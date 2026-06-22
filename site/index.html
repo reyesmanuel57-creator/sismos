@@ -79,7 +79,7 @@
     Última actualización: <span id="upd">—</span> · sismos escaneados: <span id="nev">—</span></footer>
 </div>
 <script>
-const FUENTE="estado.json";
+const FUENTE="/api/estado";
 const col=n=>n==="ELEVADO"?"#D64550":n==="MODERADO"?"#E8943B":"#3FA796";
 fetch(FUENTE).then(r=>r.json()).then(d=>{
   document.getElementById("sub").textContent=
