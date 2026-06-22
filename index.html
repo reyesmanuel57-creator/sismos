@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Monitor Sísmico Chile — En Vivo</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+  :root{--bg:#0E1117;--card:#1A2030;--line:#2A3142;--text:#ECEFF4;--muted:#8B93A7;
+        --verde:#3FA796;--naranjo:#E8943B;--rojo:#D64550;}
+  *{margin:0;padding:0;box-sizing:border-box;}
+  body{background:var(--bg);color:var(--text);font-family:'Inter',sans-serif;padding-bottom:50px;}
+  .wrap{max-width:780px;margin:0 auto;padding:0 18px;}
+  header{padding:28px 18px 0;max-width:780px;margin:0 auto;}
+  .live{display:inline-flex;align-items:center;gap:7px;font-family:'Space Mono',monospace;
+        font-size:11px;letter-spacing:.14em;color:var(--verde);text-transform:uppercase;}
+  .pulse{width:8px;height:8px;border-radius:50%;background:var(--verde);
+         box-shadow:0 0 8px var(--verde);animation:p 2s infinite;}
+  @keyframes p{0%,100%{opacity:1}50%{opacity:.3}}
+  h1{font-size:clamp(22px,5vw,30px);font-weight:800;margin-top:8px;letter-spacing:-.02em;}
+  .sub{color:var(--muted);font-size:13px;margin-top:7px;font-family:'Space Mono',monospace;}
+  .zonas{margin-top:24px;display:flex;flex-direction:column;gap:11px;}
+  .zona{background:var(--card);border:1px solid var(--line);border-radius:12px;
+        padding:16px 17px;border-left-width:5px;}
+  .zona.NORMAL{border-left-color:var(--verde);} .zona.MODERADO{border-left-color:var(--naranjo);}
+  .zona.ELEVADO{border-left-color:var(--rojo);}
+  .zt{display:flex;justify-content:space-between;align-items:center;}
+  .zn{font-weight:700;font-size:15px;}
+  .nv{font-family:'Space Mono',monospace;font-size:10px;font-weight:700;padding:4px 9px;border-radius:18px;}
+  .nv.NORMAL{background:rgba(63,167,150,.15);color:var(--verde);}
+  .nv.MODERADO{background:rgba(232,148,59,.15);color:var(--naranjo);}
+  .nv.ELEVADO{background:rgba(214,69,80,.15);color:var(--rojo);}
+  .pr{display:flex;gap:20px;margin-top:12px;}
+  .p1{flex:1;} .p1 .l{font-size:10px;color:var(--muted);font-family:'Space Mono',monospace;}
+  .p1 .v{font-size:23px;font-weight:800;margin-top:2px;}
+  .p1 .b{height:5px;background:var(--line);border-radius:3px;margin-top:6px;overflow:hidden;}
+  .p1 .f{height:100%;border-radius:3px;}
+  .cx{margin-top:11px;font-size:11px;color:var(--muted);font-family:'Space Mono',monospace;}
+  .panel{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:18px;margin-top:22px;}
+  .panel h2{font-size:14px;font-family:'Space Mono',monospace;text-transform:uppercase;
+            letter-spacing:.05em;margin-bottom:4px;}
+  .panel .d{font-size:12px;color:var(--muted);margin-bottom:14px;}
+  .params{display:flex;flex-wrap:wrap;gap:14px;margin-top:6px;font-family:'Space Mono',monospace;font-size:12px;}
+  .params span{color:var(--muted);} .params b{color:var(--text);}
+  .disc{background:var(--card);border:1px solid var(--line);border-radius:12px;
+        padding:16px;margin-top:22px;font-size:12.5px;color:var(--muted);}
+  .disc b{color:var(--text);}
+  footer{text-align:center;color:var(--muted);font-size:11px;margin-top:26px;font-family:'Space Mono',monospace;}
+  footer a{color:var(--verde);text-decoration:none;}
+</style>
+</head>
+<body>
+<header>
+  <div class="live"><span class="pulse"></span> Monitoreo activo · auto-aprendizaje</div>
+  <h1>Monitor Sísmico Chile</h1>
+  <div class="sub" id="sub">cargando…</div>
+</header>
+<div class="wrap">
+  <div class="zonas" id="zonas"></div>
+
+  <div class="panel">
+    <h2>Auto-aprendizaje del modelo</h2>
+    <div class="d">El sistema reajusta sus parámetros con los sismos recientes de Chile
+      en cada actualización. Estos son los valores aprendidos del régimen actual:</div>
+    <div class="params" id="params"></div>
+    <canvas id="chart" style="margin-top:18px;max-height:240px;"></canvas>
+  </div>
+
+  <div class="disc">
+    <b>Cómo leer esto:</b> son <b>probabilidades por zona, no certezas</b>, y
+    <b>no indican día, hora ni lugar exacto</b>. "M≥6: 8%" = en semanas con estas
+    condiciones, históricamente hubo un M≥6 cerca del 8% de las veces. El sistema
+    escanea el USGS cada 6 horas y reaprende del comportamiento reciente.
+    <br><br>Fuente oficial de emergencias: <b>SENAPRED</b> y
+    <a href="https://www.sismologia.cl">sismologia.cl</a>. Proyecto personal, no oficial.
+  </div>
+  <footer>Datos: USGS · Modelo ETAS auto-adaptativo<br>
+    Última actualización: <span id="upd">—</span> · sismos escaneados: <span id="nev">—</span></footer>
+</div>
+<script>
+const FUENTE="estado.json";
+const col=n=>n==="ELEVADO"?"#D64550":n==="MODERADO"?"#E8943B":"#3FA796";
+fetch(FUENTE).then(r=>r.json()).then(d=>{
+  document.getElementById("sub").textContent=
+    `Estimación vigente · último sismo ${new Date(d.ultimo_sismo).toLocaleString('es-CL')}`;
+  document.getElementById("upd").textContent=new Date(d.actualizado).toLocaleString('es-CL');
+  document.getElementById("nev").textContent=d.n_eventos_escaneados;
+  const c=document.getElementById("zonas");c.innerHTML="";
+  d.zonas.forEach(z=>{const k=col(z.nivel),p5=(z.prob_M5_7d*100).toFixed(0),p6=(z.prob_M6_7d*100).toFixed(0);
+    c.innerHTML+=`<div class="zona ${z.nivel}"><div class="zt"><span class="zn">${z.zona}</span>
+      <span class="nv ${z.nivel}">${z.nivel}</span></div><div class="pr">
+      <div class="p1"><div class="l">M≥5.0 / 7 días</div><div class="v">${p5}%</div>
+      <div class="b"><div class="f" style="width:${p5}%;background:${k}"></div></div></div>
+      <div class="p1"><div class="l">M≥6.0 / 7 días</div><div class="v" style="color:${k}">${p6}%</div>
+      <div class="b"><div class="f" style="width:${Math.min(100,p6*5)}%;background:${k}"></div></div></div>
+      </div><div class="cx">Últimos 30 días: ${z.n_ult30d} sismos${z.mag_max_ult30d>0?` · máx M${z.mag_max_ult30d}`:''}</div></div>`;});
+  const p=d.parametros_aprendidos;
+  document.getElementById("params").innerHTML=
+    `<span>valor-b <b>${p.b.toFixed(2)}</b></span><span>productividad K <b>${p.K.toFixed(4)}</b></span>
+     <span>α <b>${p.alpha.toFixed(2)}</b></span><span>decaimiento p <b>${p.p.toFixed(2)}</b></span>
+     <span>tasa base μ <b>${p.mu.toFixed(3)}</b>/día</span>`;
+  // grafico de evolucion del aprendizaje
+  const h=d.historial_parametros||[];
+  if(h.length>1){
+    new Chart(document.getElementById("chart"),{type:"line",
+      data:{labels:h.map(x=>new Date(x.fecha).toLocaleDateString('es-CL')),
+        datasets:[{label:"valor-b",data:h.map(x=>x.b),borderColor:"#3FA796",tension:.3},
+                  {label:"decaimiento p",data:h.map(x=>x.p),borderColor:"#E8943B",tension:.3}]},
+      options:{plugins:{legend:{labels:{color:"#8B93A7",font:{size:10}}}},
+        scales:{x:{ticks:{color:"#8B93A7",font:{size:9}},grid:{color:"#2A3142"}},
+                y:{ticks:{color:"#8B93A7",font:{size:9}},grid:{color:"#2A3142"}}}}});
+  } else {
+    document.getElementById("chart").insertAdjacentHTML("afterend",
+      '<div style="color:#8B93A7;font-size:11px;font-family:monospace;margin-top:10px">La curva de evolución aparecerá tras varias actualizaciones.</div>');
+  }
+}).catch(e=>{document.getElementById("zonas").innerHTML='<div style="color:#8B93A7;padding:30px;text-align:center">No se pudo cargar el estado.</div>';});
+</script>
+</body>
+</html>
