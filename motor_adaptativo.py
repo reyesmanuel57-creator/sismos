@@ -38,8 +38,40 @@ ZONAS = {
 }
 
 
+def escanear_csn():
+    """
+    Trae los sismos MÁS RECIENTES del Centro Sismológico Nacional de Chile
+    (vía API que sirve datos de sismologia.cl). Detecta microsismicidad
+    (M2-M4) que el USGS no reporta tan rápido. Complementa el histórico USGS.
+    """
+    try:
+        r = requests.get("https://api.boostr.cl/earthquakes/recent.json", timeout=20)
+        if r.status_code != 200:
+            return pd.DataFrame()
+        data = r.json().get("data", [])
+        filas = []
+        for e in data:
+            try:
+                t = pd.to_datetime(f"{e['date']} {e['hour']}").tz_localize(
+                    "America/Santiago").tz_convert("UTC")
+                filas.append({
+                    "time": t,
+                    "latitude": float(e["latitude"]),
+                    "longitude": float(e["longitude"]),
+                    "depth": float(str(e["depth"]).replace(" km", "").strip()),
+                    "mag": float(e["magnitude"]),
+                    "place": e.get("place", "CSN"),
+                })
+            except (ValueError, KeyError):
+                continue
+        return pd.DataFrame(filas)
+    except Exception:
+        return pd.DataFrame()  # si el CSN falla, el sistema sigue con USGS
+
+
 def escanear_chile(dias_atras=2600):
-    """Escanea TODOS los sismos de Chile hasta ahora."""
+    """Escanea sismos de Chile: histórico USGS + recientes CSN combinados."""
+    # 1. histórico completo desde USGS (base del aprendizaje)
     url = "https://earthquake.usgs.gov/fdsnws/event/1/query"
     hoy = datetime.now(timezone.utc)
     inicio = (hoy - pd.Timedelta(days=dias_atras)).strftime("%Y-%m-%d")
@@ -51,6 +83,22 @@ def escanear_chile(dias_atras=2600):
     r = requests.get(url, params=params, timeout=120); r.raise_for_status()
     df = pd.read_csv(StringIO(r.text))
     df["time"] = pd.to_datetime(df["time"], utc=True, format="ISO8601")
+    df = df[["time", "latitude", "longitude", "depth", "mag", "place"]]
+
+    # 2. sismos recientes del CSN chileno (microsismicidad de última hora)
+    csn = escanear_csn()
+    if len(csn) > 0:
+        # solo agregar CSN dentro del bbox de Chile y con M>=MC para consistencia
+        csn = csn[(csn["latitude"] >= BBOX[0]) & (csn["latitude"] <= BBOX[1]) &
+                  (csn["longitude"] >= BBOX[2]) & (csn["longitude"] <= BBOX[3]) &
+                  (csn["mag"] >= MC)]
+        # evitar duplicados: quitar eventos CSN a <2 min de uno USGS ya existente
+        if len(csn) > 0 and len(df) > 0:
+            ultimo_usgs = df["time"].max()
+            csn_nuevos = csn[csn["time"] > ultimo_usgs - pd.Timedelta(minutes=2)]
+            df = pd.concat([df, csn_nuevos], ignore_index=True)
+            df = df.drop_duplicates(subset=["time", "mag"]).reset_index(drop=True)
+
     return df.sort_values("time").reset_index(drop=True)
 
 
@@ -139,6 +187,7 @@ def correr(estado_previo_path="estado_aprendizaje.json"):
         "actualizado":datetime.now(timezone.utc).isoformat(),
         "ultimo_sismo":hoy.isoformat(),
         "n_eventos_escaneados":len(cat),
+        "fuente_datos":"USGS (histórico) + CSN Chile (reciente)",
         "parametros_aprendidos":par,
         "zonas":zonas,
         "historial_parametros":historial,
