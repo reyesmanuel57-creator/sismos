@@ -1,144 +1,111 @@
 """
-MOTOR AUTO-ADAPTATIVO — Chile siempre activo
-===============================================
-En cada corrida (programada cada pocas horas en la nube):
-  1. ESCANEA todos los sismos de Chile (USGS) hasta el instante actual.
-  2. RE-AJUSTA los parámetros ETAS por máxima verosimilitud usando una
-     ventana reciente (los últimos N años) — así APRENDE del comportamiento
-     ACTUAL de Chile, no solo del histórico congelado.
-  3. RE-ESTIMA el riesgo por zona para los próximos días con esos
-     parámetros frescos + la actividad más reciente.
-  4. GUARDA el estado y registra cómo cambiaron los parámetros (historial
-     de aprendizaje) para poder ver la evolución.
-
-"Auto-aprende" significa dos cosas que aquí SÍ ocurren:
-  - la TASA de riesgo cambia con cada sismo nuevo (instantáneo, vía ETAS)
-  - los PARÁMETROS del modelo (valor-b, productividad K, decaimiento p)
-    se reajustan con los datos recientes (aprendizaje real del régimen
-    actual de la zona)
+MOTOR AUTO-ADAPTATIVO v2 — Chile
+==================================
+Mejoras sobre v1:
+  1. ZONAS FINAS: 9 zonas de ~330km (antes 5 grandes) -> mejor "dónde"
+  2. CALIBRACIÓN CONTINUA: guarda cada pronóstico y, en la corrida
+     siguiente, compara con lo que realmente pasó. Acumula una "tasa de
+     acierto" real para que sepas cuánto confiar.
+  3. RANKING: las zonas se ordenan por riesgo (mayor primero).
+  4. Mantiene: USGS histórico + CSN reciente, auto-reajuste ETAS.
 """
 import numpy as np
 import pandas as pd
 import requests, json, os
 from io import StringIO
 from datetime import datetime, timezone
-from scipy.optimize import minimize
 
 MC = 4.5
 BBOX = (-56, -17, -76, -66)
-VENTANA_APRENDIZAJE_DIAS = 2555  # ~7 años: aprende del régimen reciente
-VENTANA_MEMORIA_DIAS = 1095      # 3 años de activación para el riesgo
+VENTANA_APRENDIZAJE_DIAS = 2555
+VENTANA_MEMORIA_DIAS = 1095
 
+# ZONAS FINAS: franjas de 3° de latitud con nombre reconocible
 ZONAS = {
-    "Norte Grande (Arica–Antofagasta)": (-26, -17),
-    "Norte Chico (Atacama–Coquimbo)": (-32, -26),
-    "Centro (Valparaíso–Maule)": (-37, -32),
-    "Sur (Biobío–Los Lagos)": (-44, -37),
-    "Austral (Aysén–Magallanes)": (-56, -44),
+    "Arica–Parinacota": (-20, -17),
+    "Tarapacá (Iquique)": (-23, -20),
+    "Antofagasta": (-26, -23),
+    "Atacama (Copiapó)": (-29, -26),
+    "Coquimbo (La Serena)": (-32, -29),
+    "Valparaíso–Metropolitana": (-35, -32),
+    "Maule–Ñuble": (-38, -35),
+    "Biobío–Araucanía": (-41, -38),
+    "Los Lagos–Aysén": (-44, -41),
 }
 
 
 def escanear_csn():
-    """
-    Trae los sismos MÁS RECIENTES del Centro Sismológico Nacional de Chile
-    (vía API que sirve datos de sismologia.cl). Detecta microsismicidad
-    (M2-M4) que el USGS no reporta tan rápido. Complementa el histórico USGS.
-    """
     try:
         r = requests.get("https://api.boostr.cl/earthquakes/recent.json", timeout=20)
         if r.status_code != 200:
             return pd.DataFrame()
-        data = r.json().get("data", [])
         filas = []
-        for e in data:
+        for e in r.json().get("data", []):
             try:
                 t = pd.to_datetime(f"{e['date']} {e['hour']}").tz_localize(
                     "America/Santiago").tz_convert("UTC")
-                filas.append({
-                    "time": t,
-                    "latitude": float(e["latitude"]),
-                    "longitude": float(e["longitude"]),
-                    "depth": float(str(e["depth"]).replace(" km", "").strip()),
-                    "mag": float(e["magnitude"]),
-                    "place": e.get("place", "CSN"),
-                })
+                filas.append({"time": t, "latitude": float(e["latitude"]),
+                              "longitude": float(e["longitude"]),
+                              "depth": float(str(e["depth"]).replace(" km","").strip()),
+                              "mag": float(e["magnitude"]), "place": e.get("place","CSN")})
             except (ValueError, KeyError):
                 continue
         return pd.DataFrame(filas)
     except Exception:
-        return pd.DataFrame()  # si el CSN falla, el sistema sigue con USGS
+        return pd.DataFrame()
 
 
 def escanear_chile(dias_atras=2600):
-    """Escanea sismos de Chile: histórico USGS + recientes CSN combinados."""
-    # 1. histórico completo desde USGS (base del aprendizaje)
     url = "https://earthquake.usgs.gov/fdsnws/event/1/query"
     hoy = datetime.now(timezone.utc)
     inicio = (hoy - pd.Timedelta(days=dias_atras)).strftime("%Y-%m-%d")
-    params = {"format": "csv", "starttime": inicio,
-              "endtime": hoy.strftime("%Y-%m-%d"),
+    params = {"format": "csv", "starttime": inicio, "endtime": hoy.strftime("%Y-%m-%d"),
               "minlatitude": BBOX[0], "maxlatitude": BBOX[1],
               "minlongitude": BBOX[2], "maxlongitude": BBOX[3],
               "minmagnitude": MC, "orderby": "time-asc"}
     r = requests.get(url, params=params, timeout=120); r.raise_for_status()
     df = pd.read_csv(StringIO(r.text))
     df["time"] = pd.to_datetime(df["time"], utc=True, format="ISO8601")
-    df = df[["time", "latitude", "longitude", "depth", "mag", "place"]]
-
-    # 2. sismos recientes del CSN chileno (microsismicidad de última hora)
+    df = df[["time","latitude","longitude","depth","mag","place"]]
     csn = escanear_csn()
     if len(csn) > 0:
-        # solo agregar CSN dentro del bbox de Chile y con M>=MC para consistencia
-        csn = csn[(csn["latitude"] >= BBOX[0]) & (csn["latitude"] <= BBOX[1]) &
-                  (csn["longitude"] >= BBOX[2]) & (csn["longitude"] <= BBOX[3]) &
-                  (csn["mag"] >= MC)]
-        # evitar duplicados: quitar eventos CSN a <2 min de uno USGS ya existente
+        csn = csn[(csn["latitude"]>=BBOX[0])&(csn["latitude"]<=BBOX[1])&
+                  (csn["longitude"]>=BBOX[2])&(csn["longitude"]<=BBOX[3])&(csn["mag"]>=MC)]
         if len(csn) > 0 and len(df) > 0:
-            ultimo_usgs = df["time"].max()
-            csn_nuevos = csn[csn["time"] > ultimo_usgs - pd.Timedelta(minutes=2)]
-            df = pd.concat([df, csn_nuevos], ignore_index=True)
-            df = df.drop_duplicates(subset=["time", "mag"]).reset_index(drop=True)
-
+            ult = df["time"].max()
+            df = pd.concat([df, csn[csn["time"] > ult-pd.Timedelta(minutes=2)]], ignore_index=True)
+            df = df.drop_duplicates(subset=["time","mag"]).reset_index(drop=True)
     return df.sort_values("time").reset_index(drop=True)
 
 
-# ---- AUTO-APRENDIZAJE: reajuste ETAS por máxima verosimilitud ----
-def neg_loglik(params, t_days, mags, T):
-    mu, K, alpha, c, p = params
-    if mu<=0 or K<=0 or c<=0 or p<=1.001 or alpha<0: return 1e10
-    n=len(t_days); s=0.0
-    for i in range(n):
-        lo=np.searchsorted(t_days, t_days[i]-VENTANA_MEMORIA_DIAS, side="left")
-        if lo<i:
-            dt=t_days[i]-t_days[lo:i]
-            lam=mu+(K*np.exp(alpha*(mags[lo:i]-MC))/(dt+c)**p).sum()
-        else: lam=mu
-        s+=np.log(max(lam,1e-12))
-    integ=K*np.exp(alpha*(mags-MC))*(c**(1-p)-(T-t_days+c)**(1-p))/(p-1)
-    return -(s - (mu*T + integ.sum()))
-
-
 def reaprender_parametros(cat):
-    """Reajusta ETAS con la ventana reciente. Aprende el régimen actual."""
+    from scipy.optimize import minimize
     hoy = cat["time"].max()
-    reciente = cat[cat["time"] >= hoy - pd.Timedelta(days=VENTANA_APRENDIZAJE_DIAS)]
-    t0 = reciente["time"].min()
-    t_days = (reciente["time"]-t0).dt.total_seconds().values/86400.0
-    mags = reciente["mag"].values.astype(float)
-    T = t_days[-1]
-    # valor-b reciente (Aki MLE)
+    rec = cat[cat["time"] >= hoy - pd.Timedelta(days=VENTANA_APRENDIZAJE_DIAS)]
+    t0 = rec["time"].min()
+    t_days = (rec["time"]-t0).dt.total_seconds().values/86400.0
+    mags = rec["mag"].values.astype(float); T = t_days[-1]
     b = np.log10(np.e)/(mags.mean()-(MC-0.05))
-    x0=[0.3,0.02,1.8,0.12,1.3]
-    bounds=[(1e-4,5),(1e-5,2),(0.1,4),(1e-3,10),(1.01,3)]
-    res=minimize(neg_loglik,x0,args=(t_days,mags,T),method="L-BFGS-B",
-                 bounds=bounds,options={"maxiter":80})
-    mu,K,alpha,c,p=res.x
-    return {"mu":float(mu),"K":float(K),"alpha":float(alpha),"c":float(c),
-            "p":float(p),"b":float(b),"n_eventos_aprendizaje":len(reciente),
-            "convergencia":bool(res.success)}
+    def nll(p):
+        mu,K,al,c,pp = p
+        if mu<=0 or K<=0 or c<=0 or pp<=1.001 or al<0: return 1e10
+        s=0.0
+        for i in range(len(t_days)):
+            lo=np.searchsorted(t_days,t_days[i]-VENTANA_MEMORIA_DIAS,side="left")
+            if lo<i:
+                dt=t_days[i]-t_days[lo:i]
+                lam=mu+(K*np.exp(al*(mags[lo:i]-MC))/(dt+c)**pp).sum()
+            else: lam=mu
+            s+=np.log(max(lam,1e-12))
+        integ=K*np.exp(al*(mags-MC))*(c**(1-pp)-(T-t_days+c)**(1-pp))/(pp-1)
+        return -(s-(mu*T+integ.sum()))
+    res=minimize(nll,[0.3,0.02,1.8,0.12,1.3],method="L-BFGS-B",
+                 bounds=[(1e-4,5),(1e-5,2),(0.1,4),(1e-3,10),(1.01,3)],options={"maxiter":80})
+    mu,K,al,c,pp=res.x
+    return {"mu":float(mu),"K":float(K),"alpha":float(al),"c":float(c),"p":float(pp),
+            "b":float(b),"n_eventos_aprendizaje":len(rec),"convergencia":bool(res.success)}
 
 
-# ---- RE-ESTIMACIÓN de riesgo por zona ----
 def tasa_zona(z, t_corte, mu_zona, par):
     h=z[(z["time"]<t_corte)&(z["time"]>=t_corte-pd.Timedelta(days=VENTANA_MEMORIA_DIAS))]
     if len(h)==0: return mu_zona
@@ -155,16 +122,63 @@ def estimar(cat, par):
         mu_zona=len(z)/años/365.25 if años>0 else par["mu"]
         tasa=tasa_zona(z,hoy,mu_zona,par)
         def prob(mag,dias=7):
-            lam=tasa*10**(-par["b"]*(mag-MC)); return 1-np.exp(-lam*dias)
+            return 1-np.exp(-(tasa*10**(-par["b"]*(mag-MC)))*dias)
         ult7=z[z["time"]>=hoy-pd.Timedelta(days=7)]
         ult30=z[z["time"]>=hoy-pd.Timedelta(days=30)]
         p6=prob(6.0)
-        nivel="ELEVADO" if p6>=0.15 else "MODERADO" if (p6>=0.07 or prob(5.0)>=0.5) else "NORMAL"
-        out.append({"zona":nombre,"prob_M5_7d":round(prob(5.0),3),
-                    "prob_M6_7d":round(p6,3),"nivel":nivel,
-                    "n_ult7d":int(len(ult7)),"n_ult30d":int(len(ult30)),
+        nivel="ELEVADO" if p6>=0.10 else "MODERADO" if (p6>=0.04 or prob(5.0)>=0.4) else "NORMAL"
+        out.append({"zona":nombre,"lat0":la0,"lat1":la1,
+                    "prob_M5_7d":round(prob(5.0),3),"prob_M6_7d":round(p6,3),
+                    "nivel":nivel,"n_ult7d":int(len(ult7)),"n_ult30d":int(len(ult30)),
                     "mag_max_ult30d":round(float(ult30["mag"].max()),1) if len(ult30) else 0.0})
+    # RANKING: ordenar por probabilidad de M5 (mayor primero)
+    out.sort(key=lambda x:-x["prob_M5_7d"])
     return out, hoy
+
+
+def evaluar_calibracion(estado_previo, cat):
+    """
+    Compara los pronósticos de la corrida ANTERIOR con lo que realmente
+    pasó después. Acumula aciertos para mostrar la confiabilidad real.
+    Un 'acierto' = la zona que tenía mayor prob_M5 fue de las que tuvo
+    actividad M>=5 en la semana siguiente.
+    """
+    calib = estado_previo.get("calibracion", {"evaluaciones":0,"aciertos_top3":0,
+                                                "brier_sum":0.0,"n_brier":0})
+    pron_prev = estado_previo.get("zonas")
+    fecha_prev = estado_previo.get("ultimo_sismo")
+    if not pron_prev or not fecha_prev:
+        return calib
+    try:
+        t_prev = pd.to_datetime(fecha_prev, utc=True)
+    except Exception:
+        return calib
+    # ventana evaluada: 7 días después del pronóstico previo
+    fin = t_prev + pd.Timedelta(days=7)
+    if cat["time"].max() < fin:
+        return calib  # aún no pasó la semana completa, no evaluar todavía
+
+    # ¿qué zonas tuvieron realmente M>=5 en esa semana?
+    real = cat[(cat["time"]>t_prev)&(cat["time"]<=fin)&(cat["mag"]>=5.0)]
+    zonas_con_evento = set()
+    for _,e in real.iterrows():
+        for z in pron_prev:
+            if z["lat0"]<=e["latitude"]<z["lat1"]:
+                zonas_con_evento.add(z["zona"])
+    # top-3 zonas pronosticadas (ya vienen ordenadas por riesgo)
+    top3 = [z["zona"] for z in pron_prev[:3]]
+    acierto = len(zonas_con_evento & set(top3)) > 0 if zonas_con_evento else None
+
+    # Brier score: qué tan bien calibradas las probabilidades de M5 por zona
+    for z in pron_prev:
+        ocurrio = 1 if z["zona"] in zonas_con_evento else 0
+        calib["brier_sum"] += (z["prob_M5_7d"]-ocurrio)**2
+        calib["n_brier"] += 1
+
+    if acierto is not None:
+        calib["evaluaciones"] += 1
+        if acierto: calib["aciertos_top3"] += 1
+    return calib
 
 
 def correr(estado_previo_path="estado_aprendizaje.json"):
@@ -172,16 +186,23 @@ def correr(estado_previo_path="estado_aprendizaje.json"):
     par = reaprender_parametros(cat)
     zonas, hoy = estimar(cat, par)
 
-    # historial de aprendizaje: cómo evolucionan los parámetros
-    historial=[]
+    # cargar estado previo para historial y calibración
+    previo = {}
     if os.path.exists(estado_previo_path):
-        try: historial=json.load(open(estado_previo_path)).get("historial_parametros",[])
+        try: previo = json.load(open(estado_previo_path))
         except: pass
+
+    calib = evaluar_calibracion(previo, cat)
+    tasa_acierto = (calib["aciertos_top3"]/calib["evaluaciones"]*100
+                    if calib.get("evaluaciones",0)>0 else None)
+    brier = (calib["brier_sum"]/calib["n_brier"] if calib.get("n_brier",0)>0 else None)
+
+    historial = previo.get("historial_parametros",[])
     historial.append({"fecha":datetime.now(timezone.utc).isoformat(),
                       "mu":round(par["mu"],4),"K":round(par["K"],4),
                       "alpha":round(par["alpha"],3),"p":round(par["p"],3),
                       "b":round(par["b"],3),"n_total":len(cat)})
-    historial=historial[-200:]  # conservar últimas 200 corridas
+    historial=historial[-200:]
 
     return {
         "actualizado":datetime.now(timezone.utc).isoformat(),
@@ -190,24 +211,24 @@ def correr(estado_previo_path="estado_aprendizaje.json"):
         "fuente_datos":"USGS (histórico) + CSN Chile (reciente)",
         "parametros_aprendidos":par,
         "zonas":zonas,
+        "calibracion":{**calib,
+                       "tasa_acierto_top3_pct":round(tasa_acierto,1) if tasa_acierto is not None else None,
+                       "brier_score":round(brier,4) if brier is not None else None},
         "historial_parametros":historial,
-        "descargo":("Sistema auto-adaptativo. Probabilidades por zona para 7 días, "
-                    "NO predicción de día/hora/lugar. Oficial: SENAPRED, sismologia.cl."),
+        "descargo":("Sistema auto-adaptativo con calibración. Probabilidades por zona "
+                    "para 7 días, NO predicción de día/hora/lugar. Oficial: SENAPRED, sismologia.cl."),
     }
 
 
 if __name__ == "__main__":
-    print("Escaneando sismos de Chile y reaprendiendo...")
+    print("Escaneando, reaprendiendo y calibrando...")
     estado = correr()
     json.dump(estado, open("estado_aprendizaje.json","w"), ensure_ascii=False, indent=2)
-
     p=estado["parametros_aprendidos"]
-    print(f"\nEscaneados: {estado['n_eventos_escaneados']} sismos | "
-          f"último: {estado['ultimo_sismo'][:16]}")
-    print(f"\nParámetros REAPRENDIDOS del Chile reciente:")
-    print(f"  valor-b={p['b']:.3f}  K={p['K']:.4f}  alpha={p['alpha']:.2f}  "
-          f"p={p['p']:.3f}  (n={p['n_eventos_aprendizaje']}, conv={p['convergencia']})")
-    print(f"\nEstimación de riesgo actual por zona (7 días):")
-    for z in estado["zonas"]:
-        print(f"  [{z['nivel']:8s}] {z['zona'][:30]:30s} M≥5:{z['prob_M5_7d']*100:3.0f}% "
-              f"M≥6:{z['prob_M6_7d']*100:3.0f}%")
+    print(f"\nEscaneados {estado['n_eventos_escaneados']} sismos | b={p['b']:.2f}")
+    print(f"\nRANKING de zonas por riesgo (7 días):")
+    for i,z in enumerate(estado["zonas"],1):
+        print(f"  {i}. [{z['nivel']:8s}] {z['zona']:26s} M5={z['prob_M5_7d']*100:3.0f}% M6={z['prob_M6_7d']*100:.0f}%")
+    c=estado["calibracion"]
+    print(f"\nCalibración: {c['evaluaciones']} semanas evaluadas, "
+          f"tasa acierto top-3: {c.get('tasa_acierto_top3_pct','—')}%")
