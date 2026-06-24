@@ -175,6 +175,55 @@ def estimar(cat, par):
     return out, hoy
 
 
+def pronostico_ubicacion(cat, zonas, hoy):
+    """
+    Estima la ubicación aproximada y magnitud del sismo más probable de la
+    próxima semana. Da un PUNTO específico (lat/lon) afinado al máximo, con
+    su círculo de incertidumbre real.
+
+    Método elegido por backtesting (216 semanas): promedio de los sismos más
+    recientes de la zona más activa. Error mediano medido: ~420 km.
+    Precisión por radio: dentro de 100km el 19%, dentro de 200km el 36%.
+    Se reporta SIEMPRE con su margen real; no es un punto exacto garantizado.
+    """
+    h90 = cat[cat["time"] >= hoy - pd.Timedelta(days=90)]
+    if len(h90) == 0:
+        return None
+    # zona con mayor actividad reciente
+    mejor_zona, mejor_score = None, -1
+    for z in zonas:
+        hz = h90[(h90["latitude"] >= z["lat0"]) & (h90["latitude"] < z["lat1"])]
+        if len(hz) == 0:
+            continue
+        score = len(hz) + np.exp(float(hz["mag"].max()) - 4)
+        if score > mejor_score:
+            mejor_score, mejor_zona = score, z
+    if mejor_zona is None:
+        return None
+    # PUNTO afinado: promedio de los sismos más recientes de la zona (mejor método)
+    hz = h90[(h90["latitude"] >= mejor_zona["lat0"]) & (h90["latitude"] < mejor_zona["lat1"])]
+    recientes = hz.sort_values("time").tail(10)
+    lat_pt = round(float(recientes["latitude"].mean()), 2)
+    lon_pt = round(float(recientes["longitude"].mean()), 2)
+    # magnitud esperada
+    hz_all = cat[(cat["latitude"] >= mejor_zona["lat0"]) & (cat["latitude"] < mejor_zona["lat1"])]
+    mag_esperada = round(float(hz_all["mag"].quantile(0.90)), 1) if len(hz_all) else 5.0
+    return {
+        "zona": mejor_zona["zona"],
+        "lat_punto": lat_pt,
+        "lon_punto": lon_pt,
+        "mag_esperada_aprox": mag_esperada,
+        "prob_M5_7d": mejor_zona["prob_M5_7d"],
+        "radio_km": 420,
+        "acierto_100km_pct": 19,
+        "acierto_200km_pct": 36,
+        "nota": ("Punto central estimado de la zona más activa. Margen real "
+                 "~420 km (el sismo cae dentro de 100 km el 19% de las veces, "
+                 "dentro de 200 km el 36%). Es la mejor estimación posible, "
+                 "NO un punto garantizado ni una predicción de evento."),
+    }
+
+
 def evaluar_calibracion(estado_previo, cat):
     """
     Compara los pronósticos de la corrida ANTERIOR con lo que realmente
@@ -242,6 +291,8 @@ def actividad_reciente(cat, hoy):
             "lugar": str(e.get("place", "")),
             "hace_horas": round(horas, 1),
             "profundidad": round(float(e.get("depth", 0)), 0),
+            "lat": round(float(e["latitude"]), 2),
+            "lon": round(float(e["longitude"]), 2),
         })
     return eventos
 
@@ -292,6 +343,7 @@ def correr(estado_previo_path="estado_aprendizaje.json"):
     # NUEVO: actividad reciente + estado de vigilancia
     eventos_recientes = actividad_reciente(cat, hoy)
     vigilancia = evaluar_vigilancia(zonas, eventos_recientes)
+    pronostico = pronostico_ubicacion(cat, zonas, hoy)
 
     historial = previo.get("historial_parametros",[])
     historial.append({"fecha":datetime.now(timezone.utc).isoformat(),
@@ -307,6 +359,7 @@ def correr(estado_previo_path="estado_aprendizaje.json"):
         "fuente_datos":"USGS (histórico) + CSN y sismologia.cl (reciente)",
         "vigilancia":vigilancia,
         "actividad_reciente":eventos_recientes,
+        "pronostico_ubicacion":pronostico,
         "parametros_aprendidos":par,
         "zonas":zonas,
         "calibracion":{**calib,

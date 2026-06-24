@@ -5,6 +5,8 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Monitor Sísmico Chile — En Vivo</title>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css"/>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
 <style>
   :root{--bg:#0E1117;--card:#1A2030;--line:#2A3142;--text:#ECEFF4;--muted:#8B93A7;
@@ -71,6 +73,20 @@
   .evento .mag{font-family:'Space Mono',monospace;font-weight:700;font-size:18px;background:rgba(232,148,59,.15);color:var(--naranjo);border-radius:8px;padding:6px 11px;}
   .evento .info{flex:1;} .evento .info .z{font-weight:600;font-size:14px;}
   .evento .info .t{font-size:11px;color:var(--muted);font-family:'Space Mono',monospace;margin-top:2px;}
+  .destacada{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:12px;margin-top:12px;text-align:center;}
+  .destacada .dt{font-family:'Space Mono',monospace;font-size:10px;color:var(--rojo);letter-spacing:.05em;}
+  .destacada .dz{font-weight:700;font-size:15px;margin-top:4px;}
+  .destacada .dp{font-size:12px;color:var(--text);margin-top:5px;}
+  .destacada .dn{font-size:10px;color:var(--muted);margin-top:6px;line-height:1.4;}
+  .pronostico{background:linear-gradient(135deg,rgba(214,69,80,.12),rgba(232,148,59,.08));border:1px solid var(--line);border-radius:11px;padding:14px;margin-top:12px;}
+  .pronostico .pt{font-family:'Space Mono',monospace;font-size:10px;color:var(--naranjo);letter-spacing:.04em;}
+  .pronostico .pz{font-weight:800;font-size:18px;margin-top:6px;}
+  .pronostico .pm{font-size:13px;margin-top:6px;color:var(--text);}
+  .pronostico .pprecision{font-size:11px;color:var(--naranjo);margin-top:8px;font-family:'Space Mono',monospace;line-height:1.4;}
+  .pronostico .pn{font-size:10.5px;color:var(--muted);margin-top:8px;line-height:1.45;}
+  #mapa-real{width:100%;height:380px;border-radius:12px;border:1px solid var(--line);margin-bottom:12px;background:#0E1117;z-index:1;}
+  .leaflet-popup-content-wrapper,.leaflet-popup-tip{background:var(--card);color:var(--text);}
+  @keyframes ping{0%{transform:scale(0.3);opacity:1}80%,100%{transform:scale(2.2);opacity:0}}
 </style>
 </head>
 <body>
@@ -82,15 +98,13 @@
 <div class="wrap">
   <div id="banner-vigilancia"></div>
   <div id="actividad-reciente"></div>
-  <div class="layout">
-    <div class="mapcol">
-      <div class="seccion-titulo">Mapa de riesgo</div>
-      <div class="mapa" id="mapa"></div>
-    </div>
-    <div>
-      <div class="seccion-titulo">Ranking de zonas a vigilar (7 días)</div>
-      <div id="zonas"></div>
-    </div>
+  <div class="seccion-titulo">Mapa de riesgo — ubicación estimada</div>
+  <div id="mapa-real"></div>
+  <div id="pronostico-ubicacion"></div>
+  <div id="zona-destacada"></div>
+  <div style="margin-top:18px">
+    <div class="seccion-titulo">Ranking de zonas a vigilar (7 días)</div>
+    <div id="zonas"></div>
   </div>
 
   <div class="panel">
@@ -121,19 +135,68 @@
 const FUENTE="https://raw.githubusercontent.com/reyesmanuel57-creator/sismos/main/estado.json";
 const col=n=>n==="ELEVADO"?"#D64550":n==="MODERADO"?"#E8943B":"#3FA796";
 
-// mapa simplificado de Chile: una franja vertical dividida en celdas por latitud
-function dibujarMapa(zonas){
-  const h=420, w=70, n=zonas.length;
-  const ch=h/n;
-  let svg=`<svg viewBox="0 0 ${w} ${h}">`;
-  zonas.slice().sort((a,b)=>a.lat1-b.lat1).forEach((z,i)=>{
-    const y=i*ch;
-    svg+=`<rect x="12" y="${y}" width="46" height="${ch-2}" rx="3"
-      fill="${col(z.nivel)}" opacity="${z.nivel==='NORMAL'?0.35:0.85}"
-      stroke="#0E1117" stroke-width="1"></rect>`;
+// MAPA REAL de Chile con Leaflet + círculos concéntricos sobre el punto estimado
+let _map=null, _capas=[];
+function dibujarMapa(zonas, actividad, pronostico){
+  if(!_map){
+    _map = L.map('mapa-real',{zoomControl:true,attributionControl:false}).setView([-30,-71],4);
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{maxZoom:10}).addTo(_map);
+    setTimeout(()=>_map.invalidateSize(),300);
+  }
+  // limpiar capas previas
+  _capas.forEach(c=>_map.removeLayer(c)); _capas=[];
+
+  // pintar zonas como rectángulos de color por nivel
+  zonas.forEach(z=>{
+    const c=col(z.nivel);
+    const rect=L.rectangle([[z.lat0,-76],[z.lat1,-66]],
+      {color:c,weight:0,fillColor:c,fillOpacity:z.nivel==='NORMAL'?0.06:0.22}).addTo(_map);
+    _capas.push(rect);
   });
-  svg+=`</svg>`;
-  document.getElementById("mapa").innerHTML=svg;
+
+  // sismos recientes como puntos
+  if(actividad){
+    actividad.forEach(e=>{
+      if(e.lat&&e.lon){
+        const m=L.circleMarker([e.lat,e.lon],{radius:e.mag>=6?9:e.mag>=5?6:4,
+          color:'#E8943B',fillColor:'#E8943B',fillOpacity:0.8,weight:1}).addTo(_map);
+        m.bindPopup('M'+e.mag+' · '+(e.lugar||e.zona));
+        _capas.push(m);
+      }
+    });
+  }
+
+  // PUNTO ESTIMADO con círculos concéntricos rojos (como mapa de terremoto)
+  if(pronostico && pronostico.lat_punto){
+    const lat=pronostico.lat_punto, lon=pronostico.lon_punto;
+    const colorTop = col(zonas[0].nivel);
+    // círculo de incertidumbre (radio real en metros)
+    const inc=L.circle([lat,lon],{radius:pronostico.radio_km*1000,
+      color:colorTop,weight:1,fillColor:colorTop,fillOpacity:0.08,dashArray:'5 5'}).addTo(_map);
+    _capas.push(inc);
+    // anillos concéntricos sobre el punto (estilo epicentro)
+    [80000,45000,18000].forEach((r,i)=>{
+      const ring=L.circle([lat,lon],{radius:r,color:'#D64550',weight:2,
+        fillColor:'#D64550',fillOpacity:i===2?0.6:0.05}).addTo(_map);
+      _capas.push(ring);
+    });
+    // centrar el mapa en el punto
+    _map.setView([lat,lon],6);
+  }
+
+  // texto de la zona destacada bajo el mapa
+  if(zonas.length){
+    const t=zonas[0];
+    const cont=document.getElementById("zona-destacada");
+    if(cont){
+      cont.innerHTML=`<div class="destacada">
+        <div class="dt">🔴 Zona de mayor actividad esta semana</div>
+        <div class="dz">${t.zona}</div>
+        <div class="dp">Probabilidad de sismo M≥5: <b>${(t.prob_M5_7d*100).toFixed(0)}%</b> · M≥6: <b>${(t.prob_M6_7d*100).toFixed(0)}%</b></div>
+        <div class="dn">Indica dónde hay más actividad, no que vaya a ocurrir un sismo.</div>
+      </div>`;
+    }
+  }
 }
 
 fetch(FUENTE).then(r=>r.json()).then(d=>{
@@ -164,7 +227,23 @@ fetch(FUENTE).then(r=>r.json()).then(d=>{
   document.getElementById("upd").textContent=new Date(d.actualizado).toLocaleString('es-CL');
   document.getElementById("nev").textContent=d.n_eventos_escaneados;
 
-  dibujarMapa(d.zonas);
+  // Pronóstico de ubicación aproximada (con su precisión real)
+  const pr = d.pronostico_ubicacion;
+  if(pr){
+    const cont = document.getElementById("pronostico-ubicacion");
+    if(cont){
+      cont.innerHTML = `<div class="pronostico">
+        <div class="pt">📍 UBICACIÓN ESTIMADA DEL PRÓXIMO SISMO (7 DÍAS)</div>
+        <div class="pz">${pr.zona}</div>
+        <div class="pm">Punto estimado: <b>${pr.lat_punto}°, ${pr.lon_punto}°</b></div>
+        <div class="pm">Magnitud esperada: <b>M${pr.mag_esperada_aprox}</b> · Probabilidad M≥5: <b>${(pr.prob_M5_7d*100).toFixed(0)}%</b></div>
+        <div class="pprecision">Margen real ±${pr.radio_km} km · acierta dentro de 100 km el ${pr.acierto_100km_pct}%, dentro de 200 km el ${pr.acierto_200km_pct}%</div>
+        <div class="pn">${pr.nota}</div>
+      </div>`;
+    }
+  }
+
+  dibujarMapa(d.zonas, d.actividad_reciente, d.pronostico_ubicacion);
 
   const c=document.getElementById("zonas");c.innerHTML="";
   d.zonas.forEach((z,i)=>{const k=col(z.nivel),p5=(z.prob_M5_7d*100).toFixed(0),p6=(z.prob_M6_7d*100).toFixed(0);
