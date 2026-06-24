@@ -181,6 +181,59 @@ def evaluar_calibracion(estado_previo, cat):
     return calib
 
 
+def actividad_reciente(cat, hoy):
+    """
+    Detecta sismos relevantes (M>=5) de las últimas 24-48h para mostrarlos
+    destacados. NO es alerta temprana (el dato llega con minutos/horas de
+    retraso) sino información rápida de lo que acaba de ocurrir + aviso de
+    que pueden venir réplicas.
+    """
+    recientes = cat[(cat["time"] >= hoy - pd.Timedelta(hours=48)) & (cat["mag"] >= 5.0)]
+    eventos = []
+    for _, e in recientes.sort_values("time", ascending=False).iterrows():
+        horas = (hoy - e["time"]).total_seconds() / 3600
+        # ¿en qué zona cayó?
+        zona = "Chile"
+        for nombre, (la0, la1) in ZONAS.items():
+            if la0 <= e["latitude"] < la1:
+                zona = nombre; break
+        eventos.append({
+            "mag": round(float(e["mag"]), 1),
+            "zona": zona,
+            "lugar": str(e.get("place", "")),
+            "hace_horas": round(horas, 1),
+            "profundidad": round(float(e.get("depth", 0)), 0),
+        })
+    return eventos
+
+
+def evaluar_vigilancia(zonas, eventos_recientes):
+    """
+    Define el estado global de vigilancia del país:
+    - ALERTA: hubo M>=6 en últimas 48h (réplicas probables) o alguna zona ELEVADO
+    - VIGILANCIA: hubo M>=5 reciente, o alguna zona MODERADO
+    - NORMAL: todo tranquilo
+    El mensaje promueve PREPARACIÓN, nunca afirma que vaya a ocurrir un sismo.
+    """
+    hay_m6 = any(e["mag"] >= 6.0 for e in eventos_recientes)
+    hay_m5 = any(e["mag"] >= 5.0 for e in eventos_recientes)
+    zona_elevada = any(z["nivel"] == "ELEVADO" for z in zonas)
+    zona_moderada = any(z["nivel"] == "MODERADO" for z in zonas)
+
+    if hay_m6 or zona_elevada:
+        return {"estado": "ALERTA",
+                "mensaje": ("Actividad sísmica elevada en Chile. Pueden ocurrir réplicas. "
+                            "Buen momento para revisar tu kit de emergencia y plan familiar. "
+                            "Esto NO predice un sismo: indica mayor actividad reciente.")}
+    if hay_m5 or zona_moderada:
+        return {"estado": "VIGILANCIA",
+                "mensaje": ("Una o más zonas muestran actividad por sobre lo normal. "
+                            "Mantente informado y ten lista tu preparación ante sismos.")}
+    return {"estado": "NORMAL",
+            "mensaje": ("Actividad sísmica dentro de lo normal para Chile. "
+                        "Recuerda mantener siempre tu preparación ante sismos.")}
+
+
 def correr(estado_previo_path="estado_aprendizaje.json"):
     cat = escanear_chile()
     par = reaprender_parametros(cat)
@@ -197,6 +250,10 @@ def correr(estado_previo_path="estado_aprendizaje.json"):
                     if calib.get("evaluaciones",0)>0 else None)
     brier = (calib["brier_sum"]/calib["n_brier"] if calib.get("n_brier",0)>0 else None)
 
+    # NUEVO: actividad reciente + estado de vigilancia
+    eventos_recientes = actividad_reciente(cat, hoy)
+    vigilancia = evaluar_vigilancia(zonas, eventos_recientes)
+
     historial = previo.get("historial_parametros",[])
     historial.append({"fecha":datetime.now(timezone.utc).isoformat(),
                       "mu":round(par["mu"],4),"K":round(par["K"],4),
@@ -209,6 +266,8 @@ def correr(estado_previo_path="estado_aprendizaje.json"):
         "ultimo_sismo":hoy.isoformat(),
         "n_eventos_escaneados":len(cat),
         "fuente_datos":"USGS (histórico) + CSN Chile (reciente)",
+        "vigilancia":vigilancia,
+        "actividad_reciente":eventos_recientes,
         "parametros_aprendidos":par,
         "zonas":zonas,
         "calibracion":{**calib,

@@ -60,6 +60,17 @@
   .disc b{color:var(--text);}
   footer{text-align:center;color:var(--muted);font-size:11px;margin-top:24px;font-family:'Space Mono',monospace;}
   footer a{color:var(--verde);text-decoration:none;}
+  .banner{border-radius:12px;padding:16px 18px;margin-bottom:16px;border-left-width:6px;border-left-style:solid;}
+  .banner.NORMAL{background:rgba(63,167,150,.10);border-left-color:var(--verde);}
+  .banner.VIGILANCIA{background:rgba(232,148,59,.13);border-left-color:var(--naranjo);}
+  .banner.ALERTA{background:rgba(214,69,80,.15);border-left-color:var(--rojo);}
+  .banner .bt{font-family:'Space Mono',monospace;font-size:13px;font-weight:700;letter-spacing:.08em;display:flex;align-items:center;gap:8px;}
+  .banner.NORMAL .bt{color:var(--verde);} .banner.VIGILANCIA .bt{color:var(--naranjo);} .banner.ALERTA .bt{color:var(--rojo);}
+  .banner .bm{font-size:13px;color:var(--text);margin-top:7px;line-height:1.5;}
+  .evento{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:13px 15px;margin-bottom:8px;display:flex;align-items:center;gap:14px;}
+  .evento .mag{font-family:'Space Mono',monospace;font-weight:700;font-size:18px;background:rgba(232,148,59,.15);color:var(--naranjo);border-radius:8px;padding:6px 11px;}
+  .evento .info{flex:1;} .evento .info .z{font-weight:600;font-size:14px;}
+  .evento .info .t{font-size:11px;color:var(--muted);font-family:'Space Mono',monospace;margin-top:2px;}
 </style>
 </head>
 <body>
@@ -69,6 +80,8 @@
   <div class="sub" id="sub">cargando…</div>
 </header>
 <div class="wrap">
+  <div id="banner-vigilancia"></div>
+  <div id="actividad-reciente"></div>
   <div class="layout">
     <div class="mapcol">
       <div class="seccion-titulo">Mapa de riesgo</div>
@@ -105,7 +118,7 @@
     Última actualización: <span id="upd">—</span> · sismos: <span id="nev">—</span></footer>
 </div>
 <script>
-const FUENTE="estado.json";
+const FUENTE="https://raw.githubusercontent.com/reyesmanuel57-creator/sismos/main/estado.json";
 const col=n=>n==="ELEVADO"?"#D64550":n==="MODERADO"?"#E8943B":"#3FA796";
 
 // mapa simplificado de Chile: una franja vertical dividida en celdas por latitud
@@ -124,6 +137,28 @@ function dibujarMapa(zonas){
 }
 
 fetch(FUENTE).then(r=>r.json()).then(d=>{
+  // Banner de vigilancia (estado global del país)
+  const vig = d.vigilancia || {estado:"NORMAL", mensaje:""};
+  const iconos = {NORMAL:"🟢", VIGILANCIA:"🟠", ALERTA:"🔴"};
+  document.getElementById("banner-vigilancia").innerHTML =
+    `<div class="banner ${vig.estado}">
+       <div class="bt">${iconos[vig.estado]||""} ESTADO: ${vig.estado}</div>
+       <div class="bm">${vig.mensaje}</div>
+     </div>`;
+
+  // Actividad reciente (sismos M>=5 últimas 48h)
+  const ar = d.actividad_reciente || [];
+  if(ar.length>0){
+    let html = '<div class="seccion-titulo">Actividad reciente (últimas 48h)</div>';
+    ar.slice(0,5).forEach(e=>{
+      const t = e.hace_horas<1 ? "hace minutos" : `hace ${Math.round(e.hace_horas)}h`;
+      html += `<div class="evento"><span class="mag">M${e.mag}</span>
+        <div class="info"><div class="z">${e.zona}</div>
+        <div class="t">${e.lugar||''} · ${t} · prof ${e.profundidad}km</div></div></div>`;
+    });
+    document.getElementById("actividad-reciente").innerHTML = html;
+  }
+
   document.getElementById("sub").textContent=
     `Estimación vigente · último sismo ${new Date(d.ultimo_sismo).toLocaleString('es-CL')}`;
   document.getElementById("upd").textContent=new Date(d.actualizado).toLocaleString('es-CL');
