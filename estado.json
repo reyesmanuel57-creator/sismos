@@ -1,5 +1,5 @@
 {
-  "actualizado": "2026-06-23T22:46:19.479322+00:00",
+  "actualizado": "2026-06-24T00:04:33.179736+00:00",
   "ultimo_sismo": "2026-06-21T08:50:13.934000+00:00",
   "n_eventos_escaneados": 1891,
   "fuente_datos": "USGS (histórico) + CSN Chile (reciente)",
@@ -15,44 +15,98 @@
   },
   "zonas": [
     {
-      "zona": "Norte Grande (Arica–Antofagasta)",
-      "prob_M5_7d": 0.448,
-      "prob_M6_7d": 0.025,
+      "zona": "Tarapacá (Iquique)",
+      "lat0": -23,
+      "lat1": -20,
+      "prob_M5_7d": 0.225,
+      "prob_M6_7d": 0.011,
       "nivel": "NORMAL",
-      "n_ult7d": 4,
-      "n_ult30d": 14,
+      "n_ult7d": 3,
+      "n_ult30d": 8,
       "mag_max_ult30d": 6.9
     },
     {
-      "zona": "Norte Chico (Atacama–Coquimbo)",
-      "prob_M5_7d": 0.248,
-      "prob_M6_7d": 0.012,
+      "zona": "Antofagasta",
+      "lat0": -26,
+      "lat1": -23,
+      "prob_M5_7d": 0.191,
+      "prob_M6_7d": 0.009,
+      "nivel": "NORMAL",
+      "n_ult7d": 0,
+      "n_ult30d": 3,
+      "mag_max_ult30d": 4.9
+    },
+    {
+      "zona": "Coquimbo (La Serena)",
+      "lat0": -32,
+      "lat1": -29,
+      "prob_M5_7d": 0.156,
+      "prob_M6_7d": 0.007,
       "nivel": "NORMAL",
       "n_ult7d": 1,
-      "n_ult30d": 9,
+      "n_ult30d": 6,
+      "mag_max_ult30d": 5.1
+    },
+    {
+      "zona": "Arica–Parinacota",
+      "lat0": -20,
+      "lat1": -17,
+      "prob_M5_7d": 0.121,
+      "prob_M6_7d": 0.006,
+      "nivel": "NORMAL",
+      "n_ult7d": 1,
+      "n_ult30d": 3,
+      "mag_max_ult30d": 5.1
+    },
+    {
+      "zona": "Atacama (Copiapó)",
+      "lat0": -29,
+      "lat1": -26,
+      "prob_M5_7d": 0.108,
+      "prob_M6_7d": 0.005,
+      "nivel": "NORMAL",
+      "n_ult7d": 0,
+      "n_ult30d": 3,
       "mag_max_ult30d": 5.5
     },
     {
-      "zona": "Centro (Valparaíso–Maule)",
-      "prob_M5_7d": 0.123,
-      "prob_M6_7d": 0.006,
+      "zona": "Valparaíso–Metropolitana",
+      "lat0": -35,
+      "lat1": -32,
+      "prob_M5_7d": 0.094,
+      "prob_M6_7d": 0.004,
       "nivel": "NORMAL",
       "n_ult7d": 0,
       "n_ult30d": 3,
       "mag_max_ult30d": 6.0
     },
     {
-      "zona": "Sur (Biobío–Los Lagos)",
-      "prob_M5_7d": 0.045,
+      "zona": "Maule–Ñuble",
+      "lat0": -38,
+      "lat1": -35,
+      "prob_M5_7d": 0.047,
       "prob_M6_7d": 0.002,
+      "nivel": "NORMAL",
+      "n_ult7d": 0,
+      "n_ult30d": 0,
+      "mag_max_ult30d": 0.0
+    },
+    {
+      "zona": "Biobío–Araucanía",
+      "lat0": -41,
+      "lat1": -38,
+      "prob_M5_7d": 0.023,
+      "prob_M6_7d": 0.001,
       "nivel": "NORMAL",
       "n_ult7d": 0,
       "n_ult30d": 1,
       "mag_max_ult30d": 4.5
     },
     {
-      "zona": "Austral (Aysén–Magallanes)",
-      "prob_M5_7d": 0.01,
+      "zona": "Los Lagos–Aysén",
+      "lat0": -44,
+      "lat1": -41,
+      "prob_M5_7d": 0.007,
       "prob_M6_7d": 0.0,
       "nivel": "NORMAL",
       "n_ult7d": 0,
@@ -60,6 +114,14 @@
       "mag_max_ult30d": 0.0
     }
   ],
+  "calibracion": {
+    "evaluaciones": 0,
+    "aciertos_top3": 0,
+    "brier_sum": 0.0,
+    "n_brier": 0,
+    "tasa_acierto_top3_pct": null,
+    "brier_score": null
+  },
   "historial_parametros": [
     {
       "fecha": "2026-06-23T04:40:53.158846+00:00",
@@ -114,7 +176,16 @@
       "p": 1.467,
       "b": 1.369,
       "n_total": 1891
+    },
+    {
+      "fecha": "2026-06-24T00:04:33.179719+00:00",
+      "mu": 0.6635,
+      "K": 0.0022,
+      "alpha": 1.807,
+      "p": 1.467,
+      "b": 1.369,
+      "n_total": 1891
     }
   ],
-  "descargo": "Sistema auto-adaptativo. Probabilidades por zona para 7 días, NO predicción de día/hora/lugar. Oficial: SENAPRED, sismologia.cl."
+  "descargo": "Sistema auto-adaptativo con calibración. Probabilidades por zona para 7 días, NO predicción de día/hora/lugar. Oficial: SENAPRED, sismologia.cl."
 }
