@@ -34,6 +34,40 @@ ZONAS = {
 }
 
 
+def escanear_sismologia_cl():
+    """
+    Lee sismos del catálogo oficial del CSN (sismologia.cl) del día actual
+    y el anterior. Trae microsismicidad chilena con todo el detalle, directo
+    de la fuente oficial nacional.
+    """
+    import re
+    h = {"User-Agent": "Mozilla/5.0"}
+    patron = re.compile(
+        r'(\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2})\s+(-?\d+\.\d+)\s+(-?\d+\.\d+)\s+(\d+)\s*km\s+(\d+\.\d+)')
+    filas = []
+    hoy = datetime.now(timezone.utc)
+    for delta in (0, 1):  # hoy y ayer
+        f = hoy - pd.Timedelta(days=delta)
+        url = (f"https://www.sismologia.cl/sismicidad/catalogo/"
+               f"{f.year}/{f.month:02d}/{f.year}{f.month:02d}{f.day:02d}.html")
+        try:
+            r = requests.get(url, headers=h, timeout=25)
+            if r.status_code != 200:
+                continue
+            txt = re.sub(r"\s+", " ", re.sub(r"<[^>]+>", " ", r.text))
+            for m in patron.finditer(txt):
+                try:
+                    filas.append({"time": pd.to_datetime(m.group(1), utc=True),
+                                  "latitude": float(m.group(2)), "longitude": float(m.group(3)),
+                                  "depth": float(m.group(4)), "mag": float(m.group(5)),
+                                  "place": "sismologia.cl"})
+                except (ValueError, KeyError):
+                    continue
+        except Exception:
+            continue
+    return pd.DataFrame(filas)
+
+
 def escanear_csn():
     try:
         r = requests.get("https://api.boostr.cl/earthquakes/recent.json", timeout=20)
@@ -67,14 +101,19 @@ def escanear_chile(dias_atras=2600):
     df = pd.read_csv(StringIO(r.text))
     df["time"] = pd.to_datetime(df["time"], utc=True, format="ISO8601")
     df = df[["time","latitude","longitude","depth","mag","place"]]
-    csn = escanear_csn()
-    if len(csn) > 0:
-        csn = csn[(csn["latitude"]>=BBOX[0])&(csn["latitude"]<=BBOX[1])&
-                  (csn["longitude"]>=BBOX[2])&(csn["longitude"]<=BBOX[3])&(csn["mag"]>=MC)]
-        if len(csn) > 0 and len(df) > 0:
-            ult = df["time"].max()
-            df = pd.concat([df, csn[csn["time"] > ult-pd.Timedelta(minutes=2)]], ignore_index=True)
-            df = df.drop_duplicates(subset=["time","mag"]).reset_index(drop=True)
+    ult = df["time"].max()
+    # fuentes chilenas recientes: CSN (boostr) + sismologia.cl oficial
+    for fuente in (escanear_csn(), escanear_sismologia_cl()):
+        if len(fuente) > 0:
+            f = fuente[(fuente["latitude"]>=BBOX[0])&(fuente["latitude"]<=BBOX[1])&
+                       (fuente["longitude"]>=BBOX[2])&(fuente["longitude"]<=BBOX[3])&
+                       (fuente["mag"]>=MC)]
+            nuevos = f[f["time"] > ult - pd.Timedelta(minutes=2)]
+            if len(nuevos) > 0:
+                df = pd.concat([df, nuevos], ignore_index=True)
+    # quitar duplicados (mismo sismo reportado por varias fuentes): redondear a minuto
+    df["_t"] = df["time"].dt.floor("min")
+    df = df.drop_duplicates(subset=["_t","mag"]).drop(columns="_t")
     return df.sort_values("time").reset_index(drop=True)
 
 
@@ -265,7 +304,7 @@ def correr(estado_previo_path="estado_aprendizaje.json"):
         "actualizado":datetime.now(timezone.utc).isoformat(),
         "ultimo_sismo":hoy.isoformat(),
         "n_eventos_escaneados":len(cat),
-        "fuente_datos":"USGS (histórico) + CSN Chile (reciente)",
+        "fuente_datos":"USGS (histórico) + CSN y sismologia.cl (reciente)",
         "vigilancia":vigilancia,
         "actividad_reciente":eventos_recientes,
         "parametros_aprendidos":par,
