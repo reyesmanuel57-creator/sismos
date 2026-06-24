@@ -1,21 +1,21 @@
 {
-  "actualizado": "2026-06-24T02:34:46.826169+00:00",
+  "actualizado": "2026-06-24T03:00:06.288412+00:00",
   "ultimo_sismo": "2026-06-21T08:50:13.934000+00:00",
-  "n_eventos_escaneados": 1891,
-  "fuente_datos": "USGS (histórico) + CSN Chile (reciente)",
+  "n_eventos_escaneados": 1889,
+  "fuente_datos": "USGS (histórico) + CSN y sismologia.cl (reciente)",
   "vigilancia": {
     "estado": "NORMAL",
     "mensaje": "Actividad sísmica dentro de lo normal para Chile. Recuerda mantener siempre tu preparación ante sismos."
   },
   "actividad_reciente": [],
   "parametros_aprendidos": {
-    "mu": 0.6634534454524154,
-    "K": 0.002202955527571763,
-    "alpha": 1.8068892770749096,
-    "c": 0.014583435276302412,
-    "p": 1.4666643646314406,
-    "b": 1.3685827978094518,
-    "n_eventos_aprendizaje": 1855,
+    "mu": 0.6640532911780059,
+    "K": 0.0021274611040516915,
+    "alpha": 1.818725409490082,
+    "c": 0.01581593242141042,
+    "p": 1.4884482000159762,
+    "b": 1.3679612121111613,
+    "n_eventos_aprendizaje": 1854,
     "convergencia": true
   },
   "zonas": [
@@ -23,7 +23,7 @@
       "zona": "Tarapacá (Iquique)",
       "lat0": -23,
       "lat1": -20,
-      "prob_M5_7d": 0.225,
+      "prob_M5_7d": 0.224,
       "prob_M6_7d": 0.011,
       "nivel": "NORMAL",
       "n_ult7d": 3,
@@ -34,7 +34,7 @@
       "zona": "Antofagasta",
       "lat0": -26,
       "lat1": -23,
-      "prob_M5_7d": 0.191,
+      "prob_M5_7d": 0.19,
       "prob_M6_7d": 0.009,
       "nivel": "NORMAL",
       "n_ult7d": 0,
@@ -57,7 +57,7 @@
       "lat0": -20,
       "lat1": -17,
       "prob_M5_7d": 0.121,
-      "prob_M6_7d": 0.006,
+      "prob_M6_7d": 0.005,
       "nivel": "NORMAL",
       "n_ult7d": 1,
       "n_ult30d": 3,
@@ -89,7 +89,7 @@
       "zona": "Maule–Ñuble",
       "lat0": -38,
       "lat1": -35,
-      "prob_M5_7d": 0.047,
+      "prob_M5_7d": 0.048,
       "prob_M6_7d": 0.002,
       "nivel": "NORMAL",
       "n_ult7d": 0,
@@ -208,6 +208,15 @@
       "p": 1.467,
       "b": 1.369,
       "n_total": 1891
+    },
+    {
+      "fecha": "2026-06-24T03:00:06.288396+00:00",
+      "mu": 0.6641,
+      "K": 0.0021,
+      "alpha": 1.819,
+      "p": 1.488,
+      "b": 1.368,
+      "n_total": 1889
     }
   ],
   "descargo": "Sistema auto-adaptativo con calibración. Probabilidades por zona para 7 días, NO predicción de día/hora/lugar. Oficial: SENAPRED, sismologia.cl."
