@@ -176,12 +176,17 @@ function dibujarMapa(zonas, actividad, pronostico){
     _capas.push(inc);
     // anillos concéntricos sobre el punto (estilo epicentro)
     [80000,45000,18000].forEach((r,i)=>{
-      const ring=L.circle([lat,lon],{radius:r,color:'#D64550',weight:2,
-        fillColor:'#D64550',fillOpacity:i===2?0.6:0.05}).addTo(_map);
+      const ring=L.circle([lat,lon],{radius:r,color:'#D64550',weight:2.5,
+        fillColor:'#D64550',fillOpacity:i===2?0.7:0.05}).addTo(_map);
       _capas.push(ring);
     });
-    // centrar el mapa en el punto
-    _map.setView([lat,lon],6);
+    // marcador central bien visible
+    const centro=L.circleMarker([lat,lon],{radius:6,color:'#fff',weight:2,
+      fillColor:'#D64550',fillOpacity:1}).addTo(_map);
+    centro.bindPopup('Punto estimado · M'+pronostico.mag_esperada_aprox);
+    _capas.push(centro);
+    // centrar el mapa en el punto (con retardo para asegurar que el mapa esté listo)
+    setTimeout(()=>{ _map.invalidateSize(); _map.setView([lat,lon],6); }, 400);
   }
 
   // texto de la zona destacada bajo el mapa
