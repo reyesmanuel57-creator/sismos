@@ -87,15 +87,28 @@
   #mapa-real{width:100%;height:380px;border-radius:12px;border:1px solid var(--line);margin-bottom:12px;background:#0E1117;z-index:1;}
   .leaflet-popup-content-wrapper,.leaflet-popup-tip{background:var(--card);color:var(--text);}
   @keyframes ping{0%{transform:scale(0.3);opacity:1}80%,100%{transform:scale(2.2);opacity:0}}
+  .replicas{background:linear-gradient(135deg,rgba(214,69,80,.20),rgba(232,148,59,.12));border:2px solid var(--rojo);border-radius:12px;padding:16px;margin-bottom:16px;animation:pulso 2s infinite;}
+  @keyframes pulso{0%,100%{border-color:var(--rojo)}50%{border-color:var(--naranjo)}}
+  .replicas .rt{font-family:'Space Mono',monospace;font-size:14px;font-weight:700;color:var(--rojo);letter-spacing:.05em;}
+  .replicas .rg{font-size:13px;margin-top:8px;color:var(--text);font-weight:600;}
+  .replicas .rp{font-size:13px;margin-top:6px;color:var(--text);}
+  .replicas .rn{font-size:11px;color:var(--muted);margin-top:10px;line-height:1.5;}
+  .tsunami{background:linear-gradient(135deg,rgba(59,130,180,.25),rgba(63,167,150,.12));border:2px solid #3B82B4;border-radius:12px;padding:16px;margin-bottom:16px;animation:pulso 2s infinite;}
+  .tsunami .tt{font-family:'Space Mono',monospace;font-size:14px;font-weight:700;color:#5BA3D0;letter-spacing:.05em;}
+  .tsunami .tg{font-size:13px;margin-top:8px;color:var(--text);font-weight:600;}
+  .tsunami .tp{font-size:13px;margin-top:6px;color:var(--text);}
+  .tsunami .tn{font-size:11px;color:var(--muted);margin-top:10px;line-height:1.5;}
 </style>
 </head>
 <body>
 <header>
-  <div class="live"><span class="pulse"></span> Monitoreo activo · 9 zonas · auto-aprendizaje</div>
-  <h1>Monitor Sísmico Chile</h1>
+  <div class="live"><span class="pulse"></span> Monitoreo activo · Placa de Nazca · 14 zonas</div>
+  <h1>Monitor Sísmico Nazca</h1>
   <div class="sub" id="sub">cargando…</div>
 </header>
 <div class="wrap">
+  <div id="alerta-tsunami"></div>
+  <div id="modo-replicas"></div>
   <div id="banner-vigilancia"></div>
   <div id="actividad-reciente"></div>
   <div class="seccion-titulo">Mapa de riesgo — ubicación estimada</div>
@@ -129,7 +142,12 @@
     <a href="https://www.sismologia.cl">sismologia.cl</a>. Proyecto personal, no oficial.
   </div>
   <footer>Datos: USGS + CSN · Modelo ETAS auto-adaptativo<br>
-    Última actualización: <span id="upd">—</span> · sismos: <span id="nev">—</span></footer>
+    Última actualización: <span id="upd">—</span> · sismos: <span id="nev">—</span><br>
+    <br>
+    <span style="color:var(--verde);font-weight:700;letter-spacing:.05em;">CREADO POR MANUEL REYES PIQUÉ</span><br>
+    <span style="font-style:italic;opacity:.85;">"En algún lugar, algo increíble está esperando ser descubierto."<br>— Carl Sagan</span><br>
+    <br>
+    <span style="opacity:.7;font-size:10px;">Proyecto personal de monitoreo. No reemplaza a SENAPRED, SHOA ni al CSN, que son las fuentes oficiales de Chile.</span></footer>
 </div>
 <script>
 const FUENTE="https://raw.githubusercontent.com/reyesmanuel57-creator/sismos/main/estado.json";
@@ -139,7 +157,7 @@ const col=n=>n==="ELEVADO"?"#D64550":n==="MODERADO"?"#E8943B":"#3FA796";
 let _map=null, _capas=[];
 function dibujarMapa(zonas, actividad, pronostico){
   if(!_map){
-    _map = L.map('mapa-real',{zoomControl:true,attributionControl:false}).setView([-30,-71],4);
+    _map = L.map('mapa-real',{zoomControl:true,attributionControl:false}).setView([-18,-72],3);
     L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{maxZoom:10}).addTo(_map);
     setTimeout(()=>_map.invalidateSize(),300);
   }
@@ -205,6 +223,35 @@ function dibujarMapa(zonas, actividad, pronostico){
 }
 
 fetch(FUENTE).then(r=>r.json()).then(d=>{
+  // ALERTA DE TSUNAMI (solo si hay riesgo real para Chile)
+  const tsu = d.alerta_tsunami;
+  if(tsu && tsu.activo && tsu.es_riesgo_chile){
+    const cont = document.getElementById("alerta-tsunami");
+    if(cont){
+      cont.innerHTML = `<div class="tsunami">
+        <div class="tt">🌊 POSIBLE ALERTA DE TSUNAMI</div>
+        <div class="tg">Sismo M${tsu.sismo_mag} · ${tsu.sismo_lugar}</div>
+        <div class="tp">Distancia a Chile: ${tsu.dist_km} km · llegada estimada: <b>${tsu.horas_restantes}h</b></div>
+        <div class="tn">${tsu.nota}</div>
+      </div>`;
+    }
+  }
+
+  // MODO RÉPLICAS (solo aparece tras un sismo grande)
+  const rep = d.modo_replicas;
+  if(rep && rep.activo){
+    const cont = document.getElementById("modo-replicas");
+    if(cont){
+      cont.innerHTML = `<div class="replicas">
+        <div class="rt">⚡ MODO RÉPLICAS ACTIVO</div>
+        <div class="rg">Sismo M${rep.gatillo_mag} hace ${Math.round(rep.horas_desde)}h · ${rep.gatillo_lugar}</div>
+        <div class="rp">Probabilidad de réplica M≥5 (próximas 72h, ${rep.radio_km}km): <b>${(rep.prob_replica_M5_72h*100).toFixed(0)}%</b></div>
+        <div class="rp">Magnitud esperada de réplica: <b>M${rep.mag_replica_esperada}</b></div>
+        <div class="rn">${rep.nota}</div>
+      </div>`;
+    }
+  }
+
   // Banner de vigilancia (estado global del país)
   const vig = d.vigilancia || {estado:"NORMAL", mensaje:""};
   const iconos = {NORMAL:"🟢", VIGILANCIA:"🟠", ALERTA:"🔴"};

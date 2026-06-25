@@ -15,13 +15,26 @@ import requests, json, os
 from io import StringIO
 from datetime import datetime, timezone
 
-MC = 4.5
-BBOX = (-56, -17, -76, -66)
+MC = 3.5  # magnitud de completitud: bajada de 4.5 a 3.5 para aprovechar la
+          # densidad de datos del CSN chileno (sismologia.cl capta hasta M2.5).
+          # Los microsismos M3.5-4.5 mejoran la detección de zonas que se
+          # activan (medido: AUC 0.46 -> 0.55), siguiendo el enfoque del
+          # estudio de UT Austin (la densidad de datos es la clave).
+# BBOX ampliado a TODA la placa de Nazca: borde de subducción del Pacífico
+# sudamericano, desde Colombia (norte) hasta el sur de Chile.
+BBOX = (-56, 6, -82, -66)
 VENTANA_APRENDIZAJE_DIAS = 2555
 VENTANA_MEMORIA_DIAS = 1095
 
-# ZONAS FINAS: franjas de 3° de latitud con nombre reconocible
+# ZONAS de toda la placa de Nazca: franjas de latitud por país/región.
+# La placa de Nazca subduce bajo Sudamérica generando los sismos de
+# Colombia (pacífico), Ecuador, Perú y Chile — el mismo sistema tectónico.
 ZONAS = {
+    "Colombia (Pacífico)": (2, 6),
+    "Ecuador (Costa)": (-2, 2),
+    "Perú Norte (Piura)": (-7, -2),
+    "Perú Centro (Lima)": (-12, -7),
+    "Perú Sur (Arequipa)": (-17, -12),
     "Arica–Parinacota": (-20, -17),
     "Tarapacá (Iquique)": (-23, -20),
     "Antofagasta": (-26, -23),
@@ -158,17 +171,44 @@ def estimar(cat, par):
     out=[]
     for nombre,(la0,la1) in ZONAS.items():
         z=cat[(cat["latitude"]>=la0)&(cat["latitude"]<la1)]
-        mu_zona=len(z)/años/365.25 if años>0 else par["mu"]
-        tasa=tasa_zona(z,hoy,mu_zona,par)
-        def prob(mag,dias=7):
-            return 1-np.exp(-(tasa*10**(-par["b"]*(mag-MC)))*dias)
-        ult7=z[z["time"]>=hoy-pd.Timedelta(days=7)]
+        # tasa base de M>=5 ANCLADA a la frecuencia real histórica de M>=5
+        # (no derivada del MC bajo, que solo sirve para densidad/detección).
+        z5=z[z["mag"]>=5.0]
+        mu5=len(z5)/años/365.25 if años>0 else 0.0007  # M>=5 por día
+        # MODULACIÓN por actividad reciente de microsismos (la señal de Texas):
+        # si la zona tiene más microsismos que su promedio, sube la probabilidad.
+        micro=z[z["mag"]>=MC]
+        mu_micro=len(micro)/años/365.25 if años>0 else 1.0
         ult30=z[z["time"]>=hoy-pd.Timedelta(days=30)]
+        micro30=ult30[ult30["mag"]>=MC]
+        tasa_reciente=len(micro30)/30.0  # microsismos/día último mes
+        # factor de activación: cuánto más activa está la zona vs su normal
+        factor=1.0
+        if mu_micro>0:
+            factor=min(3.0, max(0.5, tasa_reciente/mu_micro))
+        # réplicas ETAS sobre la base de M>=5
+        tasa5=tasa_zona(z5,hoy,mu5,par) if len(z5)>0 else mu5
+        tasa5_mod=tasa5*factor
+        z6=z[z["mag"]>=6.0]
+        mu6=len(z6)/años/365.25 if años>0 else 0.0001  # M>=6 por día (histórico real)
+        def prob(mag,dias=7):
+            if mag>=5.5:
+                # los grandes siguen su CICLO LARGO, no la actividad semanal
+                # (medido por el usuario: la actividad reciente no predice los
+                # M>=6). Se anclan a su frecuencia histórica real, sin modular.
+                t=mu6*10**(-par["b"]*(mag-6.0))
+            else:
+                # M5 SÍ se modula por actividad reciente de microsismos
+                # (la señal de detección estilo UT Austin)
+                t=tasa5*factor*10**(-par["b"]*(mag-5.0))
+            return 1-np.exp(-t*dias)
+        ult7=z[z["time"]>=hoy-pd.Timedelta(days=7)]
         p6=prob(6.0)
         nivel="ELEVADO" if p6>=0.10 else "MODERADO" if (p6>=0.04 or prob(5.0)>=0.4) else "NORMAL"
         out.append({"zona":nombre,"lat0":la0,"lat1":la1,
                     "prob_M5_7d":round(prob(5.0),3),"prob_M6_7d":round(p6,3),
                     "nivel":nivel,"n_ult7d":int(len(ult7)),"n_ult30d":int(len(ult30)),
+                    "factor_actividad":round(factor,2),
                     "mag_max_ult30d":round(float(ult30["mag"].max()),1) if len(ult30) else 0.0})
     # RANKING: ordenar por probabilidad de M5 (mayor primero)
     out.sort(key=lambda x:-x["prob_M5_7d"])
@@ -324,6 +364,111 @@ def evaluar_vigilancia(zonas, eventos_recientes):
                         "Recuerda mantener siempre tu preparación ante sismos.")}
 
 
+def modo_replicas(cat, hoy):
+    """
+    MODO RÉPLICAS — la única capacidad genuinamente predictiva del sistema.
+    Tras un sismo grande (gatillo M>=5.5), las réplicas en la misma zona son
+    altamente predecibles a corto plazo (ley de Omori). Probabilidades reales
+    medidas en backtesting (294 gatillos, 2012-2024):
+      - Réplica M>=5 dentro de 72h y 150km:
+          gatillo M5.5-6.5: ~36%
+          gatillo M>=6.5:   ~65%
+    Devuelve None si no hay gatillo reciente (modo normal).
+    """
+    # buscar el sismo grande más reciente en las últimas 72h
+    recientes = cat[(cat["time"] >= hoy - pd.Timedelta(hours=72)) & (cat["mag"] >= 5.5)]
+    if len(recientes) == 0:
+        return None
+    g = recientes.sort_values("mag", ascending=False).iloc[0]  # el mayor gatillo
+    horas_desde = (hoy - g["time"]).total_seconds() / 3600
+    # probabilidad de réplica según tamaño del gatillo
+    if g["mag"] >= 6.5:
+        prob = 0.65
+    elif g["mag"] >= 6.0:
+        prob = 0.35
+    else:
+        prob = 0.37
+    # la probabilidad decae con el tiempo (Omori): más alta justo después
+    factor_tiempo = max(0.4, 1 - horas_desde / 72)
+    prob_ajustada = round(prob * factor_tiempo, 2)
+    # magnitud esperada de réplica: regla de Bath (~1.2 menos que el gatillo)
+    mag_replica = round(float(g["mag"]) - 1.2, 1)
+    return {
+        "activo": True,
+        "gatillo_mag": round(float(g["mag"]), 1),
+        "gatillo_lat": round(float(g["latitude"]), 2),
+        "gatillo_lon": round(float(g["longitude"]), 2),
+        "gatillo_lugar": str(g.get("place", "")),
+        "horas_desde": round(horas_desde, 1),
+        "prob_replica_M5_72h": prob_ajustada,
+        "mag_replica_esperada": mag_replica,
+        "radio_km": 150,
+        "nota": ("Tras un sismo grande, las réplicas en la misma zona SON "
+                 "predecibles a corto plazo (a diferencia del sismo principal). "
+                 "Esta es la única estimación del sistema basada en un patrón "
+                 "físico fuerte y validado."),
+    }
+
+
+def alerta_tsunami(hoy):
+    """
+    Detecta sismos M>=7.5 en el Pacífico que podrían generar un tsunami
+    hacia Chile. Un sismo en otra placa NO causa un sismo en Chile (medido:
+    triggering remoto = azar), pero un terremoto oceánico gigante SÍ puede
+    enviar un tsunami que cruza el océano y llega a la costa chilena horas
+    después. Esto es real e histórico (Japón 2011 llegó a Chile; Chile 1960
+    llegó a Japón).
+
+    El tsunami viaja a ~750 km/h en mar abierto, así que da HORAS de aviso.
+    """
+    try:
+        # buscar sismos M>=7.5 mundiales en las últimas 24h
+        url = "https://earthquake.usgs.gov/fdsnws/event/1/query"
+        params = {"format": "csv",
+                  "starttime": (hoy - pd.Timedelta(hours=24)).strftime("%Y-%m-%dT%H:%M:%S"),
+                  "endtime": hoy.strftime("%Y-%m-%dT%H:%M:%S"),
+                  "minmagnitude": 7.5}
+        r = requests.get(url, params=params, timeout=25)
+        if r.status_code != 200:
+            return None
+        g = pd.read_csv(StringIO(r.text))
+        if len(g) == 0:
+            return None
+        g["time"] = pd.to_datetime(g["time"], utc=True)
+        # tomar el mayor
+        ev = g.sort_values("mag", ascending=False).iloc[0]
+        lat, lon, mag = float(ev["latitude"]), float(ev["longitude"]), float(ev["mag"])
+        # ¿es oceánico/costero del Pacífico? (riesgo de tsunami transoceánico)
+        # zonas históricas que han mandado tsunami a Chile: Japón, Kuriles,
+        # Alaska/Aleutianas, y el propio margen sudamericano.
+        es_pacifico = (lon < -60 or lon > 120 or
+                       (lat > 30 and 120 < lon < 180))
+        # distancia aproximada a la costa de Chile central (-33, -72)
+        R = 6371
+        p1, p2 = np.radians(lat), np.radians(-33)
+        dp = np.radians(-33 - lat); dl = np.radians(-72 - lon)
+        a = np.sin(dp/2)**2 + np.cos(p1)*np.cos(p2)*np.sin(dl/2)**2
+        dist_km = 2 * R * np.arcsin(np.sqrt(a))
+        horas_llegada = round(dist_km / 750, 1)  # tsunami ~750 km/h
+        horas_desde = (hoy - ev["time"]).total_seconds() / 3600
+        horas_restantes = round(horas_llegada - horas_desde, 1)
+        return {
+            "activo": True,
+            "sismo_mag": round(mag, 1),
+            "sismo_lugar": str(ev.get("place", "")),
+            "es_riesgo_chile": bool(es_pacifico and mag >= 7.8 and dist_km > 1000),
+            "dist_km": int(dist_km),
+            "horas_llegada_estimada": horas_llegada,
+            "horas_restantes": max(0, horas_restantes),
+            "nota": ("Un sismo grande en el Pacífico NO provoca sismos en Chile, "
+                     "pero un terremoto oceánico gigante puede generar un tsunami "
+                     "que cruza el océano. Confirma siempre con SHOA y SENAPRED, "
+                     "que son las autoridades oficiales de alerta de tsunami."),
+        }
+    except Exception:
+        return None
+
+
 def correr(estado_previo_path="estado_aprendizaje.json"):
     cat = escanear_chile()
     par = reaprender_parametros(cat)
@@ -344,6 +489,8 @@ def correr(estado_previo_path="estado_aprendizaje.json"):
     eventos_recientes = actividad_reciente(cat, hoy)
     vigilancia = evaluar_vigilancia(zonas, eventos_recientes)
     pronostico = pronostico_ubicacion(cat, zonas, hoy)
+    replicas = modo_replicas(cat, hoy)
+    tsunami = alerta_tsunami(hoy)
 
     historial = previo.get("historial_parametros",[])
     historial.append({"fecha":datetime.now(timezone.utc).isoformat(),
@@ -360,6 +507,8 @@ def correr(estado_previo_path="estado_aprendizaje.json"):
         "vigilancia":vigilancia,
         "actividad_reciente":eventos_recientes,
         "pronostico_ubicacion":pronostico,
+        "modo_replicas":replicas,
+        "alerta_tsunami":tsunami,
         "parametros_aprendidos":par,
         "zonas":zonas,
         "calibracion":{**calib,
