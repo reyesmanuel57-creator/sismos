@@ -23,8 +23,10 @@ MC = 3.5  # magnitud de completitud: bajada de 4.5 a 3.5 para aprovechar la
 # BBOX ampliado a TODA la placa de Nazca: borde de subducción del Pacífico
 # sudamericano, desde Colombia (norte) hasta el sur de Chile.
 BBOX = (-56, 6, -82, -66)
-VENTANA_APRENDIZAJE_DIAS = 2555
-VENTANA_MEMORIA_DIAS = 1095
+VENTANA_APRENDIZAJE_DIAS = 1825  # 5 años para estimar parámetros (suficiente)
+VENTANA_MEMORIA_DIAS = 180       # cada evento mira 180 días atrás: suficiente
+                                 # para que el decaimiento de réplicas (p de
+                                 # Omori) se calcule bien, sin colgar el motor.
 
 # ZONAS de toda la placa de Nazca: franjas de latitud por país/región.
 # La placa de Nazca subduce bajo Sudamérica generando los sismos de
@@ -134,10 +136,16 @@ def reaprender_parametros(cat):
     from scipy.optimize import minimize
     hoy = cat["time"].max()
     rec = cat[cat["time"] >= hoy - pd.Timedelta(days=VENTANA_APRENDIZAJE_DIAS)]
+    # OPTIMIZACIÓN: el aprendizaje ETAS usa solo M>=4.0 (no los microsismos
+    # M3.5-4.0). Los parámetros se estiman bien con esos ~3000 sismos, y así
+    # el cálculo no se cuelga. Los microsismos M3.5+ se usan aparte, en
+    # estimar(), solo para detectar actividad reciente (eso es rápido).
+    MC_ETAS = 4.5
+    rec = rec[rec["mag"] >= MC_ETAS]
     t0 = rec["time"].min()
     t_days = (rec["time"]-t0).dt.total_seconds().values/86400.0
     mags = rec["mag"].values.astype(float); T = t_days[-1]
-    b = np.log10(np.e)/(mags.mean()-(MC-0.05))
+    b = np.log10(np.e)/(mags.mean()-(MC_ETAS-0.05))
     def nll(p):
         mu,K,al,c,pp = p
         if mu<=0 or K<=0 or c<=0 or pp<=1.001 or al<0: return 1e10
@@ -146,13 +154,13 @@ def reaprender_parametros(cat):
             lo=np.searchsorted(t_days,t_days[i]-VENTANA_MEMORIA_DIAS,side="left")
             if lo<i:
                 dt=t_days[i]-t_days[lo:i]
-                lam=mu+(K*np.exp(al*(mags[lo:i]-MC))/(dt+c)**pp).sum()
+                lam=mu+(K*np.exp(al*(mags[lo:i]-MC_ETAS))/(dt+c)**pp).sum()
             else: lam=mu
             s+=np.log(max(lam,1e-12))
-        integ=K*np.exp(al*(mags-MC))*(c**(1-pp)-(T-t_days+c)**(1-pp))/(pp-1)
+        integ=K*np.exp(al*(mags-MC_ETAS))*(c**(1-pp)-(T-t_days+c)**(1-pp))/(pp-1)
         return -(s-(mu*T+integ.sum()))
     res=minimize(nll,[0.3,0.02,1.8,0.12,1.3],method="L-BFGS-B",
-                 bounds=[(1e-4,5),(1e-5,2),(0.1,4),(1e-3,10),(1.01,3)],options={"maxiter":80})
+                 bounds=[(1e-4,5),(1e-5,2),(0.1,4),(1e-3,10),(1.01,2.5)],options={"maxiter":80})
     mu,K,al,c,pp=res.x
     return {"mu":float(mu),"K":float(K),"alpha":float(al),"c":float(c),"p":float(pp),
             "b":float(b),"n_eventos_aprendizaje":len(rec),"convergencia":bool(res.success)}
