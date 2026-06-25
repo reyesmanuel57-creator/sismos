@@ -1,6 +1,6 @@
 {
-  "actualizado": "2026-06-25T02:27:18.889612+00:00",
-  "ultimo_sismo": "2026-06-25T02:17:04+00:00",
+  "actualizado": "2026-06-25T10:35:02.565439+00:00",
+  "ultimo_sismo": "2026-06-25T02:17:03+00:00",
   "n_eventos_escaneados": 8419,
   "fuente_datos": "USGS (histórico) + CSN y sismologia.cl (reciente)",
   "vigilancia": {
@@ -10,10 +10,10 @@
   "actividad_reciente": [],
   "pronostico_ubicacion": {
     "zona": "Tarapacá (Iquique)",
-    "lat_punto": -21.94,
+    "lat_punto": -21.93,
     "lon_punto": -68.68,
     "mag_esperada_aprox": 4.7,
-    "prob_M5_7d": 0.241,
+    "prob_M5_7d": 0.24,
     "radio_km": 420,
     "acierto_100km_pct": 19,
     "acierto_200km_pct": 36,
@@ -23,29 +23,29 @@
   "alerta_tsunami": {
     "activo": true,
     "sismo_mag": 7.5,
-    "sismo_lugar": "23 km SE of Yumare, Venezuela",
+    "sismo_lugar": "28 km SE of Yumare, Venezuela",
     "es_riesgo_chile": false,
-    "dist_km": 4845,
+    "dist_km": 4844,
     "horas_llegada_estimada": 6.5,
     "horas_restantes": 2.3,
     "nota": "Un sismo grande en el Pacífico NO provoca sismos en Chile, pero un terremoto oceánico gigante puede generar un tsunami que cruza el océano. Confirma siempre con SHOA y SENAPRED, que son las autoridades oficiales de alerta de tsunami."
   },
   "parametros_aprendidos": {
-    "mu": 2.684494898795659,
-    "K": 0.011366056853718656,
-    "alpha": 1.2201470145302626,
-    "c": 0.2872195782635827,
-    "p": 2.414800507496826,
-    "b": 0.44782210349444895,
+    "mu": 2.9453887664701224,
+    "K": 0.0008902825466582396,
+    "alpha": 1.485588734955955,
+    "c": 0.15712485557341602,
+    "p": 2.982700707733518,
+    "b": 0.4478165306566048,
     "n_eventos_aprendizaje": 8286,
-    "convergencia": true
+    "convergencia": false
   },
   "zonas": [
     {
       "zona": "Tarapacá (Iquique)",
       "lat0": -23,
       "lat1": -20,
-      "prob_M5_7d": 0.241,
+      "prob_M5_7d": 0.24,
       "prob_M6_7d": 0.024,
       "nivel": "NORMAL",
       "n_ult7d": 8,
@@ -57,7 +57,7 @@
       "zona": "Valparaíso–Metropolitana",
       "lat0": -35,
       "lat1": -32,
-      "prob_M5_7d": 0.181,
+      "prob_M5_7d": 0.18,
       "prob_M6_7d": 0.008,
       "nivel": "NORMAL",
       "n_ult7d": 1,
@@ -69,7 +69,7 @@
       "zona": "Perú Centro (Lima)",
       "lat0": -12,
       "lat1": -7,
-      "prob_M5_7d": 0.153,
+      "prob_M5_7d": 0.152,
       "prob_M6_7d": 0.013,
       "nivel": "NORMAL",
       "n_ult7d": 2,
@@ -81,25 +81,13 @@
       "zona": "Coquimbo (La Serena)",
       "lat0": -32,
       "lat1": -29,
-      "prob_M5_7d": 0.143,
+      "prob_M5_7d": 0.141,
       "prob_M6_7d": 0.019,
       "nivel": "NORMAL",
       "n_ult7d": 1,
       "n_ult30d": 10,
       "factor_actividad": 1.01,
       "mag_max_ult30d": 5.1
-    },
-    {
-      "zona": "Atacama (Copiapó)",
-      "lat0": -29,
-      "lat1": -26,
-      "prob_M5_7d": 0.124,
-      "prob_M6_7d": 0.019,
-      "nivel": "NORMAL",
-      "n_ult7d": 0,
-      "n_ult30d": 6,
-      "factor_actividad": 0.96,
-      "mag_max_ult30d": 5.5
     },
     {
       "zona": "Perú Sur (Arequipa)",
@@ -112,6 +100,18 @@
       "n_ult30d": 5,
       "factor_actividad": 0.53,
       "mag_max_ult30d": 4.8
+    },
+    {
+      "zona": "Atacama (Copiapó)",
+      "lat0": -29,
+      "lat1": -26,
+      "prob_M5_7d": 0.121,
+      "prob_M6_7d": 0.019,
+      "nivel": "NORMAL",
+      "n_ult7d": 0,
+      "n_ult30d": 6,
+      "factor_actividad": 0.96,
+      "mag_max_ult30d": 5.5
     },
     {
       "zona": "Arica–Parinacota",
@@ -141,7 +141,7 @@
       "zona": "Perú Norte (Piura)",
       "lat0": -7,
       "lat1": -2,
-      "prob_M5_7d": 0.062,
+      "prob_M5_7d": 0.061,
       "prob_M6_7d": 0.013,
       "nivel": "NORMAL",
       "n_ult7d": 0,
@@ -396,6 +396,15 @@
       "K": 0.0114,
       "alpha": 1.22,
       "p": 2.415,
+      "b": 0.448,
+      "n_total": 8419
+    },
+    {
+      "fecha": "2026-06-25T10:35:02.565418+00:00",
+      "mu": 2.9454,
+      "K": 0.0009,
+      "alpha": 1.486,
+      "p": 2.983,
       "b": 0.448,
       "n_total": 8419
     }
