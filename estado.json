@@ -1,7 +1,7 @@
 {
-  "actualizado": "2026-06-25T13:32:30.428609+00:00",
-  "ultimo_sismo": "2026-06-25T11:13:40+00:00",
-  "n_eventos_escaneados": 8421,
+  "actualizado": "2026-06-25T18:29:52.117176+00:00",
+  "ultimo_sismo": "2026-06-25T16:02:45+00:00",
+  "n_eventos_escaneados": 8423,
   "fuente_datos": "USGS (histórico) + CSN y sismologia.cl (reciente)",
   "vigilancia": {
     "estado": "NORMAL",
@@ -31,11 +31,11 @@
     "nota": "Un sismo grande en el Pacífico NO provoca sismos en Chile, pero un terremoto oceánico gigante puede generar un tsunami que cruza el océano. Confirma siempre con SHOA y SENAPRED, que son las autoridades oficiales de alerta de tsunami."
   },
   "parametros_aprendidos": {
-    "mu": 1.04884332221923,
-    "K": 0.002299263970076462,
-    "alpha": 1.2309724378275368,
-    "c": 0.01772926019804466,
-    "p": 1.6513466909436014,
+    "mu": 1.0488520984413692,
+    "K": 0.0022988561331716705,
+    "alpha": 1.2309404663162797,
+    "c": 0.017728113146366124,
+    "p": 1.6513878404534743,
     "b": 1.3171174236308392,
     "n_eventos_aprendizaje": 2082,
     "convergencia": true
@@ -66,6 +66,18 @@
       "mag_max_ult30d": 6.0
     },
     {
+      "zona": "Coquimbo (La Serena)",
+      "lat0": -32,
+      "lat1": -29,
+      "prob_M5_7d": 0.156,
+      "prob_M6_7d": 0.019,
+      "nivel": "NORMAL",
+      "n_ult7d": 2,
+      "n_ult30d": 11,
+      "factor_actividad": 1.11,
+      "mag_max_ult30d": 5.1
+    },
+    {
       "zona": "Perú Centro (Lima)",
       "lat0": -12,
       "lat1": -7,
@@ -88,18 +100,6 @@
       "n_ult30d": 7,
       "factor_actividad": 1.11,
       "mag_max_ult30d": 5.5
-    },
-    {
-      "zona": "Coquimbo (La Serena)",
-      "lat0": -32,
-      "lat1": -29,
-      "prob_M5_7d": 0.143,
-      "prob_M6_7d": 0.019,
-      "nivel": "NORMAL",
-      "n_ult7d": 1,
-      "n_ult30d": 10,
-      "factor_actividad": 1.01,
-      "mag_max_ult30d": 5.1
     },
     {
       "zona": "Perú Sur (Arequipa)",
@@ -425,6 +425,15 @@
       "p": 1.651,
       "b": 1.317,
       "n_total": 8421
+    },
+    {
+      "fecha": "2026-06-25T18:29:52.117155+00:00",
+      "mu": 1.0489,
+      "K": 0.0023,
+      "alpha": 1.231,
+      "p": 1.651,
+      "b": 1.317,
+      "n_total": 8423
     }
   ],
   "descargo": "Sistema auto-adaptativo con calibración. Probabilidades por zona para 7 días, NO predicción de día/hora/lugar. Oficial: SENAPRED, sismologia.cl."
