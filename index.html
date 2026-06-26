@@ -98,6 +98,12 @@
   .tsunami .tg{font-size:13px;margin-top:8px;color:var(--text);font-weight:600;}
   .tsunami .tp{font-size:13px;margin-top:6px;color:var(--text);}
   .tsunami .tn{font-size:11px;color:var(--muted);margin-top:10px;line-height:1.5;}
+  .verif-box{margin-top:18px;border-top:1px solid rgba(255,255,255,.08);padding-top:14px;}
+  .vtit{font-family:'Space Mono',monospace;font-size:12px;color:var(--text);font-weight:700;margin-bottom:10px;letter-spacing:.03em;}
+  .vrow{display:flex;align-items:center;gap:10px;padding:7px 0;border-bottom:1px solid rgba(255,255,255,.04);font-size:12px;}
+  .vcheck{font-size:18px;font-weight:800;width:20px;text-align:center;flex-shrink:0;}
+  .vfecha{font-family:'Space Mono',monospace;color:var(--muted);font-size:11px;flex-shrink:0;width:78px;}
+  .vdet{color:var(--text);font-size:11px;line-height:1.4;}
 </style>
 </head>
 <body>
@@ -125,6 +131,7 @@
     <div class="d">El sistema guarda cada pronóstico y lo compara con lo que realmente
       ocurre. Así mide su propia tasa de acierto — cuánto puedes confiar en estos números.</div>
     <div class="calib-grid" id="calib"></div>
+    <div id="verif" class="verif-box"></div>
   </div>
 
   <div class="panel">
@@ -298,7 +305,10 @@ fetch(FUENTE).then(r=>r.json()).then(d=>{
   dibujarMapa(d.zonas, d.actividad_reciente, d.pronostico_ubicacion);
 
   const c=document.getElementById("zonas");c.innerHTML="";
+  const regColor={REPLICAS:'#D64550',ENJAMBRE:'#E8943B',NORMAL:'#3FA796',CALMA:'#5BA3D0'};
+  const regTexto={REPLICAS:'⚡ Réplicas en curso',ENJAMBRE:'◆ Enjambre activo',NORMAL:'● Normal',CALMA:'○ Calma'};
   d.zonas.forEach((z,i)=>{const k=col(z.nivel),p5=(z.prob_M5_7d*100).toFixed(0),p6=(z.prob_M6_7d*100).toFixed(0);
+    const rg=z.regimen||'NORMAL'; const rc=regColor[rg]||'#3FA796';
     c.innerHTML+=`<div class="zona ${z.nivel}"><div class="zt">
       <span class="rank">#${i+1}</span><span class="zn">${z.zona}</span>
       <span class="nv ${z.nivel}">${z.nivel}</span></div><div class="pr">
@@ -306,7 +316,7 @@ fetch(FUENTE).then(r=>r.json()).then(d=>{
       <div class="b"><div class="f" style="width:${p5}%;background:${k}"></div></div></div>
       <div class="p1"><div class="l">M≥6.0 / 7 días</div><div class="v" style="color:${k}">${p6}%</div>
       <div class="b"><div class="f" style="width:${Math.min(100,p6*5)}%;background:${k}"></div></div></div>
-      </div><div class="cx">${z.n_ult30d} sismos últimos 30d${z.mag_max_ult30d>0?` · máx M${z.mag_max_ult30d}`:''}</div></div>`;});
+      </div><div class="cx"><span style="color:${rc};font-weight:600">${regTexto[rg]||rg}</span> · Magnitud estimada: <b style="color:#E8E6E3">M${z.mag_esperada||'5.0'}</b> · ${z.n_ult30d} sismos últimos 30d${z.mag_max_ult30d>0?` · máx M${z.mag_max_ult30d}`:''}</div></div>`;});
 
   // calibración
   const cal=d.calibracion||{};
@@ -321,6 +331,31 @@ fetch(FUENTE).then(r=>r.json()).then(d=>{
   if((cal.evaluaciones||0)===0){
     ci.innerHTML+=`<div style="flex:2;min-width:180px;color:#8B93A7;font-size:12px;font-family:monospace;align-self:center">
       Aún recolectando datos. La tasa de acierto aparece tras la primera semana completa de pronósticos.</div>`;
+  }
+  // HISTORIAL DE VERIFICACIÓN (checks de cada semana)
+  const hist=cal.historial||[];
+  const hc=document.getElementById("verif");
+  if(hc){
+    if(hist.length>0){
+      let filas=hist.slice().reverse().map(c=>{
+        const ok=c.acierto;
+        const icon=ok?'✓':'✗';
+        const color=ok?'#3FA796':'#D64550';
+        const reales=c.zonas_reales&&c.zonas_reales.length?c.zonas_reales.join(', '):'sin sismo M≥5';
+        return `<div class="vrow">
+          <span class="vcheck" style="color:${color}">${icon}</span>
+          <span class="vfecha">${c.fecha}</span>
+          <span class="vdet">Pronóstico #1: <b>${c.zona_pronosticada}</b> · Tembló: ${reales}</span>
+        </div>`;
+      }).join('');
+      const aciertos=hist.filter(c=>c.acierto).length;
+      hc.innerHTML=`<div class="vtit">Verificación semana a semana — ${aciertos}/${hist.length} aciertos en zona</div>${filas}`;
+    } else {
+      hc.innerHTML=`<div class="vtit">Verificación semana a semana</div>
+        <div style="color:#8B93A7;font-size:12px;font-family:monospace;padding:8px 0">
+        Cada semana el sistema compara su pronóstico con lo que realmente pasó.
+        Los checks (✓/✗) aparecerán aquí tras la primera semana completa.</div>`;
+    }
   }
 
   // parámetros

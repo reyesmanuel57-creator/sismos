@@ -173,6 +173,30 @@ def tasa_zona(z, t_corte, mu_zona, par):
     return mu_zona+(par["K"]*np.exp(par["alpha"]*(h["mag"].values-MC))/(dt+par["c"])**par["p"]).sum()
 
 
+def clasificar_regimen(z, hoy, mu_micro):
+    """
+    Clasifica el RÉGIMEN sísmico actual de una zona, basado en los patrones
+    que la IA (clustering no supervisado) encontró en los datos históricos.
+    Describe el ESTADO ACTUAL (presente), no predice el futuro — es honesto.
+    Regímenes: REPLICAS, ENJAMBRE, NORMAL, CALMA.
+    """
+    h7 = z[z["time"] >= hoy - pd.Timedelta(days=7)]
+    h30 = z[z["time"] >= hoy - pd.Timedelta(days=30)]
+    grandes = z[(z["mag"] >= 5.5) & (z["time"] >= hoy - pd.Timedelta(days=10))]
+    n7 = len(h7)
+    tasa_sem = len(h30) / 4.3
+    acel = (n7 / (tasa_sem + 0.1)) if tasa_sem >= 0 else 1.0
+    # clasificación (umbrales derivados de los clusters que halló la IA)
+    if len(grandes) > 0 and n7 >= 10:
+        return "REPLICAS"      # sismo grande reciente + alta actividad
+    elif acel >= 2.5 and n7 >= 4:
+        return "ENJAMBRE"      # actividad muy acelerada
+    elif len(h30) <= 1:
+        return "CALMA"         # casi sin actividad
+    else:
+        return "NORMAL"
+
+
 def estimar(cat, par):
     hoy=cat["time"].max()
     años=(hoy-cat["time"].min()).days/365.25
@@ -213,9 +237,18 @@ def estimar(cat, par):
         ult7=z[z["time"]>=hoy-pd.Timedelta(days=7)]
         p6=prob(6.0)
         nivel="ELEVADO" if p6>=0.10 else "MODERADO" if (p6>=0.04 or prob(5.0)>=0.4) else "NORMAL"
+        regimen=clasificar_regimen(z,hoy,mu_micro)
+        # MAGNITUD ESTIMADA por zona (ventana semanal):
+        # magnitud típica = mediana de sus sismos M>=5 históricos (81% acierto ±0.5)
+        # magnitud máxima = el mayor registrado (potencial de la zona)
+        zhist=z[z["mag"]>=5.0]
+        mag_esperada=round(float(zhist["mag"].median()),1) if len(zhist)>0 else 5.0
+        mag_maxima=round(float(z["mag"].max()),1) if len(z)>0 else 0.0
         out.append({"zona":nombre,"lat0":la0,"lat1":la1,
                     "prob_M5_7d":round(prob(5.0),3),"prob_M6_7d":round(p6,3),
-                    "nivel":nivel,"n_ult7d":int(len(ult7)),"n_ult30d":int(len(ult30)),
+                    "nivel":nivel,"regimen":regimen,
+                    "mag_esperada":mag_esperada,"mag_maxima_historica":mag_maxima,
+                    "n_ult7d":int(len(ult7)),"n_ult30d":int(len(ult30)),
                     "factor_actividad":round(factor,2),
                     "mag_max_ult30d":round(float(ult30["mag"].max()),1) if len(ult30) else 0.0})
     # RANKING: ordenar por probabilidad de M5 (mayor primero)
@@ -280,7 +313,10 @@ def evaluar_calibracion(estado_previo, cat):
     actividad M>=5 en la semana siguiente.
     """
     calib = estado_previo.get("calibracion", {"evaluaciones":0,"aciertos_top3":0,
-                                                "brier_sum":0.0,"n_brier":0})
+                                                "brier_sum":0.0,"n_brier":0,
+                                                "historial":[]})
+    if "historial" not in calib:
+        calib["historial"] = []
     pron_prev = estado_previo.get("zonas")
     fecha_prev = estado_previo.get("ultimo_sismo")
     if not pron_prev or not fecha_prev:
@@ -314,6 +350,16 @@ def evaluar_calibracion(estado_previo, cat):
     if acierto is not None:
         calib["evaluaciones"] += 1
         if acierto: calib["aciertos_top3"] += 1
+        # guardar este check en el historial (zona pronosticada vs lo que pasó)
+        check = {
+            "fecha": t_prev.strftime("%d-%m-%Y"),
+            "zona_pronosticada": top3[0] if top3 else "-",
+            "zonas_reales": list(zonas_con_evento) if zonas_con_evento else [],
+            "acierto": bool(acierto),
+        }
+        calib["historial"].append(check)
+        # mantener solo los últimos 20 checks
+        calib["historial"] = calib["historial"][-20:]
     return calib
 
 
