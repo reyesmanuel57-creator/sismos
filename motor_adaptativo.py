@@ -294,6 +294,9 @@ def pronostico_ubicacion(cat, zonas, hoy):
         "lat_punto": lat_pt,
         "lon_punto": lon_pt,
         "mag_esperada_aprox": mag_esperada,
+        # el círculo rojo en el mapa solo se muestra si la magnitud estimada
+        # es relevante (>= 4.8). Para estimaciones menores no se alarma visualmente.
+        "mostrar_circulo": bool(mag_esperada >= 4.8),
         "prob_M5_7d": mejor_zona["prob_M5_7d"],
         "radio_km": 420,
         "acierto_100km_pct": 19,
@@ -580,9 +583,92 @@ if __name__ == "__main__":
     json.dump(estado, open("estado_aprendizaje.json","w"), ensure_ascii=False, indent=2)
     p=estado["parametros_aprendidos"]
     print(f"\nEscaneados {estado['n_eventos_escaneados']} sismos | b={p['b']:.2f}")
+
+    # ENVÍO A WHATSAPP (solo si está configurado WSP_PHONE y WSP_APIKEY)
+    # Lógica anti-spam: envía si es urgente (enjambre/réplicas/tsunami) o si
+    # toca el resumen diario (controlado por un archivo de marca).
+    import os
+    try:
+        zonas = estado.get("zonas", [])
+        top = zonas[0] if zonas else {}
+        urgente = top.get("regimen") in ("ENJAMBRE", "REPLICAS")
+        tsu = estado.get("alerta_tsunami")
+        if tsu and tsu.get("es_riesgo_chile"):
+            urgente = True
+        # resumen diario: solo una vez al día
+        hoy_str = datetime.now(timezone.utc).strftime("%Y-%m-%d")
+        marca = ""
+        if os.path.exists("ultimo_wsp.txt"):
+            with open("ultimo_wsp.txt") as f:
+                marca = f.read().strip()
+        toca_resumen = (marca != hoy_str)
+        if urgente or toca_resumen:
+            if enviar_whatsapp(estado):
+                print("WhatsApp enviado.")
+                with open("ultimo_wsp.txt", "w") as f:
+                    f.write(hoy_str)
+    except Exception as e:
+        print(f"WhatsApp no enviado: {e}")
     print(f"\nRANKING de zonas por riesgo (7 días):")
     for i,z in enumerate(estado["zonas"],1):
         print(f"  {i}. [{z['nivel']:8s}] {z['zona']:26s} M5={z['prob_M5_7d']*100:3.0f}% M6={z['prob_M6_7d']*100:.0f}%")
     c=estado["calibracion"]
     print(f"\nCalibración: {c['evaluaciones']} semanas evaluadas, "
           f"tasa acierto top-3: {c.get('tasa_acierto_top3_pct','—')}%")
+
+
+def enviar_whatsapp(estado, phone=None, apikey=None):
+    """
+    Envía un resumen del estado a WhatsApp vía CallMeBot (gratis).
+    Solo el NOMBRE de la zona (sin lat/long), magnitud estimada y probabilidad.
+    Honesto: deja claro que es una estimación, no una certeza, y apunta a
+    las fuentes oficiales.
+
+    Para activarlo, define las variables de entorno WSP_PHONE y WSP_APIKEY
+    en el workflow (o pásalas como argumentos). Si no están, no envía nada.
+    """
+    import os, urllib.parse, urllib.request
+    phone = phone or os.environ.get("WSP_PHONE")
+    apikey = apikey or os.environ.get("WSP_APIKEY")
+    if not phone or not apikey:
+        return False  # no configurado, no envía
+
+    zonas = estado.get("zonas", [])
+    if not zonas:
+        return False
+    top = zonas[0]
+    regimen = top.get("regimen", "NORMAL")
+    emoji = {"REPLICAS": "🔴", "ENJAMBRE": "🟠", "NORMAL": "🟢", "CALMA": "🔵"}.get(regimen, "🟢")
+
+    # construir mensaje honesto (solo nombre de zona, magnitud, probabilidad)
+    lineas = [
+        f"{emoji} Monitor Sismico Nazca",
+        f"Zona mas activa: {top['zona']}",
+        f"Probabilidad sismo M>=5 (7 dias): {int(top['prob_M5_7d']*100)}%",
+        f"Magnitud estimada si ocurre: ~M{top.get('mag_esperada', 5.0)}",
+        f"Estado de la zona: {regimen}",
+        "",
+        "Top 3 zonas a vigilar:",
+    ]
+    for i, z in enumerate(zonas[:3], 1):
+        lineas.append(f"  {i}. {z['zona']} ({int(z['prob_M5_7d']*100)}%, ~M{z.get('mag_esperada',5.0)})")
+
+    # alerta de tsunami si aplica
+    tsu = estado.get("alerta_tsunami")
+    if tsu and tsu.get("es_riesgo_chile"):
+        lineas += ["", f"🌊 POSIBLE TSUNAMI: sismo M{tsu['sismo_mag']} en el Pacifico. Llegada estimada ~{tsu['horas_restantes']}h. Confirma con SHOA."]
+
+    lineas += [
+        "",
+        "⚠ Es una ESTIMACION de probabilidad, NO una certeza, ni indica dia/hora exactos.",
+        "Fuentes oficiales: SENAPRED y sismologia.cl",
+    ]
+    mensaje = "\n".join(lineas)
+
+    try:
+        url = ("https://api.callmebot.com/whatsapp.php?"
+               + urllib.parse.urlencode({"phone": phone, "text": mensaje, "apikey": apikey}))
+        urllib.request.urlopen(url, timeout=20)
+        return True
+    except Exception:
+        return False
