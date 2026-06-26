@@ -20,23 +20,17 @@ MC = 3.5  # magnitud de completitud: bajada de 4.5 a 3.5 para aprovechar la
           # Los microsismos M3.5-4.5 mejoran la detección de zonas que se
           # activan (medido: AUC 0.46 -> 0.55), siguiendo el enfoque del
           # estudio de UT Austin (la densidad de datos es la clave).
-# BBOX ampliado a TODA la placa de Nazca: borde de subducción del Pacífico
-# sudamericano, desde Colombia (norte) hasta el sur de Chile.
-BBOX = (-56, 6, -82, -66)
+# BBOX de Chile: borde de subducción de la placa de Nazca bajo Chile,
+# desde Arica (norte) hasta Aysén (sur).
+BBOX = (-44, -17, -76, -66)
 VENTANA_APRENDIZAJE_DIAS = 1825  # 5 años para estimar parámetros (suficiente)
 VENTANA_MEMORIA_DIAS = 180       # cada evento mira 180 días atrás: suficiente
                                  # para que el decaimiento de réplicas (p de
                                  # Omori) se calcule bien, sin colgar el motor.
 
-# ZONAS de toda la placa de Nazca: franjas de latitud por país/región.
-# La placa de Nazca subduce bajo Sudamérica generando los sismos de
-# Colombia (pacífico), Ecuador, Perú y Chile — el mismo sistema tectónico.
+# ZONAS de Chile: franjas de latitud por región. La placa de Nazca subduce
+# bajo Chile generando los sismos a lo largo de toda la costa.
 ZONAS = {
-    "Colombia (Pacífico)": (2, 6),
-    "Ecuador (Costa)": (-2, 2),
-    "Perú Norte (Piura)": (-7, -2),
-    "Perú Centro (Lima)": (-12, -7),
-    "Perú Sur (Arequipa)": (-17, -12),
     "Arica–Parinacota": (-20, -17),
     "Tarapacá (Iquique)": (-23, -20),
     "Antofagasta": (-26, -23),
@@ -366,6 +360,34 @@ def evaluar_calibracion(estado_previo, cat):
     return calib
 
 
+def monitor_en_vivo(cat, hoy, n=12):
+    """
+    Lista los últimos sismos detectados (los más recientes primero) para
+    mostrar un monitor tipo 'escáner en vivo'. Incluye sismos M>=3.5 para
+    dar sensación de actividad real. Es información de lo que YA ocurrió
+    (llega con minutos/horas de retraso), no alerta temprana.
+    """
+    recientes = cat[cat["mag"] >= 3.5].sort_values("time", ascending=False).head(n)
+    eventos = []
+    for _, e in recientes.iterrows():
+        horas = (hoy - e["time"]).total_seconds() / 3600
+        zona = "—"
+        for nombre, (la0, la1) in ZONAS.items():
+            if la0 <= e["latitude"] < la1:
+                zona = nombre; break
+        # lugar legible: usar 'place' de USGS, recortado
+        lugar = str(e.get("place", "") or "")
+        eventos.append({
+            "mag": round(float(e["mag"]), 1),
+            "zona": zona,
+            "lugar": lugar,
+            "hace_horas": round(horas, 1),
+            "profundidad": int(round(float(e.get("depth", 0) or 0))),
+            "hora_utc": e["time"].strftime("%d-%m %H:%M"),
+        })
+    return eventos
+
+
 def actividad_reciente(cat, hoy):
     """
     Detecta sismos relevantes (M>=5) de las últimas 24-48h para mostrarlos
@@ -544,6 +566,7 @@ def correr(estado_previo_path="estado_aprendizaje.json"):
 
     # NUEVO: actividad reciente + estado de vigilancia
     eventos_recientes = actividad_reciente(cat, hoy)
+    monitor = monitor_en_vivo(cat, hoy, n=12)
     vigilancia = evaluar_vigilancia(zonas, eventos_recientes)
     pronostico = pronostico_ubicacion(cat, zonas, hoy)
     replicas = modo_replicas(cat, hoy)
@@ -563,6 +586,7 @@ def correr(estado_previo_path="estado_aprendizaje.json"):
         "fuente_datos":"USGS (histórico) + CSN y sismologia.cl (reciente)",
         "vigilancia":vigilancia,
         "actividad_reciente":eventos_recientes,
+        "monitor_en_vivo":monitor,
         "pronostico_ubicacion":pronostico,
         "modo_replicas":replicas,
         "alerta_tsunami":tsunami,

@@ -107,11 +107,21 @@
   .minimapa{margin-top:12px;border-top:1px solid rgba(255,255,255,.06);padding-top:10px;}
   .mm-tit{font-family:'Space Mono',monospace;font-size:11px;color:#D64550;font-weight:700;margin-bottom:6px;}
   .mm-leaflet{width:100%;height:180px;border-radius:8px;overflow:hidden;background:#0F1620;}
+  .mon-box{background:#0F1620;border:1px solid var(--line);border-radius:12px;overflow:hidden;}
+  .mon-head{display:flex;align-items:center;gap:8px;padding:11px 14px;border-bottom:1px solid rgba(255,255,255,.06);font-family:'Space Mono',monospace;font-size:11px;color:var(--muted);}
+  .mon-dot{width:8px;height:8px;border-radius:50%;background:#3FA796;animation:pulse 1.6s infinite;}
+  @keyframes pulse{0%,100%{opacity:1}50%{opacity:.3}}
+  .mon-row{display:flex;align-items:center;gap:10px;padding:9px 14px;border-bottom:1px solid rgba(255,255,255,.04);font-size:12px;}
+  .mon-row:last-child{border-bottom:none;}
+  .mon-mag{font-family:'Space Mono',monospace;font-weight:800;font-size:15px;min-width:42px;text-align:center;padding:3px 0;border-radius:6px;flex-shrink:0;}
+  .mon-info{flex:1;min-width:0;}
+  .mon-lugar{color:var(--text);font-size:12px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+  .mon-meta{color:var(--muted);font-size:10px;font-family:'Space Mono',monospace;margin-top:1px;}
 </style>
 </head>
 <body>
 <header>
-  <div class="live"><span class="pulse"></span> Monitoreo activo · Placa de Nazca · 14 zonas</div>
+  <div class="live"><span class="pulse"></span> Monitoreo activo · Chile · 9 zonas</div>
   <h1>Monitor Sísmico Nazca</h1>
   <div class="sub" id="sub">cargando…</div>
 </header>
@@ -120,10 +130,9 @@
   <div id="modo-replicas"></div>
   <div id="banner-vigilancia"></div>
   <div id="actividad-reciente"></div>
-  <div class="seccion-titulo">Mapa de riesgo — ubicación estimada</div>
-  <div id="mapa-real"></div>
+  <div class="seccion-titulo">Monitor de sismos en vivo</div>
+  <div id="monitor-vivo"></div>
   <div id="pronostico-ubicacion"></div>
-  <div id="zona-destacada"></div>
   <div style="margin-top:18px">
     <div class="seccion-titulo">Ranking de zonas a vigilar (7 días)</div>
     <div id="zonas"></div>
@@ -165,75 +174,39 @@ const col=n=>n==="ELEVADO"?"#D64550":n==="MODERADO"?"#E8943B":"#3FA796";
 
 // MAPA REAL de Chile con Leaflet + círculos concéntricos sobre el punto estimado
 let _map=null, _capas=[];
-function dibujarMapa(zonas, actividad, pronostico){
-  if(!_map){
-    _map = L.map('mapa-real',{zoomControl:true,attributionControl:false}).setView([-18,-72],3);
-    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{maxZoom:10}).addTo(_map);
-    setTimeout(()=>_map.invalidateSize(),300);
+function dibujarMonitor(eventos){
+  const cont=document.getElementById("monitor-vivo");
+  if(!cont) return;
+  // color de la magnitud según tamaño
+  function colorMag(m){
+    if(m>=6) return {bg:'#D64550',fg:'#fff'};
+    if(m>=5) return {bg:'rgba(232,148,59,.22)',fg:'#E8943B'};
+    if(m>=4) return {bg:'rgba(63,167,150,.18)',fg:'#3FA796'};
+    return {bg:'rgba(139,147,167,.15)',fg:'#8B93A7'};
   }
-  // limpiar capas previas
-  _capas.forEach(c=>_map.removeLayer(c)); _capas=[];
-
-  // pintar zonas como rectángulos de color por nivel
-  zonas.forEach(z=>{
-    const c=col(z.nivel);
-    const rect=L.rectangle([[z.lat0,-76],[z.lat1,-66]],
-      {color:c,weight:0,fillColor:c,fillOpacity:z.nivel==='NORMAL'?0.06:0.22}).addTo(_map);
-    _capas.push(rect);
-  });
-
-  // sismos recientes como puntos
-  if(actividad){
-    actividad.forEach(e=>{
-      if(e.lat&&e.lon){
-        const m=L.circleMarker([e.lat,e.lon],{radius:e.mag>=6?9:e.mag>=5?6:4,
-          color:'#E8943B',fillColor:'#E8943B',fillOpacity:0.8,weight:1}).addTo(_map);
-        m.bindPopup('M'+e.mag+' · '+(e.lugar||e.zona));
-        _capas.push(m);
-      }
-    });
+  if(!eventos || !eventos.length){
+    cont.innerHTML=`<div class="mon-box"><div class="mon-head">
+      <span class="mon-dot"></span> ESCÁNER SÍSMICO · sin datos recientes</div></div>`;
+    return;
   }
-
-  // PUNTO ESTIMADO con círculos concéntricos rojos (como mapa de terremoto)
-  // Solo se dibuja si la magnitud estimada es >= 4.8 (mostrar_circulo)
-  if(pronostico && pronostico.lat_punto && pronostico.mostrar_circulo){
-    const lat=pronostico.lat_punto, lon=pronostico.lon_punto;
-    const colorTop = col(zonas[0].nivel);
-    // círculo de incertidumbre (radio real en metros)
-    const inc=L.circle([lat,lon],{radius:pronostico.radio_km*1000,
-      color:colorTop,weight:1,fillColor:colorTop,fillOpacity:0.08,dashArray:'5 5'}).addTo(_map);
-    _capas.push(inc);
-    // anillos concéntricos sobre el punto (estilo epicentro)
-    [80000,45000,18000].forEach((r,i)=>{
-      const ring=L.circle([lat,lon],{radius:r,color:'#D64550',weight:2.5,
-        fillColor:'#D64550',fillOpacity:i===2?0.7:0.05}).addTo(_map);
-      _capas.push(ring);
-    });
-    // marcador central bien visible
-    const centro=L.circleMarker([lat,lon],{radius:6,color:'#fff',weight:2,
-      fillColor:'#D64550',fillOpacity:1}).addTo(_map);
-    centro.bindPopup('Punto estimado · M'+pronostico.mag_esperada_aprox);
-    _capas.push(centro);
-    // centrar el mapa en el punto (con retardo para asegurar que el mapa esté listo)
-    setTimeout(()=>{ _map.invalidateSize(); _map.setView([lat,lon],6); }, 400);
-  } else {
-    // sin círculo (magnitud estimada < 4.8): vista general de la placa, sin alerta
-    setTimeout(()=>{ _map.invalidateSize(); _map.setView([-30,-71],4); }, 400);
-  }
-
-  // texto de la zona destacada bajo el mapa
-  if(zonas.length){
-    const t=zonas[0];
-    const cont=document.getElementById("zona-destacada");
-    if(cont){
-      cont.innerHTML=`<div class="destacada">
-        <div class="dt">🔴 Zona de mayor actividad esta semana</div>
-        <div class="dz">${t.zona}</div>
-        <div class="dp">Probabilidad de sismo M≥5: <b>${(t.prob_M5_7d*100).toFixed(0)}%</b> · M≥6: <b>${(t.prob_M6_7d*100).toFixed(0)}%</b></div>
-        <div class="dn">Indica dónde hay más actividad, no que vaya a ocurrir un sismo.</div>
-      </div>`;
-    }
-  }
+  let filas=eventos.map(e=>{
+    const cm=colorMag(e.mag);
+    const hace = e.hace_horas<1 ? `hace ${Math.round(e.hace_horas*60)} min`
+                : e.hace_horas<24 ? `hace ${e.hace_horas.toFixed(0)} h`
+                : `hace ${(e.hace_horas/24).toFixed(0)} d`;
+    const lugar = e.lugar && e.lugar.length>2 ? e.lugar : (e.zona||'Chile');
+    return `<div class="mon-row">
+      <span class="mon-mag" style="background:${cm.bg};color:${cm.fg}">${e.mag.toFixed(1)}</span>
+      <span class="mon-info">
+        <div class="mon-lugar">${lugar}</div>
+        <div class="mon-meta">${e.hora_utc} UTC · ${hace} · prof ${e.profundidad} km</div>
+      </span>
+    </div>`;
+  }).join('');
+  cont.innerHTML=`<div class="mon-box">
+    <div class="mon-head"><span class="mon-dot"></span> ESCÁNER SÍSMICO EN VIVO · últimos ${eventos.length} eventos detectados (M≥3.5)</div>
+    ${filas}
+  </div>`;
 }
 
 fetch(FUENTE).then(r=>r.json()).then(d=>{
@@ -309,7 +282,7 @@ fetch(FUENTE).then(r=>r.json()).then(d=>{
     }
   }
 
-  dibujarMapa(d.zonas, d.actividad_reciente, d.pronostico_ubicacion);
+  dibujarMonitor(d.monitor_en_vivo);
 
   // Mini-mapa REAL (Leaflet/OpenStreetMap) por zona: SOLO si magnitud >= 4.8.
   // Devuelve un div contenedor; el mapa se inicializa después (initMiniMapas).
