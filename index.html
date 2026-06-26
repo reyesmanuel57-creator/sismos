@@ -106,7 +106,7 @@
   .vdet{color:var(--text);font-size:11px;line-height:1.4;}
   .minimapa{margin-top:12px;border-top:1px solid rgba(255,255,255,.06);padding-top:10px;}
   .mm-tit{font-family:'Space Mono',monospace;font-size:11px;color:#D64550;font-weight:700;margin-bottom:6px;}
-  .minimapa svg{border-radius:8px;display:block;}
+  .mm-leaflet{width:100%;height:180px;border-radius:8px;overflow:hidden;background:#0F1620;}
 </style>
 </head>
 <body>
@@ -311,50 +311,45 @@ fetch(FUENTE).then(r=>r.json()).then(d=>{
 
   dibujarMapa(d.zonas, d.actividad_reciente, d.pronostico_ubicacion);
 
-  // Mini-mapa SVG por zona: SOLO se genera si la magnitud estimada es >= 4.8.
-  // Si no supera ese umbral, devuelve vacío (no carga ningún mapa).
-  function miniMapa(z){
+  // Mini-mapa REAL (Leaflet/OpenStreetMap) por zona: SOLO si magnitud >= 4.8.
+  // Devuelve un div contenedor; el mapa se inicializa después (initMiniMapas).
+  const _miniMapasPendientes = [];
+  function miniMapa(z, idx){
     const mag = z.mag_esperada || 0;
-    if(mag < 4.8) return "";  // sin mapa para magnitudes menores
-    // coordenadas de la franja de la zona (latitudes), proyectadas al SVG
-    const la0 = z.lat0, la1 = z.lat1;
-    const latC = (la0+la1)/2;
-    // SVG simple: caja con la costa esquemática y el círculo rojo sobre la zona
-    // proyección: lat -17 (arriba) a -44 (abajo) mapeada a y=10..150
-    const W=300, H=160;
-    const yOf = la => 10 + ( (-17) - la ) / ( (-17)-(-44) ) * (H-20);
-    const xCosta = 110;  // la costa va vertical aprox en x=110
-    const yz = yOf(latC);
-    // path de la costa (línea vertical ondulada simple)
-    let costa = `M ${xCosta} 10`;
-    for(let la=-17; la>=-44; la-=3){
-      const y = yOf(la);
-      const x = xCosta + Math.sin(la*0.7)*8;
-      costa += ` L ${x.toFixed(0)} ${y.toFixed(0)}`;
-    }
+    if(mag < 4.8) return "";
+    const id = "minimap-"+idx;
+    // guardar datos para inicializar el mapa real luego
+    _miniMapasPendientes.push({id:id, lat0:z.lat0, lat1:z.lat1, mag:mag,
+                               lonp:z.lon_punto, latp:z.lat_punto});
     return `<div class="minimapa">
       <div class="mm-tit">🔴 Ubicación estimada · M${mag}</div>
-      <svg viewBox="0 0 ${W} ${H}" width="100%" preserveAspectRatio="xMidYMid meet">
-        <rect x="0" y="0" width="${W}" height="${H}" fill="#0F1620" rx="8"/>
-        <!-- océano a la izquierda -->
-        <rect x="0" y="0" width="${xCosta}" height="${H}" fill="#0C1018" rx="8"/>
-        <!-- costa -->
-        <path d="${costa}" stroke="#3A4658" stroke-width="1.5" fill="none"/>
-        <!-- franja de la zona resaltada -->
-        <rect x="0" y="${yOf(la1).toFixed(0)}" width="${W}" height="${(yOf(la0)-yOf(la1)).toFixed(0)}"
-              fill="#D64550" opacity="0.10"/>
-        <!-- círculo de incertidumbre -->
-        <circle cx="${xCosta}" cy="${yz.toFixed(0)}" r="42" fill="#D64550" opacity="0.06"
-                stroke="#D64550" stroke-width="1" stroke-dasharray="4 4"/>
-        <!-- anillos concéntricos (epicentro estimado) -->
-        <circle cx="${xCosta}" cy="${yz.toFixed(0)}" r="26" fill="none" stroke="#D64550" stroke-width="1.5" opacity="0.4"/>
-        <circle cx="${xCosta}" cy="${yz.toFixed(0)}" r="16" fill="none" stroke="#D64550" stroke-width="2" opacity="0.6"/>
-        <circle cx="${xCosta}" cy="${yz.toFixed(0)}" r="7" fill="#D64550" opacity="0.85"/>
-        <circle cx="${xCosta}" cy="${yz.toFixed(0)}" r="3" fill="#fff"/>
-        <text x="8" y="18" fill="#5A6678" font-size="9" font-family="monospace">Pacífico</text>
-        <text x="${W-8}" y="${H-8}" fill="#5A6678" font-size="9" font-family="monospace" text-anchor="end">margen ±420 km</text>
-      </svg>
+      <div id="${id}" class="mm-leaflet"></div>
     </div>`;
+  }
+  function initMiniMapas(){
+    _miniMapasPendientes.forEach(mm=>{
+      const el=document.getElementById(mm.id);
+      if(!el) return;
+      const latC=(mm.lat0+mm.lat1)/2;
+      // centro del círculo: punto estimado si existe, si no el centro de la zona
+      const lat = (mm.latp!=null)? mm.latp : latC;
+      const lon = (mm.lonp!=null)? mm.lonp : -71;
+      const map=L.map(mm.id,{zoomControl:false,attributionControl:false,
+                             dragging:false,scrollWheelZoom:false,doubleClickZoom:false,
+                             boxZoom:false,keyboard:false,tap:false}).setView([latC,-70.5],5);
+      L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{maxZoom:9}).addTo(map);
+      // franja de la zona
+      L.rectangle([[mm.lat0,-76],[mm.lat1,-66]],
+        {color:'#D64550',weight:0,fillColor:'#D64550',fillOpacity:0.10}).addTo(map);
+      // círculo de incertidumbre (margen real ~420km) + anillos
+      L.circle([lat,lon],{radius:420000,color:'#D64550',weight:1,
+        fillColor:'#D64550',fillOpacity:0.05,dashArray:'5 5'}).addTo(map);
+      L.circle([lat,lon],{radius:80000,color:'#D64550',weight:2,
+        fillColor:'#D64550',fillOpacity:0.1}).addTo(map);
+      L.circleMarker([lat,lon],{radius:6,color:'#fff',weight:2,
+        fillColor:'#D64550',fillOpacity:1}).addTo(map);
+      setTimeout(()=>map.invalidateSize(),200);
+    });
   }
 
   const c=document.getElementById("zonas");c.innerHTML="";
@@ -370,7 +365,8 @@ fetch(FUENTE).then(r=>r.json()).then(d=>{
       <div class="p1"><div class="l">M≥6.0 / 7 días</div><div class="v" style="color:${k}">${p6}%</div>
       <div class="b"><div class="f" style="width:${Math.min(100,p6*5)}%;background:${k}"></div></div></div>
       </div><div class="cx"><span style="color:${rc};font-weight:600">${regTexto[rg]||rg}</span> · Magnitud estimada: <b style="color:#E8E6E3">M${z.mag_esperada||'5.0'}</b> · ${z.n_ult30d} sismos últimos 30d${z.mag_max_ult30d>0?` · máx M${z.mag_max_ult30d}`:''}</div>
-      ${miniMapa(z)}</div>`;});
+      ${miniMapa(z, i)}</div>`;});
+  initMiniMapas();
 
   // calibración
   const cal=d.calibracion||{};
