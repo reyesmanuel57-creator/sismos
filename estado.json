@@ -1,6 +1,6 @@
 {
-  "actualizado": "2026-06-27T12:56:27.512446+00:00",
-  "ultimo_sismo": "2026-06-27T12:50:50+00:00",
+  "actualizado": "2026-06-27T16:48:08.057809+00:00",
+  "ultimo_sismo": "2026-06-27T12:50:51+00:00",
   "n_eventos_escaneados": 6237,
   "fuente_datos": "USGS (histórico) + CSN y sismologia.cl (reciente)",
   "vigilancia": {
@@ -10,11 +10,11 @@
   "actividad_reciente": [],
   "monitor_en_vivo": [
     {
-      "mag": 4.1,
+      "mag": 4.3,
       "zona": "Tarapacá (Iquique)",
-      "lugar": "sismologia.cl",
+      "lugar": "26 km al sur de Calama",
       "hace_horas": 0.0,
-      "profundidad": 125,
+      "profundidad": 109,
       "hora_utc": "27-06 12:50"
     },
     {
@@ -28,7 +28,7 @@
     {
       "mag": 4.5,
       "zona": "Tarapacá (Iquique)",
-      "lugar": "65 km al noreste de Calama",
+      "lugar": "sismologia.cl",
       "hace_horas": 6.2,
       "profundidad": 116,
       "hora_utc": "27-06 06:36"
@@ -108,11 +108,11 @@
   ],
   "pronostico_ubicacion": {
     "zona": "Tarapacá (Iquique)",
-    "lat_punto": -21.92,
+    "lat_punto": -21.91,
     "lon_punto": -68.88,
     "mag_esperada_aprox": 4.7,
     "mostrar_circulo": false,
-    "prob_M5_7d": 0.233,
+    "prob_M5_7d": 0.234,
     "radio_km": 420,
     "acierto_100km_pct": 19,
     "acierto_200km_pct": 36,
@@ -121,11 +121,11 @@
   "modo_replicas": null,
   "alerta_tsunami": null,
   "parametros_aprendidos": {
-    "mu": 0.6619734400282338,
-    "K": 0.0011919545510252507,
-    "alpha": 1.5413962620314705,
-    "c": 0.006605020843647306,
-    "p": 1.4686795939252797,
+    "mu": 0.6635997379859679,
+    "K": 0.0010037096691444707,
+    "alpha": 1.6326901272306389,
+    "c": 0.006722046408953615,
+    "p": 1.4915093187793964,
     "b": 1.420151873574805,
     "n_eventos_aprendizaje": 1274,
     "convergencia": true
@@ -135,7 +135,7 @@
       "zona": "Tarapacá (Iquique)",
       "lat0": -23,
       "lat1": -20,
-      "prob_M5_7d": 0.233,
+      "prob_M5_7d": 0.234,
       "prob_M6_7d": 0.024,
       "nivel": "NORMAL",
       "regimen": "NORMAL",
@@ -607,6 +607,15 @@
       "K": 0.0012,
       "alpha": 1.541,
       "p": 1.469,
+      "b": 1.42,
+      "n_total": 6237
+    },
+    {
+      "fecha": "2026-06-27T16:48:08.057779+00:00",
+      "mu": 0.6636,
+      "K": 0.001,
+      "alpha": 1.633,
+      "p": 1.492,
       "b": 1.42,
       "n_total": 6237
     }
