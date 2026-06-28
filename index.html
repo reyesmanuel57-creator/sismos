@@ -124,6 +124,18 @@
   .cm-big{font-size:26px;font-weight:800;color:var(--text);}
   .cm-lbl{font-size:10px;color:var(--muted);font-family:'Space Mono',monospace;margin-top:4px;line-height:1.3;}
   .cm-nota{font-size:11px;color:var(--muted);line-height:1.5;border-top:1px solid rgba(255,255,255,.06);padding-top:9px;margin-top:4px;}
+  .clima-zona{background:#0F1620;border:1px solid var(--line);border-radius:12px;padding:12px;margin-bottom:10px;}
+  .clima-ciudad{font-weight:700;font-size:14px;color:var(--text);margin-bottom:2px;}
+  .clima-zona-lbl{font-size:10px;color:var(--muted);font-family:'Space Mono',monospace;margin-bottom:10px;}
+  .clima-dias{display:flex;gap:6px;overflow-x:auto;padding-bottom:4px;}
+  .clima-dia{flex:0 0 auto;width:62px;text-align:center;background:rgba(255,255,255,.03);border-radius:8px;padding:8px 4px;}
+  .cd-fecha{font-size:9px;color:var(--muted);font-family:'Space Mono',monospace;}
+  .cd-icono{font-size:20px;margin:4px 0;}
+  .cd-temp{font-size:12px;font-weight:700;color:var(--text);}
+  .cd-tmin{font-size:10px;color:#5BA3D0;}
+  .cd-lluvia{font-size:9px;color:#5BA3D0;margin-top:2px;font-family:'Space Mono',monospace;}
+  .cd-conf{font-size:8px;color:var(--muted);margin-top:3px;font-family:'Space Mono',monospace;}
+  .clima-nota{font-size:10px;color:var(--muted);margin-top:6px;font-family:'Space Mono',monospace;line-height:1.4;}
 </style>
 </head>
 <body>
@@ -143,6 +155,11 @@
   <div style="margin-top:18px">
     <div class="seccion-titulo">Ranking de zonas a vigilar (7 días)</div>
     <div id="zonas"></div>
+  </div>
+
+  <div style="margin-top:18px">
+    <div class="seccion-titulo">Pronóstico del clima 7 días por región (híbrido con IA)</div>
+    <div id="clima"></div>
   </div>
 
   <div class="panel">
@@ -228,6 +245,35 @@ function dibujarMonitor(eventos){
   </div>`;
 }
 
+function dibujarClima(clima){
+  const cont=document.getElementById("clima");
+  if(!cont) return;
+  if(!clima || !clima.length){
+    cont.innerHTML=`<div style="color:#8B93A7;font-size:12px;font-family:monospace;padding:10px">Pronóstico del clima no disponible en esta actualización.</div>`;
+    return;
+  }
+  const diaSem=f=>{const d=new Date(f+'T00:00:00');return ['Dom','Lun','Mar','Mié','Jue','Vie','Sáb'][d.getDay()];};
+  let html='';
+  clima.forEach(c=>{
+    let dias=c.dias.map(d=>`
+      <div class="clima-dia">
+        <div class="cd-fecha">${diaSem(d.fecha)} ${d.fecha.slice(8,10)}</div>
+        <div class="cd-icono">${d.icono}</div>
+        <div class="cd-temp">${d.t_max}°</div>
+        <div class="cd-tmin">${d.t_min}°</div>
+        ${d.prob_lluvia>10?`<div class="cd-lluvia">☔${d.prob_lluvia}%</div>`:''}
+        <div class="cd-conf">${d.confianza}%</div>
+      </div>`).join('');
+    html+=`<div class="clima-zona">
+      <div class="clima-ciudad">${c.ciudad}</div>
+      <div class="clima-zona-lbl">${c.zona}</div>
+      <div class="clima-dias">${dias}</div>
+    </div>`;
+  });
+  html+=`<div class="clima-nota">Método híbrido: modelo meteorológico global + ajuste local aprendido del historial de cada región. El % es la confianza, que baja hacia el día 7 (el clima es caótico: a más días, menos certeza). No es una predicción exacta.</div>`;
+  cont.innerHTML=html;
+}
+
 fetch(FUENTE).then(r=>r.json()).then(d=>{
   // ALERTA DE TSUNAMI (solo si hay riesgo real para Chile)
   const tsu = d.alerta_tsunami;
@@ -302,6 +348,7 @@ fetch(FUENTE).then(r=>r.json()).then(d=>{
   }
 
   dibujarMonitor(d.monitor_en_vivo);
+  dibujarClima(d.clima_regiones);
 
   // Mini-mapa REAL (Leaflet/OpenStreetMap) por zona: SOLO si magnitud >= 4.8.
   // Devuelve un div contenedor; el mapa se inicializa después (initMiniMapas).
