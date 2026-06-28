@@ -1,7 +1,7 @@
 {
-  "actualizado": "2026-06-28T16:13:18.022109+00:00",
-  "ultimo_sismo": "2026-06-28T15:56:14+00:00",
-  "n_eventos_escaneados": 6275,
+  "actualizado": "2026-06-28T18:57:36.698787+00:00",
+  "ultimo_sismo": "2026-06-28T15:56:15+00:00",
+  "n_eventos_escaneados": 6274,
   "fuente_datos": "USGS (histórico) + CSN y sismologia.cl (reciente)",
   "vigilancia": {
     "estado": "NORMAL",
@@ -12,17 +12,9 @@
     {
       "mag": 3.7,
       "zona": "Coquimbo (La Serena)",
-      "lugar": "13 km al suroeste de Parque Fray Jorge",
+      "lugar": "19 km al oeste de Parque Fray Jorge",
       "hace_horas": 0.0,
-      "profundidad": 25,
-      "hora_utc": "28-06 15:56"
-    },
-    {
-      "mag": 3.7,
-      "zona": "Coquimbo (La Serena)",
-      "lugar": "Coquimbo (La Serena)",
-      "hace_horas": 0.0,
-      "profundidad": 25,
+      "profundidad": 18,
       "hora_utc": "28-06 15:56"
     },
     {
@@ -44,7 +36,7 @@
     {
       "mag": 3.6,
       "zona": "Tarapacá (Iquique)",
-      "lugar": "70 km al suroeste de Ollagüe",
+      "lugar": "Tarapacá (Iquique)",
       "hace_horas": 5.4,
       "profundidad": 130,
       "hora_utc": "28-06 10:34"
@@ -104,6 +96,14 @@
       "hace_horas": 33.3,
       "profundidad": 116,
       "hora_utc": "27-06 06:36"
+    },
+    {
+      "mag": 4.3,
+      "zona": "Tarapacá (Iquique)",
+      "lugar": "24 km NE of Calama, Chile",
+      "hace_horas": 39.3,
+      "profundidad": 114,
+      "hora_utc": "27-06 00:35"
     }
   ],
   "clima_regiones": [],
@@ -166,15 +166,15 @@
       "zona": "Coquimbo (La Serena)",
       "lat0": -32,
       "lat1": -29,
-      "prob_M5_7d": 0.236,
+      "prob_M5_7d": 0.224,
       "prob_M6_7d": 0.019,
       "nivel": "NORMAL",
       "regimen": "NORMAL",
       "mag_esperada": 5.2,
       "mag_maxima_historica": 6.4,
-      "n_ult7d": 8,
-      "n_ult30d": 18,
-      "factor_actividad": 1.8,
+      "n_ult7d": 7,
+      "n_ult30d": 17,
+      "factor_actividad": 1.7,
       "mag_max_ult30d": 5.1
     },
     {
@@ -691,6 +691,15 @@
       "p": 1.77,
       "b": 1.426,
       "n_total": 6275
+    },
+    {
+      "fecha": "2026-06-28T18:57:36.698755+00:00",
+      "mu": 0.6619,
+      "K": 0.0009,
+      "alpha": 1.683,
+      "p": 1.77,
+      "b": 1.426,
+      "n_total": 6274
     }
   ],
   "descargo": "Sistema auto-adaptativo con calibración. Probabilidades por zona para 7 días, NO predicción de día/hora/lugar. Oficial: SENAPRED, sismologia.cl."
