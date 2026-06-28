@@ -1,5 +1,5 @@
 {
-  "actualizado": "2026-06-28T15:00:14.144149+00:00",
+  "actualizado": "2026-06-28T15:27:32.207370+00:00",
   "ultimo_sismo": "2026-06-28T12:36:13+00:00",
   "n_eventos_escaneados": 6273,
   "fuente_datos": "USGS (histórico) + CSN y sismologia.cl (reciente)",
@@ -106,13 +106,14 @@
       "hora_utc": "27-06 00:35"
     }
   ],
+  "clima_regiones": [],
   "pronostico_ubicacion": {
     "zona": "Tarapacá (Iquique)",
     "lat_punto": -21.99,
     "lon_punto": -68.7,
     "mag_esperada_aprox": 4.7,
     "mostrar_circulo": false,
-    "prob_M5_7d": 0.334,
+    "prob_M5_7d": 0.336,
     "radio_km": 420,
     "acierto_100km_pct": 19,
     "acierto_200km_pct": 36,
@@ -121,11 +122,11 @@
   "modo_replicas": null,
   "alerta_tsunami": null,
   "parametros_aprendidos": {
-    "mu": 0.6601110268278604,
-    "K": 0.0009663857031404479,
-    "alpha": 1.5714120485386927,
-    "c": 0.024003955888784845,
-    "p": 1.8153189168229515,
+    "mu": 0.6619335886312026,
+    "K": 0.0008666765832484702,
+    "alpha": 1.6833487160203708,
+    "c": 0.021424371411432965,
+    "p": 1.7700360625682978,
     "b": 1.4255037959282275,
     "n_eventos_aprendizaje": 1266,
     "convergencia": true
@@ -135,7 +136,7 @@
       "zona": "Tarapacá (Iquique)",
       "lat0": -23,
       "lat1": -20,
-      "prob_M5_7d": 0.334,
+      "prob_M5_7d": 0.336,
       "prob_M6_7d": 0.024,
       "nivel": "NORMAL",
       "regimen": "NORMAL",
@@ -670,6 +671,15 @@
       "K": 0.001,
       "alpha": 1.571,
       "p": 1.815,
+      "b": 1.426,
+      "n_total": 6273
+    },
+    {
+      "fecha": "2026-06-28T15:27:32.207339+00:00",
+      "mu": 0.6619,
+      "K": 0.0009,
+      "alpha": 1.683,
+      "p": 1.77,
       "b": 1.426,
       "n_total": 6273
     }
