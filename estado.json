@@ -1,7 +1,7 @@
 {
-  "actualizado": "2026-06-28T15:27:32.207370+00:00",
-  "ultimo_sismo": "2026-06-28T12:36:13+00:00",
-  "n_eventos_escaneados": 6273,
+  "actualizado": "2026-06-28T16:13:18.022109+00:00",
+  "ultimo_sismo": "2026-06-28T15:56:14+00:00",
+  "n_eventos_escaneados": 6275,
   "fuente_datos": "USGS (histórico) + CSN y sismologia.cl (reciente)",
   "vigilancia": {
     "estado": "NORMAL",
@@ -11,9 +11,25 @@
   "monitor_en_vivo": [
     {
       "mag": 3.7,
+      "zona": "Coquimbo (La Serena)",
+      "lugar": "13 km al suroeste de Parque Fray Jorge",
+      "hace_horas": 0.0,
+      "profundidad": 25,
+      "hora_utc": "28-06 15:56"
+    },
+    {
+      "mag": 3.7,
+      "zona": "Coquimbo (La Serena)",
+      "lugar": "Coquimbo (La Serena)",
+      "hace_horas": 0.0,
+      "profundidad": 25,
+      "hora_utc": "28-06 15:56"
+    },
+    {
+      "mag": 3.7,
       "zona": "Antofagasta",
       "lugar": "54 km al oeste de San Pedro de Atacama",
-      "hace_horas": 0.0,
+      "hace_horas": 3.3,
       "profundidad": 103,
       "hora_utc": "28-06 12:36"
     },
@@ -21,7 +37,7 @@
       "mag": 4.2,
       "zona": "Antofagasta",
       "lugar": "60 km al este de Socaire",
-      "hace_horas": 1.2,
+      "hace_horas": 4.5,
       "profundidad": 242,
       "hora_utc": "28-06 11:26"
     },
@@ -29,15 +45,15 @@
       "mag": 3.6,
       "zona": "Tarapacá (Iquique)",
       "lugar": "70 km al suroeste de Ollagüe",
-      "hace_horas": 2.0,
+      "hace_horas": 5.4,
       "profundidad": 130,
       "hora_utc": "28-06 10:34"
     },
     {
       "mag": 3.6,
       "zona": "Antofagasta",
-      "lugar": "113 km al noreste de Socaire",
-      "hace_horas": 2.6,
+      "lugar": "Antofagasta",
+      "hace_horas": 5.9,
       "profundidad": 228,
       "hora_utc": "28-06 10:00"
     },
@@ -45,7 +61,7 @@
       "mag": 3.6,
       "zona": "Antofagasta",
       "lugar": "Antofagasta",
-      "hace_horas": 4.4,
+      "hace_horas": 7.8,
       "profundidad": 206,
       "hora_utc": "28-06 08:09"
     },
@@ -53,7 +69,7 @@
       "mag": 4.2,
       "zona": "Tarapacá (Iquique)",
       "lugar": "41 km SW of Calama, Chile",
-      "hace_horas": 23.8,
+      "hace_horas": 27.1,
       "profundidad": 115,
       "hora_utc": "27-06 12:50"
     },
@@ -61,7 +77,7 @@
       "mag": 4.3,
       "zona": "Tarapacá (Iquique)",
       "lugar": "Tarapacá (Iquique)",
-      "hace_horas": 23.8,
+      "hace_horas": 27.1,
       "profundidad": 109,
       "hora_utc": "27-06 12:50"
     },
@@ -69,7 +85,7 @@
       "mag": 4.3,
       "zona": "Tarapacá (Iquique)",
       "lugar": "50 km WSW of Ollagüe, Chile",
-      "hace_horas": 24.9,
+      "hace_horas": 28.3,
       "profundidad": 125,
       "hora_utc": "27-06 11:39"
     },
@@ -77,7 +93,7 @@
       "mag": 4.4,
       "zona": "Tarapacá (Iquique)",
       "lugar": "53 km NNE of Calama, Chile",
-      "hace_horas": 30.0,
+      "hace_horas": 33.3,
       "profundidad": 120,
       "hora_utc": "27-06 06:36"
     },
@@ -85,25 +101,9 @@
       "mag": 4.5,
       "zona": "Tarapacá (Iquique)",
       "lugar": "Tarapacá (Iquique)",
-      "hace_horas": 30.0,
+      "hace_horas": 33.3,
       "profundidad": 116,
       "hora_utc": "27-06 06:36"
-    },
-    {
-      "mag": 4.3,
-      "zona": "Tarapacá (Iquique)",
-      "lugar": "24 km NE of Calama, Chile",
-      "hace_horas": 36.0,
-      "profundidad": 114,
-      "hora_utc": "27-06 00:35"
-    },
-    {
-      "mag": 4.3,
-      "zona": "Tarapacá (Iquique)",
-      "lugar": "Tarapacá (Iquique)",
-      "hace_horas": 36.0,
-      "profundidad": 116,
-      "hora_utc": "27-06 00:35"
     }
   ],
   "clima_regiones": [],
@@ -166,15 +166,15 @@
       "zona": "Coquimbo (La Serena)",
       "lat0": -32,
       "lat1": -29,
-      "prob_M5_7d": 0.213,
+      "prob_M5_7d": 0.236,
       "prob_M6_7d": 0.019,
       "nivel": "NORMAL",
       "regimen": "NORMAL",
       "mag_esperada": 5.2,
       "mag_maxima_historica": 6.4,
-      "n_ult7d": 6,
-      "n_ult30d": 16,
-      "factor_actividad": 1.6,
+      "n_ult7d": 8,
+      "n_ult30d": 18,
+      "factor_actividad": 1.8,
       "mag_max_ult30d": 5.1
     },
     {
@@ -682,6 +682,15 @@
       "p": 1.77,
       "b": 1.426,
       "n_total": 6273
+    },
+    {
+      "fecha": "2026-06-28T16:13:18.022090+00:00",
+      "mu": 0.6619,
+      "K": 0.0009,
+      "alpha": 1.683,
+      "p": 1.77,
+      "b": 1.426,
+      "n_total": 6275
     }
   ],
   "descargo": "Sistema auto-adaptativo con calibración. Probabilidades por zona para 7 días, NO predicción de día/hora/lugar. Oficial: SENAPRED, sismologia.cl."
