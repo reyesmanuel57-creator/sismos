@@ -43,11 +43,12 @@ ZONAS = {
 }
 
 
-def escanear_sismologia_cl():
+def escanear_sismologia_cl(dias=14):
     """
-    Lee sismos del catálogo oficial del CSN (sismologia.cl) del día actual
-    y el anterior. Trae microsismicidad chilena con todo el detalle, directo
-    de la fuente oficial nacional.
+    Lee sismos del catálogo oficial del CSN (sismologia.cl) de los últimos
+    'dias' días. El CSN es la red oficial chilena: capta hasta ~20 veces más
+    microsismos que USGS (microsismicidad M<4 que USGS no registra). Esta es
+    la fuente de mayor densidad de datos para detectar actividad reciente.
     """
     import re
     h = {"User-Agent": "Mozilla/5.0"}
@@ -55,7 +56,7 @@ def escanear_sismologia_cl():
         r'(\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2})\s+(-?\d+\.\d+)\s+(-?\d+\.\d+)\s+(\d+)\s*km\s+(\d+\.\d+)')
     filas = []
     hoy = datetime.now(timezone.utc)
-    for delta in (0, 1):  # hoy y ayer
+    for delta in range(dias):  # últimos 'dias' días para máxima densidad
         f = hoy - pd.Timedelta(days=delta)
         url = (f"https://www.sismologia.cl/sismicidad/catalogo/"
                f"{f.year}/{f.month:02d}/{f.year}{f.month:02d}{f.day:02d}.html")
@@ -110,19 +111,25 @@ def escanear_chile(dias_atras=2600):
     df = pd.read_csv(StringIO(r.text))
     df["time"] = pd.to_datetime(df["time"], utc=True, format="ISO8601")
     df = df[["time","latitude","longitude","depth","mag","place"]]
-    ult = df["time"].max()
-    # fuentes chilenas recientes: CSN (boostr) + sismologia.cl oficial
-    for fuente in (escanear_csn(), escanear_sismologia_cl()):
+    # fuentes chilenas: CSN (boostr, tiempo real) + sismologia.cl (densidad).
+    # El CSN aporta microsismicidad que USGS no tiene (~20x más eventos
+    # recientes). Integramos TODOS sus sismos de los últimos días, no solo
+    # los posteriores al último de USGS, para máxima densidad de datos.
+    corte_csn = df["time"].max() - pd.Timedelta(days=14)
+    for fuente in (escanear_csn(), escanear_sismologia_cl(dias=14)):
         if len(fuente) > 0:
             f = fuente[(fuente["latitude"]>=BBOX[0])&(fuente["latitude"]<=BBOX[1])&
                        (fuente["longitude"]>=BBOX[2])&(fuente["longitude"]<=BBOX[3])&
                        (fuente["mag"]>=MC)]
-            nuevos = f[f["time"] > ult - pd.Timedelta(minutes=2)]
+            # tomar todo lo reciente del CSN (últimos 14 días), no solo lo nuevo
+            nuevos = f[f["time"] > corte_csn]
             if len(nuevos) > 0:
                 df = pd.concat([df, nuevos], ignore_index=True)
-    # quitar duplicados (mismo sismo reportado por varias fuentes): redondear a minuto
-    df["_t"] = df["time"].dt.floor("min")
-    df = df.drop_duplicates(subset=["_t","mag"]).drop(columns="_t")
+    # quitar duplicados (mismo sismo en varias fuentes): redondear a minuto
+    # y a 1 decimal de magnitud para no perder microsismos distintos cercanos
+    df["_t"] = df["time"].dt.floor("5min")
+    df["_la"] = df["latitude"].round(1)
+    df = df.drop_duplicates(subset=["_t","_la"]).drop(columns=["_t","_la"])
     return df.sort_values("time").reset_index(drop=True)
 
 
@@ -375,8 +382,12 @@ def monitor_en_vivo(cat, hoy, n=12):
         for nombre, (la0, la1) in ZONAS.items():
             if la0 <= e["latitude"] < la1:
                 zona = nombre; break
-        # lugar legible: usar 'place' de USGS, recortado
-        lugar = str(e.get("place", "") or "")
+        # lugar legible: usar 'place' de USGS. Si viene de una fuente sin lugar
+        # (sismologia.cl, CSN, etc.), usar el nombre de la zona calculada.
+        lugar = str(e.get("place", "") or "").strip()
+        fuentes_sin_lugar = ("sismologia.cl", "csn", "")
+        if lugar.lower() in fuentes_sin_lugar or len(lugar) < 4:
+            lugar = zona if zona != "—" else "Chile"
         eventos.append({
             "mag": round(float(e["mag"]), 1),
             "zona": zona,
