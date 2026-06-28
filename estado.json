@@ -1,5 +1,5 @@
 {
-  "actualizado": "2026-06-28T03:39:20.118463+00:00",
+  "actualizado": "2026-06-28T03:40:30.870291+00:00",
   "ultimo_sismo": "2026-06-27T12:50:51+00:00",
   "n_eventos_escaneados": 6267,
   "fuente_datos": "USGS (histórico) + CSN y sismologia.cl (reciente)",
@@ -112,7 +112,7 @@
     "lon_punto": -68.71,
     "mag_esperada_aprox": 4.7,
     "mostrar_circulo": false,
-    "prob_M5_7d": 0.328,
+    "prob_M5_7d": 0.33,
     "radio_km": 420,
     "acierto_100km_pct": 19,
     "acierto_200km_pct": 36,
@@ -121,11 +121,11 @@
   "modo_replicas": null,
   "alerta_tsunami": null,
   "parametros_aprendidos": {
-    "mu": 0.6602080868232942,
-    "K": 0.0009624284557397291,
-    "alpha": 1.5729367339023899,
-    "c": 0.023942208937586158,
-    "p": 1.8148814655924768,
+    "mu": 0.6618442996181322,
+    "K": 0.0008622484641504699,
+    "alpha": 1.6758986256812898,
+    "c": 0.021856363407731012,
+    "p": 1.78084129497608,
     "b": 1.4264448699194312,
     "n_eventos_aprendizaje": 1267,
     "convergencia": true
@@ -135,7 +135,7 @@
       "zona": "Tarapacá (Iquique)",
       "lat0": -23,
       "lat1": -20,
-      "prob_M5_7d": 0.328,
+      "prob_M5_7d": 0.33,
       "prob_M6_7d": 0.024,
       "nivel": "NORMAL",
       "regimen": "NORMAL",
@@ -195,7 +195,7 @@
       "zona": "Atacama (Copiapó)",
       "lat0": -29,
       "lat1": -26,
-      "prob_M5_7d": 0.175,
+      "prob_M5_7d": 0.176,
       "prob_M6_7d": 0.019,
       "nivel": "NORMAL",
       "regimen": "NORMAL",
@@ -634,6 +634,15 @@
       "K": 0.001,
       "alpha": 1.573,
       "p": 1.815,
+      "b": 1.426,
+      "n_total": 6267
+    },
+    {
+      "fecha": "2026-06-28T03:40:30.870263+00:00",
+      "mu": 0.6618,
+      "K": 0.0009,
+      "alpha": 1.676,
+      "p": 1.781,
       "b": 1.426,
       "n_total": 6267
     }
