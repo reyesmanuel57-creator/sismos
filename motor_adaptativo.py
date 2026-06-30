@@ -591,10 +591,16 @@ def correr(estado_previo_path="estado_aprendizaje.json"):
     # CLIMA por región. Si falla (ej. límite de Open-Meteo), reusa el último
     # clima bueno guardado, para que la web nunca quede sin clima.
     clima = []
+    clima_diag = "no ejecutado"
     try:
         clima = clima_regiones()
-    except Exception:
+        clima_diag = f"ok: {len(clima)} regiones"
+    except Exception as e:
         clima = []
+        clima_diag = f"ERROR: {type(e).__name__}: {str(e)[:120]}"
+    # diagnóstico extra: ¿se encontró el archivo de modelos?
+    import os as _os
+    clima_diag += " | modelos_clima.json existe: " + str(_os.path.exists("modelos_clima.json"))
     if len(clima) < 5:  # vino incompleto o vacío: usar el anterior si existe
         clima_previo = previo.get("clima_regiones", [])
         if len(clima_previo) >= len(clima):
@@ -621,6 +627,7 @@ def correr(estado_previo_path="estado_aprendizaje.json"):
         "actividad_reciente":eventos_recientes,
         "monitor_en_vivo":monitor,
         "clima_regiones":clima,
+        "clima_diagnostico":clima_diag,
         "clima_validacion":clima_hist,
         "clima_pendientes":clima_pend,
         "clima_acierto":clima_acierto,
