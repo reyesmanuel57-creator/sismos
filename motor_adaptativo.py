@@ -559,189 +559,6 @@ def alerta_tsunami(hoy):
         return None
 
 
-def correr(estado_previo_path="estado_aprendizaje.json"):
-    cat = escanear_chile()
-    par = reaprender_parametros(cat)
-    zonas, hoy = estimar(cat, par)
-
-    # cargar estado previo para historial y calibración
-    previo = {}
-    for ruta in (estado_previo_path, "estado.json", "estado_aprendizaje.json"):
-        if os.path.exists(ruta):
-            try:
-                cargado = json.load(open(ruta))
-                # preferir el que tenga más información (clima, historial)
-                if len(str(cargado)) > len(str(previo)):
-                    previo = cargado
-            except Exception:
-                pass
-
-    calib = evaluar_calibracion(previo, cat)
-    tasa_acierto = (calib["aciertos_top3"]/calib["evaluaciones"]*100
-                    if calib.get("evaluaciones",0)>0 else None)
-    brier = (calib["brier_sum"]/calib["n_brier"] if calib.get("n_brier",0)>0 else None)
-
-    # NUEVO: actividad reciente + estado de vigilancia
-    eventos_recientes = actividad_reciente(cat, hoy)
-    monitor = monitor_en_vivo(cat, hoy, n=12)
-    vigilancia = evaluar_vigilancia(zonas, eventos_recientes)
-    pronostico = pronostico_ubicacion(cat, zonas, hoy)
-    replicas = modo_replicas(cat, hoy)
-    tsunami = alerta_tsunami(hoy)
-    # CLIMA por región. Si falla (ej. límite de Open-Meteo), reusa el último
-    # clima bueno guardado, para que la web nunca quede sin clima.
-    clima = []
-    clima_diag = "no ejecutado"
-    try:
-        clima = clima_regiones()
-        clima_diag = f"ok: {len(clima)} regiones"
-    except Exception as e:
-        clima = []
-        clima_diag = f"ERROR: {type(e).__name__}: {str(e)[:120]}"
-    # diagnóstico extra: ¿se encontró el archivo de modelos?
-    import os as _os
-    clima_diag += " | modelos_clima.json existe: " + str(_os.path.exists("modelos_clima.json"))
-    if len(clima) < 5:  # vino incompleto o vacío: usar el anterior si existe
-        clima_previo = previo.get("clima_regiones", [])
-        if len(clima_previo) >= len(clima):
-            clima = clima_previo
-    # validación en vivo: comparar predicciones pasadas con la realidad
-    try:
-        clima_hist, clima_pend, clima_acierto = validar_clima(previo, clima)
-    except Exception:
-        clima_hist, clima_pend, clima_acierto = {}, [], None
-
-    historial = previo.get("historial_parametros",[])
-    historial.append({"fecha":datetime.now(timezone.utc).isoformat(),
-                      "mu":round(par["mu"],4),"K":round(par["K"],4),
-                      "alpha":round(par["alpha"],3),"p":round(par["p"],3),
-                      "b":round(par["b"],3),"n_total":len(cat)})
-    historial=historial[-200:]
-
-    return {
-        "actualizado":datetime.now(timezone.utc).isoformat(),
-        "ultimo_sismo":hoy.isoformat(),
-        "n_eventos_escaneados":len(cat),
-        "fuente_datos":"USGS (histórico) + CSN y sismologia.cl (reciente)",
-        "vigilancia":vigilancia,
-        "actividad_reciente":eventos_recientes,
-        "monitor_en_vivo":monitor,
-        "clima_regiones":clima,
-        "clima_diagnostico":clima_diag,
-        "clima_validacion":clima_hist,
-        "clima_pendientes":clima_pend,
-        "clima_acierto":clima_acierto,
-        "pronostico_ubicacion":pronostico,
-        "modo_replicas":replicas,
-        "alerta_tsunami":tsunami,
-        "parametros_aprendidos":par,
-        "zonas":zonas,
-        "calibracion":{**calib,
-                       "tasa_acierto_top3_pct":round(tasa_acierto,1) if tasa_acierto is not None else None,
-                       "brier_score":round(brier,4) if brier is not None else None},
-        "historial_parametros":historial,
-        "descargo":("Sistema auto-adaptativo con calibración. Probabilidades por zona "
-                    "para 7 días, NO predicción de día/hora/lugar. Oficial: SENAPRED, sismologia.cl."),
-    }
-
-
-if __name__ == "__main__":
-    print("Escaneando, reaprendiendo y calibrando...")
-    estado = correr()
-    json.dump(estado, open("estado_aprendizaje.json","w"), ensure_ascii=False, indent=2)
-    p=estado["parametros_aprendidos"]
-    print(f"\nEscaneados {estado['n_eventos_escaneados']} sismos | b={p['b']:.2f}")
-
-    # ENVÍO A WHATSAPP (solo si está configurado WSP_PHONE y WSP_APIKEY)
-    # Lógica anti-spam: envía si es urgente (enjambre/réplicas/tsunami) o si
-    # toca el resumen diario (controlado por un archivo de marca).
-    import os
-    try:
-        zonas = estado.get("zonas", [])
-        top = zonas[0] if zonas else {}
-        urgente = top.get("regimen") in ("ENJAMBRE", "REPLICAS")
-        tsu = estado.get("alerta_tsunami")
-        if tsu and tsu.get("es_riesgo_chile"):
-            urgente = True
-        # resumen diario: solo una vez al día
-        hoy_str = datetime.now(timezone.utc).strftime("%Y-%m-%d")
-        marca = ""
-        if os.path.exists("ultimo_wsp.txt"):
-            with open("ultimo_wsp.txt") as f:
-                marca = f.read().strip()
-        toca_resumen = (marca != hoy_str)
-        if urgente or toca_resumen:
-            if enviar_whatsapp(estado):
-                print("WhatsApp enviado.")
-                with open("ultimo_wsp.txt", "w") as f:
-                    f.write(hoy_str)
-    except Exception as e:
-        print(f"WhatsApp no enviado: {e}")
-    print(f"\nRANKING de zonas por riesgo (7 días):")
-    for i,z in enumerate(estado["zonas"],1):
-        print(f"  {i}. [{z['nivel']:8s}] {z['zona']:26s} M5={z['prob_M5_7d']*100:3.0f}% M6={z['prob_M6_7d']*100:.0f}%")
-    c=estado["calibracion"]
-    print(f"\nCalibración: {c['evaluaciones']} semanas evaluadas, "
-          f"tasa acierto top-3: {c.get('tasa_acierto_top3_pct','—')}%")
-
-
-def enviar_whatsapp(estado, phone=None, apikey=None):
-    """
-    Envía un resumen del estado a WhatsApp vía CallMeBot (gratis).
-    Solo el NOMBRE de la zona (sin lat/long), magnitud estimada y probabilidad.
-    Honesto: deja claro que es una estimación, no una certeza, y apunta a
-    las fuentes oficiales.
-
-    Para activarlo, define las variables de entorno WSP_PHONE y WSP_APIKEY
-    en el workflow (o pásalas como argumentos). Si no están, no envía nada.
-    """
-    import os, urllib.parse, urllib.request
-    phone = phone or os.environ.get("WSP_PHONE")
-    apikey = apikey or os.environ.get("WSP_APIKEY")
-    if not phone or not apikey:
-        return False  # no configurado, no envía
-
-    zonas = estado.get("zonas", [])
-    if not zonas:
-        return False
-    top = zonas[0]
-    regimen = top.get("regimen", "NORMAL")
-    emoji = {"REPLICAS": "🔴", "ENJAMBRE": "🟠", "NORMAL": "🟢", "CALMA": "🔵"}.get(regimen, "🟢")
-
-    # construir mensaje honesto (solo nombre de zona, magnitud, probabilidad)
-    lineas = [
-        f"{emoji} Monitor Sismico Nazca",
-        f"Zona mas activa: {top['zona']}",
-        f"Probabilidad sismo M>=5 (7 dias): {int(top['prob_M5_7d']*100)}%",
-        f"Magnitud estimada si ocurre: ~M{top.get('mag_esperada', 5.0)}",
-        f"Estado de la zona: {regimen}",
-        "",
-        "Top 3 zonas a vigilar:",
-    ]
-    for i, z in enumerate(zonas[:3], 1):
-        lineas.append(f"  {i}. {z['zona']} ({int(z['prob_M5_7d']*100)}%, ~M{z.get('mag_esperada',5.0)})")
-
-    # alerta de tsunami si aplica
-    tsu = estado.get("alerta_tsunami")
-    if tsu and tsu.get("es_riesgo_chile"):
-        lineas += ["", f"🌊 POSIBLE TSUNAMI: sismo M{tsu['sismo_mag']} en el Pacifico. Llegada estimada ~{tsu['horas_restantes']}h. Confirma con SHOA."]
-
-    lineas += [
-        "",
-        "⚠ Es una ESTIMACION de probabilidad, NO una certeza, ni indica dia/hora exactos.",
-        "Fuentes oficiales: SENAPRED y sismologia.cl",
-    ]
-    mensaje = "\n".join(lineas)
-
-    try:
-        url = ("https://api.callmebot.com/whatsapp.php?"
-               + urllib.parse.urlencode({"phone": phone, "text": mensaje, "apikey": apikey}))
-        urllib.request.urlopen(url, timeout=20)
-        return True
-    except Exception:
-        return False
-
-
 # ============================================================
 # MÓDULO DE CLIMA — pronóstico 7 días por región de Chile
 # Datos reales de Open-Meteo + capa de IA para confianza y patrones.
@@ -1060,3 +877,189 @@ def _clima_regiones_viejo():
         except Exception:
             continue
     return salida
+
+
+
+def correr(estado_previo_path="estado_aprendizaje.json"):
+    cat = escanear_chile()
+    par = reaprender_parametros(cat)
+    zonas, hoy = estimar(cat, par)
+
+    # cargar estado previo para historial y calibración
+    previo = {}
+    for ruta in (estado_previo_path, "estado.json", "estado_aprendizaje.json"):
+        if os.path.exists(ruta):
+            try:
+                cargado = json.load(open(ruta))
+                # preferir el que tenga más información (clima, historial)
+                if len(str(cargado)) > len(str(previo)):
+                    previo = cargado
+            except Exception:
+                pass
+
+    calib = evaluar_calibracion(previo, cat)
+    tasa_acierto = (calib["aciertos_top3"]/calib["evaluaciones"]*100
+                    if calib.get("evaluaciones",0)>0 else None)
+    brier = (calib["brier_sum"]/calib["n_brier"] if calib.get("n_brier",0)>0 else None)
+
+    # NUEVO: actividad reciente + estado de vigilancia
+    eventos_recientes = actividad_reciente(cat, hoy)
+    monitor = monitor_en_vivo(cat, hoy, n=12)
+    vigilancia = evaluar_vigilancia(zonas, eventos_recientes)
+    pronostico = pronostico_ubicacion(cat, zonas, hoy)
+    replicas = modo_replicas(cat, hoy)
+    tsunami = alerta_tsunami(hoy)
+    # CLIMA por región. Si falla (ej. límite de Open-Meteo), reusa el último
+    # clima bueno guardado, para que la web nunca quede sin clima.
+    clima = []
+    clima_diag = "no ejecutado"
+    try:
+        clima = clima_regiones()
+        clima_diag = f"ok: {len(clima)} regiones"
+    except Exception as e:
+        clima = []
+        clima_diag = f"ERROR: {type(e).__name__}: {str(e)[:120]}"
+    # diagnóstico extra: ¿se encontró el archivo de modelos?
+    import os as _os
+    clima_diag += " | modelos_clima.json existe: " + str(_os.path.exists("modelos_clima.json"))
+    if len(clima) < 5:  # vino incompleto o vacío: usar el anterior si existe
+        clima_previo = previo.get("clima_regiones", [])
+        if len(clima_previo) >= len(clima):
+            clima = clima_previo
+    # validación en vivo: comparar predicciones pasadas con la realidad
+    try:
+        clima_hist, clima_pend, clima_acierto = validar_clima(previo, clima)
+    except Exception:
+        clima_hist, clima_pend, clima_acierto = {}, [], None
+
+    historial = previo.get("historial_parametros",[])
+    historial.append({"fecha":datetime.now(timezone.utc).isoformat(),
+                      "mu":round(par["mu"],4),"K":round(par["K"],4),
+                      "alpha":round(par["alpha"],3),"p":round(par["p"],3),
+                      "b":round(par["b"],3),"n_total":len(cat)})
+    historial=historial[-200:]
+
+    return {
+        "actualizado":datetime.now(timezone.utc).isoformat(),
+        "ultimo_sismo":hoy.isoformat(),
+        "n_eventos_escaneados":len(cat),
+        "fuente_datos":"USGS (histórico) + CSN y sismologia.cl (reciente)",
+        "vigilancia":vigilancia,
+        "actividad_reciente":eventos_recientes,
+        "monitor_en_vivo":monitor,
+        "clima_regiones":clima,
+        "clima_diagnostico":clima_diag,
+        "clima_validacion":clima_hist,
+        "clima_pendientes":clima_pend,
+        "clima_acierto":clima_acierto,
+        "pronostico_ubicacion":pronostico,
+        "modo_replicas":replicas,
+        "alerta_tsunami":tsunami,
+        "parametros_aprendidos":par,
+        "zonas":zonas,
+        "calibracion":{**calib,
+                       "tasa_acierto_top3_pct":round(tasa_acierto,1) if tasa_acierto is not None else None,
+                       "brier_score":round(brier,4) if brier is not None else None},
+        "historial_parametros":historial,
+        "descargo":("Sistema auto-adaptativo con calibración. Probabilidades por zona "
+                    "para 7 días, NO predicción de día/hora/lugar. Oficial: SENAPRED, sismologia.cl."),
+    }
+
+
+if __name__ == "__main__":
+    print("Escaneando, reaprendiendo y calibrando...")
+    estado = correr()
+    json.dump(estado, open("estado_aprendizaje.json","w"), ensure_ascii=False, indent=2)
+    p=estado["parametros_aprendidos"]
+    print(f"\nEscaneados {estado['n_eventos_escaneados']} sismos | b={p['b']:.2f}")
+
+    # ENVÍO A WHATSAPP (solo si está configurado WSP_PHONE y WSP_APIKEY)
+    # Lógica anti-spam: envía si es urgente (enjambre/réplicas/tsunami) o si
+    # toca el resumen diario (controlado por un archivo de marca).
+    import os
+    try:
+        zonas = estado.get("zonas", [])
+        top = zonas[0] if zonas else {}
+        urgente = top.get("regimen") in ("ENJAMBRE", "REPLICAS")
+        tsu = estado.get("alerta_tsunami")
+        if tsu and tsu.get("es_riesgo_chile"):
+            urgente = True
+        # resumen diario: solo una vez al día
+        hoy_str = datetime.now(timezone.utc).strftime("%Y-%m-%d")
+        marca = ""
+        if os.path.exists("ultimo_wsp.txt"):
+            with open("ultimo_wsp.txt") as f:
+                marca = f.read().strip()
+        toca_resumen = (marca != hoy_str)
+        if urgente or toca_resumen:
+            if enviar_whatsapp(estado):
+                print("WhatsApp enviado.")
+                with open("ultimo_wsp.txt", "w") as f:
+                    f.write(hoy_str)
+    except Exception as e:
+        print(f"WhatsApp no enviado: {e}")
+    print(f"\nRANKING de zonas por riesgo (7 días):")
+    for i,z in enumerate(estado["zonas"],1):
+        print(f"  {i}. [{z['nivel']:8s}] {z['zona']:26s} M5={z['prob_M5_7d']*100:3.0f}% M6={z['prob_M6_7d']*100:.0f}%")
+    c=estado["calibracion"]
+    print(f"\nCalibración: {c['evaluaciones']} semanas evaluadas, "
+          f"tasa acierto top-3: {c.get('tasa_acierto_top3_pct','—')}%")
+
+
+def enviar_whatsapp(estado, phone=None, apikey=None):
+    """
+    Envía un resumen del estado a WhatsApp vía CallMeBot (gratis).
+    Solo el NOMBRE de la zona (sin lat/long), magnitud estimada y probabilidad.
+    Honesto: deja claro que es una estimación, no una certeza, y apunta a
+    las fuentes oficiales.
+
+    Para activarlo, define las variables de entorno WSP_PHONE y WSP_APIKEY
+    en el workflow (o pásalas como argumentos). Si no están, no envía nada.
+    """
+    import os, urllib.parse, urllib.request
+    phone = phone or os.environ.get("WSP_PHONE")
+    apikey = apikey or os.environ.get("WSP_APIKEY")
+    if not phone or not apikey:
+        return False  # no configurado, no envía
+
+    zonas = estado.get("zonas", [])
+    if not zonas:
+        return False
+    top = zonas[0]
+    regimen = top.get("regimen", "NORMAL")
+    emoji = {"REPLICAS": "🔴", "ENJAMBRE": "🟠", "NORMAL": "🟢", "CALMA": "🔵"}.get(regimen, "🟢")
+
+    # construir mensaje honesto (solo nombre de zona, magnitud, probabilidad)
+    lineas = [
+        f"{emoji} Monitor Sismico Nazca",
+        f"Zona mas activa: {top['zona']}",
+        f"Probabilidad sismo M>=5 (7 dias): {int(top['prob_M5_7d']*100)}%",
+        f"Magnitud estimada si ocurre: ~M{top.get('mag_esperada', 5.0)}",
+        f"Estado de la zona: {regimen}",
+        "",
+        "Top 3 zonas a vigilar:",
+    ]
+    for i, z in enumerate(zonas[:3], 1):
+        lineas.append(f"  {i}. {z['zona']} ({int(z['prob_M5_7d']*100)}%, ~M{z.get('mag_esperada',5.0)})")
+
+    # alerta de tsunami si aplica
+    tsu = estado.get("alerta_tsunami")
+    if tsu and tsu.get("es_riesgo_chile"):
+        lineas += ["", f"🌊 POSIBLE TSUNAMI: sismo M{tsu['sismo_mag']} en el Pacifico. Llegada estimada ~{tsu['horas_restantes']}h. Confirma con SHOA."]
+
+    lineas += [
+        "",
+        "⚠ Es una ESTIMACION de probabilidad, NO una certeza, ni indica dia/hora exactos.",
+        "Fuentes oficiales: SENAPRED y sismologia.cl",
+    ]
+    mensaje = "\n".join(lineas)
+
+    try:
+        url = ("https://api.callmebot.com/whatsapp.php?"
+               + urllib.parse.urlencode({"phone": phone, "text": mensaje, "apikey": apikey}))
+        urllib.request.urlopen(url, timeout=20)
+        return True
+    except Exception:
+        return False
+
+
