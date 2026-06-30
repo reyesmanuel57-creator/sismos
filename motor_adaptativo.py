@@ -888,30 +888,33 @@ def clima_regiones():
     if not modelos:
         return []
     hoy = datetime.date.today()
+    # 1. intentar traer el dato actual de TODAS las regiones, pero con tiempo
+    # total limitado. Si Open-Meteo bloquea o tarda, se sigue solo con el
+    # modelo propio (que SIEMPRE funciona, sin internet). Esto evita que el
+    # workflow se cuelgue o que el clima quede vacío.
+    anclajes = {}
+    t_inicio = time.time()
+    for zona, modelo in modelos.items():
+        if time.time() - t_inicio > 25:  # tope de tiempo total para el dato actual
+            break
+        lat = modelo.get("lat"); lon = modelo.get("lon")
+        if lat is None or lon is None:
+            continue
+        try:
+            url = "https://api.open-meteo.com/v1/forecast?" + urllib.parse.urlencode({
+                "latitude": lat, "longitude": lon,
+                "daily": "temperature_2m_max,temperature_2m_min,precipitation_probability_max,weathercode",
+                "timezone": "America/Santiago", "forecast_days": 3,
+            })
+            r = requests.get(url, timeout=6)  # timeout corto
+            if r.status_code == 200:
+                anclajes[zona] = r.json().get("daily", {})
+        except Exception:
+            pass  # si falla, esa región usa solo el modelo propio
+    # 2. construir el pronóstico: modelo propio SIEMPRE + dato actual si llegó
     salida = []
     for zona, modelo in modelos.items():
-        # 1. traer el dato atmosférico ACTUAL (ligero: solo temp de hoy + ahora)
-        anclaje = None
-        lat = modelo.get("lat"); lon = modelo.get("lon")
-        if lat is not None and lon is not None:
-            for intento in range(2):
-                try:
-                    url = "https://api.open-meteo.com/v1/forecast?" + urllib.parse.urlencode({
-                        "latitude": lat, "longitude": lon,
-                        "current": "temperature_2m",
-                        "daily": "temperature_2m_max,temperature_2m_min,precipitation_probability_max,weathercode",
-                        "timezone": "America/Santiago", "forecast_days": 3,
-                    })
-                    r = requests.get(url, timeout=15)
-                    if r.status_code == 200:
-                        j = r.json()
-                        anclaje = {"daily": j.get("daily", {}), "current": j.get("current", {})}
-                        break
-                    elif r.status_code == 429:
-                        time.sleep(2)
-                except Exception:
-                    time.sleep(1)
-            time.sleep(0.8)  # pausa anti-429
+        anclaje = anclajes.get(zona)
         dias = []
         for i in range(7):
             fecha = hoy + datetime.timedelta(days=i)
@@ -925,8 +928,8 @@ def clima_regiones():
             fuente_dia = "modelo propio"
             code_real = None
             # 2. HÍBRIDO: si hay dato actual y es de los primeros días, anclar
-            if anclaje and i < len(anclaje["daily"].get("time", [])):
-                dia_real = anclaje["daily"]
+            if anclaje and i < len(anclaje.get("time", [])):
+                dia_real = anclaje
                 tM_real = dia_real["temperature_2m_max"][i]
                 tm_real = dia_real["temperature_2m_min"][i]
                 prob_real = dia_real["precipitation_probability_max"][i]
