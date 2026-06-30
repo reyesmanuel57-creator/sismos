@@ -801,10 +801,61 @@ def _aprender_correccion_clima(lat, lon):
 
 def clima_regiones():
     """
-    HÍBRIDO: pronóstico real de Open-Meteo (base) + corrección local
-    aprendida del historial de cada región. La confianza decrece hacia el
-    día 7 (límite físico del caos atmosférico). Honesto, sin 99% falso.
+    Pronóstico real de Open-Meteo a 7 días por región. Una sola llamada por
+    región (sin pedir histórico, que causaba bloqueo 429 por exceso de
+    solicitudes). Pausa entre regiones y reintenta si Open-Meteo limita.
+    La confianza decrece hacia el día 7 (límite físico del caos atmosférico).
     """
+    import urllib.parse, datetime, time
+    salida = []
+    for zona, (ciudad, lat, lon) in CIUDADES_CLIMA.items():
+        d = None
+        for intento in range(3):
+            try:
+                url = "https://api.open-meteo.com/v1/forecast?" + urllib.parse.urlencode({
+                    "latitude": lat, "longitude": lon,
+                    "daily": "temperature_2m_max,temperature_2m_min,precipitation_sum,"
+                             "precipitation_probability_max,windspeed_10m_max,weathercode",
+                    "timezone": "America/Santiago", "forecast_days": 7,
+                })
+                r = requests.get(url, timeout=20)
+                if r.status_code == 200:
+                    d = r.json().get("daily", {})
+                    break
+                elif r.status_code == 429:
+                    time.sleep(2)  # esperar si nos limita y reintentar
+                    continue
+                else:
+                    break
+            except Exception:
+                time.sleep(1)
+        if not d:
+            continue
+        codigos = d.get("weathercode", [])
+        dias = []
+        for i in range(min(7, len(d.get("time", [])))):
+            code = int(codigos[i]) if i < len(codigos) else 0
+            desc, icono = WMO.get(code, ("—", "•"))
+            vecinos = codigos[max(0, i-1):i+2]
+            conf = _ia_confianza_clima(i, d["precipitation_probability_max"][i], vecinos)
+            dias.append({
+                "fecha": d["time"][i],
+                "t_min": round(d["temperature_2m_min"][i]),
+                "t_max": round(d["temperature_2m_max"][i]),
+                "lluvia_mm": round(d["precipitation_sum"][i], 1),
+                "prob_lluvia": int(d["precipitation_probability_max"][i] or 0),
+                "viento": round(d["windspeed_10m_max"][i]),
+                "desc": desc, "icono": icono,
+                "confianza": int(conf * 100),
+            })
+        if dias:
+            salida.append({"zona": zona, "ciudad": ciudad, "dias": dias})
+        time.sleep(1.2)  # pausa entre regiones para no exceder el límite
+    return salida
+
+
+def _clima_regiones_hibrido_viejo():
+    """Versión híbrida con histórico (causaba 429). Conservada por referencia."""
     import urllib.parse, datetime
     salida = []
     for zona, (ciudad, lat, lon) in CIUDADES_CLIMA.items():
@@ -820,36 +871,25 @@ def clima_regiones():
                 continue
             d = r.json().get("daily", {})
             codigos = d.get("weathercode", [])
-            clima_local = _aprender_correccion_clima(lat, lon)  # IA: aprende la región
+            clima_local = _aprender_correccion_clima(lat, lon)
             dias = []
             for i in range(min(7, len(d.get("time", [])))):
                 code = int(codigos[i]) if i < len(codigos) else 0
                 desc, icono = WMO.get(code, ("—", "•"))
                 vecinos = codigos[max(0, i-1):i+2]
                 conf = _ia_confianza_clima(i, d["precipitation_probability_max"][i], vecinos)
-                tM = d["temperature_2m_max"][i]
-                tm = d["temperature_2m_min"][i]
-                # HÍBRIDO: mezclar global con climatología local aprendida;
-                # más peso a lo aprendido cuanto más lejano el día (el global
-                # pierde precisión, la climatología local gana importancia).
+                tM = d["temperature_2m_max"][i]; tm = d["temperature_2m_min"][i]
                 peso = [0.0, 0.05, 0.10, 0.18, 0.25, 0.32, 0.40][min(i, 6)]
                 if clima_local:
                     doy = datetime.date.fromisoformat(d["time"][i]).timetuple().tm_yday
-                    cM = clima_local["max"].get(doy)
-                    cm = clima_local["min"].get(doy)
-                    if cM is not None:
-                        tM = tM * (1 - peso) + cM * peso
-                    if cm is not None:
-                        tm = tm * (1 - peso) + cm * peso
-                dias.append({
-                    "fecha": d["time"][i],
-                    "t_min": round(tm), "t_max": round(tM),
+                    cM = clima_local["max"].get(doy); cm = clima_local["min"].get(doy)
+                    if cM is not None: tM = tM * (1 - peso) + cM * peso
+                    if cm is not None: tm = tm * (1 - peso) + cm * peso
+                dias.append({"fecha": d["time"][i], "t_min": round(tm), "t_max": round(tM),
                     "lluvia_mm": round(d["precipitation_sum"][i], 1),
                     "prob_lluvia": int(d["precipitation_probability_max"][i] or 0),
-                    "viento": round(d["windspeed_10m_max"][i]),
-                    "desc": desc, "icono": icono,
-                    "confianza": int(conf * 100),
-                })
+                    "viento": round(d["windspeed_10m_max"][i]), "desc": desc, "icono": icono,
+                    "confianza": int(conf * 100)})
             salida.append({"zona": zona, "ciudad": ciudad, "dias": dias})
         except Exception:
             continue
