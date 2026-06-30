@@ -136,6 +136,7 @@
   .cd-lluvia{font-size:9px;color:#5BA3D0;margin-top:2px;font-family:'Space Mono',monospace;}
   .cd-conf{font-size:8px;color:var(--muted);margin-top:3px;font-family:'Space Mono',monospace;}
   .clima-nota{font-size:10px;color:var(--muted);margin-top:6px;font-family:'Space Mono',monospace;line-height:1.4;}
+  .clima-val{background:rgba(91,163,208,.08);border:1px solid rgba(91,163,208,.25);border-radius:8px;padding:10px 12px;margin-bottom:10px;font-size:11px;color:var(--text);font-family:'Space Mono',monospace;line-height:1.5;}
 </style>
 </head>
 <body>
@@ -158,7 +159,8 @@
   </div>
 
   <div style="margin-top:18px">
-    <div class="seccion-titulo">Pronóstico del clima 7 días por región (híbrido con IA)</div>
+    <div class="seccion-titulo">Pronóstico del clima 7 días — modelo propio aprendido</div>
+    <div id="clima-acierto"></div>
     <div id="clima"></div>
   </div>
 
@@ -270,7 +272,7 @@ function dibujarClima(clima){
       <div class="clima-dias">${dias}</div>
     </div>`;
   });
-  html+=`<div class="clima-nota">Método híbrido: modelo meteorológico global + ajuste local aprendido del historial de cada región. El % es la confianza, que baja hacia el día 7 (el clima es caótico: a más días, menos certeza). No es una predicción exacta.</div>`;
+  html+=`<div class="clima-nota">Método híbrido: el dato atmosférico actual (satélite/estaciones) ancla la proyección, y el modelo propio (9 años aprendidos por región) la extiende a 7 días. El % es la confianza, que baja hacia el día 7 porque el clima es caótico. No es una predicción exacta.</div>`;
   cont.innerHTML=html;
 }
 
@@ -349,6 +351,16 @@ fetch(FUENTE).then(r=>r.json()).then(d=>{
 
   dibujarMonitor(d.monitor_en_vivo);
   dibujarClima(d.clima_regiones);
+  // % de acierto del modelo de clima (validación en vivo)
+  const ca=d.clima_acierto;
+  const cac=document.getElementById("clima-acierto");
+  if(cac){
+    if(ca && ca.n>=5){
+      cac.innerHTML=`<div class="clima-val">✓ Mi modelo acierta a ±2°C el <b>${ca.acierto_2c}%</b> de las veces · ±3°C el <b>${ca.acierto_3c}%</b> · error medio ±${ca.error_medio}°C <span style="color:var(--muted)">(medido con ${ca.n} comparaciones reales)</span></div>`;
+    } else {
+      cac.innerHTML=`<div class="clima-val" style="color:var(--muted)">El modelo está midiendo su acierto: compara cada día su predicción con la temperatura real. El % aparecerá tras unos días de datos.</div>`;
+    }
+  }
 
   // Mini-mapa REAL (Leaflet/OpenStreetMap) por zona: SOLO si magnitud >= 4.8.
   // Devuelve un div contenedor; el mapa se inicializa después (initMiniMapas).

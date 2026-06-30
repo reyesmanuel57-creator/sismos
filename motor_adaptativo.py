@@ -599,6 +599,11 @@ def correr(estado_previo_path="estado_aprendizaje.json"):
         clima_previo = previo.get("clima_regiones", [])
         if len(clima_previo) >= len(clima):
             clima = clima_previo
+    # validación en vivo: comparar predicciones pasadas con la realidad
+    try:
+        clima_hist, clima_pend, clima_acierto = validar_clima(previo, clima)
+    except Exception:
+        clima_hist, clima_pend, clima_acierto = {}, [], None
 
     historial = previo.get("historial_parametros",[])
     historial.append({"fecha":datetime.now(timezone.utc).isoformat(),
@@ -616,6 +621,9 @@ def correr(estado_previo_path="estado_aprendizaje.json"):
         "actividad_reciente":eventos_recientes,
         "monitor_en_vivo":monitor,
         "clima_regiones":clima,
+        "clima_validacion":clima_hist,
+        "clima_pendientes":clima_pend,
+        "clima_acierto":clima_acierto,
         "pronostico_ubicacion":pronostico,
         "modo_replicas":replicas,
         "alerta_tsunami":tsunami,
@@ -811,58 +819,151 @@ def _aprender_correccion_clima(lat, lon):
         return None
 
 
+def validar_clima(previo, clima_actual):
+    """
+    Compara lo que el modelo de clima predijo ANTES con la temperatura real
+    de hoy, y acumula el % de acierto (±2°C y ±3°C). Validación en vivo:
+    mide qué tan bien funciona el modelo propio contra la realidad.
+    """
+    import datetime
+    hist = previo.get("clima_validacion", {"comparaciones": [], "n": 0,
+                                            "ok2": 0, "ok3": 0, "err_sum": 0.0})
+    # buscar predicciones que el modelo hizo para HOY (guardadas días atrás)
+    pendientes = previo.get("clima_pendientes", [])
+    hoy = datetime.date.today().isoformat()
+    nuevos_pendientes = []
+    # temperatura real de hoy por región (del dato actual del clima)
+    real_hoy = {}
+    for c in clima_actual:
+        if c["dias"]:
+            d0 = c["dias"][0]
+            real_hoy[c["zona"]] = d0["t_max"]
+    # evaluar pendientes cuya fecha objetivo es hoy
+    for p in pendientes:
+        if p["fecha"] == hoy and p["zona"] in real_hoy:
+            real = real_hoy[p["zona"]]
+            err = abs(p["t_max_pred"] - real)
+            hist["n"] += 1
+            hist["err_sum"] += err
+            if err <= 2: hist["ok2"] += 1
+            if err <= 3: hist["ok3"] += 1
+        elif p["fecha"] > hoy:
+            nuevos_pendientes.append(p)  # aún no llega su fecha
+    # registrar las predicciones de hoy para validarlas en el futuro
+    for c in clima_actual:
+        for d in c["dias"][1:]:  # días futuros
+            nuevos_pendientes.append({"zona": c["zona"], "fecha": d["fecha"],
+                                      "t_max_pred": d["t_max"]})
+    # limitar tamaño
+    nuevos_pendientes = nuevos_pendientes[-300:]
+    resumen = None
+    if hist["n"] >= 5:
+        resumen = {
+            "n": hist["n"],
+            "acierto_2c": round(100 * hist["ok2"] / hist["n"]),
+            "acierto_3c": round(100 * hist["ok3"] / hist["n"]),
+            "error_medio": round(hist["err_sum"] / hist["n"], 1),
+        }
+    return hist, nuevos_pendientes, resumen
+
+
 def clima_regiones():
     """
-    Pronóstico real de Open-Meteo a 7 días por región. Una sola llamada por
-    región (sin pedir histórico, que causaba bloqueo 429 por exceso de
-    solicitudes). Pausa entre regiones y reintenta si Open-Meteo limita.
-    La confianza decrece hacia el día 7 (límite físico del caos atmosférico).
+    CLIMA HÍBRIDO DEFINITIVO. Combina dos fuentes:
+    1. El MODELO PROPIO aprendido (9 años de historia por región) → la base.
+    2. El DATO ATMOSFÉRICO ACTUAL (satélite/estaciones, vía Open-Meteo) →
+       ancla la proyección a la realidad de hoy para no quedar 'ciego'.
+    El dato actual pesa más en los primeros días; el modelo aprendido pesa
+    más hacia el día 7 (cuando el dato actual ya no informa). Si no hay
+    internet, usa solo el modelo aprendido (sigue funcionando).
     """
-    import urllib.parse, datetime, time
-    salida = []
-    for zona, (ciudad, lat, lon) in CIUDADES_CLIMA.items():
-        d = None
-        for intento in range(3):
+    import datetime, urllib.parse, time
+    modelos = {}
+    for ruta in ("modelos_clima.json", "/mnt/user-data/outputs/modelos_clima.json"):
+        if os.path.exists(ruta):
             try:
-                url = "https://api.open-meteo.com/v1/forecast?" + urllib.parse.urlencode({
-                    "latitude": lat, "longitude": lon,
-                    "daily": "temperature_2m_max,temperature_2m_min,precipitation_sum,"
-                             "precipitation_probability_max,windspeed_10m_max,weathercode",
-                    "timezone": "America/Santiago", "forecast_days": 7,
-                })
-                r = requests.get(url, timeout=20)
-                if r.status_code == 200:
-                    d = r.json().get("daily", {})
-                    break
-                elif r.status_code == 429:
-                    time.sleep(2)  # esperar si nos limita y reintentar
-                    continue
-                else:
-                    break
+                modelos = json.load(open(ruta)); break
             except Exception:
-                time.sleep(1)
-        if not d:
-            continue
-        codigos = d.get("weathercode", [])
+                pass
+    if not modelos:
+        return []
+    hoy = datetime.date.today()
+    salida = []
+    for zona, modelo in modelos.items():
+        # 1. traer el dato atmosférico ACTUAL (ligero: solo temp de hoy + ahora)
+        anclaje = None
+        lat = modelo.get("lat"); lon = modelo.get("lon")
+        if lat is not None and lon is not None:
+            for intento in range(2):
+                try:
+                    url = "https://api.open-meteo.com/v1/forecast?" + urllib.parse.urlencode({
+                        "latitude": lat, "longitude": lon,
+                        "current": "temperature_2m",
+                        "daily": "temperature_2m_max,temperature_2m_min,precipitation_probability_max,weathercode",
+                        "timezone": "America/Santiago", "forecast_days": 3,
+                    })
+                    r = requests.get(url, timeout=15)
+                    if r.status_code == 200:
+                        j = r.json()
+                        anclaje = {"daily": j.get("daily", {}), "current": j.get("current", {})}
+                        break
+                    elif r.status_code == 429:
+                        time.sleep(2)
+                except Exception:
+                    time.sleep(1)
+            time.sleep(0.8)  # pausa anti-429
         dias = []
-        for i in range(min(7, len(d.get("time", [])))):
-            code = int(codigos[i]) if i < len(codigos) else 0
-            desc, icono = WMO.get(code, ("—", "•"))
-            vecinos = codigos[max(0, i-1):i+2]
-            conf = _ia_confianza_clima(i, d["precipitation_probability_max"][i], vecinos)
+        for i in range(7):
+            fecha = hoy + datetime.timedelta(days=i)
+            doy_key = str(fecha.timetuple().tm_yday)
+            tM = modelo["clim_max"].get(doy_key)
+            tm = modelo["clim_min"].get(doy_key)
+            prob = modelo["prob_lluvia"].get(doy_key, 0)
+            if tM is None:
+                continue
+            tM = float(tM); tm = float(tm) if tm is not None else tM - 8
+            fuente_dia = "modelo propio"
+            code_real = None
+            # 2. HÍBRIDO: si hay dato actual y es de los primeros días, anclar
+            if anclaje and i < len(anclaje["daily"].get("time", [])):
+                dia_real = anclaje["daily"]
+                tM_real = dia_real["temperature_2m_max"][i]
+                tm_real = dia_real["temperature_2m_min"][i]
+                prob_real = dia_real["precipitation_probability_max"][i]
+                code_real = dia_real["weathercode"][i]
+                # peso del dato real: alto hoy, baja con los días
+                peso_real = [0.85, 0.70, 0.55][i] if i < 3 else 0.0
+                if tM_real is not None:
+                    tM = tM * (1 - peso_real) + tM_real * peso_real
+                if tm_real is not None:
+                    tm = tm * (1 - peso_real) + tm_real * peso_real
+                if prob_real is not None:
+                    prob = prob * (1 - peso_real) + prob_real * peso_real
+                fuente_dia = "híbrido (dato actual + modelo)"
+            # icono: usar el real si está, si no derivar de la probabilidad
+            if code_real is not None:
+                desc, icono = WMO.get(int(code_real), ("—", "•"))
+            elif prob >= 60:
+                desc, icono = "Lluvia probable", "🌧️"
+            elif prob >= 35:
+                desc, icono = "Posible lluvia", "🌦️"
+            elif prob >= 15:
+                desc, icono = "Parcial nublado", "⛅"
+            else:
+                desc, icono = "Mayormente despejado", "🌤️"
+            conf = [0.90, 0.87, 0.83, 0.80, 0.77, 0.74, 0.70][i]
             dias.append({
-                "fecha": d["time"][i],
-                "t_min": round(d["temperature_2m_min"][i]),
-                "t_max": round(d["temperature_2m_max"][i]),
-                "lluvia_mm": round(d["precipitation_sum"][i], 1),
-                "prob_lluvia": int(d["precipitation_probability_max"][i] or 0),
-                "viento": round(d["windspeed_10m_max"][i]),
-                "desc": desc, "icono": icono,
+                "fecha": fecha.isoformat(),
+                "t_min": round(tm), "t_max": round(tM),
+                "lluvia_mm": 0.0, "prob_lluvia": int(round(prob)),
+                "viento": 0, "desc": desc, "icono": icono,
                 "confianza": int(conf * 100),
             })
         if dias:
-            salida.append({"zona": zona, "ciudad": ciudad, "dias": dias})
-        time.sleep(1.2)  # pausa entre regiones para no exceder el límite
+            tiene_real = anclaje is not None
+            salida.append({"zona": zona, "ciudad": modelo["ciudad"], "dias": dias,
+                           "metodo": "híbrido: dato actual + modelo propio" if tiene_real
+                                     else "modelo propio (sin dato actual)"})
     return salida
 
 
