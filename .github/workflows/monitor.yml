@@ -26,6 +26,6 @@ jobs:
           cp estado_aprendizaje.json estado.json
           git config user.name "github-actions"
           git config user.email "actions@github.com"
-          git add estado.json estado_aprendizaje.json
+          git add estado.json estado_aprendizaje.json modelos_clima.json
           git commit -m "Actualizacion sismica $(date -u +'%F %H:%M')" || echo "sin cambios"
           git push || echo "nada que pushear"
