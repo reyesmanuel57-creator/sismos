@@ -566,9 +566,15 @@ def correr(estado_previo_path="estado_aprendizaje.json"):
 
     # cargar estado previo para historial y calibración
     previo = {}
-    if os.path.exists(estado_previo_path):
-        try: previo = json.load(open(estado_previo_path))
-        except: pass
+    for ruta in (estado_previo_path, "estado.json", "estado_aprendizaje.json"):
+        if os.path.exists(ruta):
+            try:
+                cargado = json.load(open(ruta))
+                # preferir el que tenga más información (clima, historial)
+                if len(str(cargado)) > len(str(previo)):
+                    previo = cargado
+            except Exception:
+                pass
 
     calib = evaluar_calibracion(previo, cat)
     tasa_acierto = (calib["aciertos_top3"]/calib["evaluaciones"]*100
@@ -582,11 +588,17 @@ def correr(estado_previo_path="estado_aprendizaje.json"):
     pronostico = pronostico_ubicacion(cat, zonas, hoy)
     replicas = modo_replicas(cat, hoy)
     tsunami = alerta_tsunami(hoy)
-    # CLIMA híbrido por región (no crítico: si falla, sigue sin él)
+    # CLIMA por región. Si falla (ej. límite de Open-Meteo), reusa el último
+    # clima bueno guardado, para que la web nunca quede sin clima.
+    clima = []
     try:
         clima = clima_regiones()
     except Exception:
         clima = []
+    if len(clima) < 5:  # vino incompleto o vacío: usar el anterior si existe
+        clima_previo = previo.get("clima_regiones", [])
+        if len(clima_previo) >= len(clima):
+            clima = clima_previo
 
     historial = previo.get("historial_parametros",[])
     historial.append({"fecha":datetime.now(timezone.utc).isoformat(),
