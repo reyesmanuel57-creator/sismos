@@ -643,6 +643,89 @@ def _aprender_correccion_clima(lat, lon):
         return None
 
 
+def reentrenar_una_region(modelos, dia_rotativo):
+    """
+    AUTO-APRENDIZAJE CONTINUO. Cada corrida reentrena UNA región (de forma
+    rotativa según el día del año), descargando su historial más reciente y
+    actualizando su climatología aprendida. En ~9 días refresca las 9
+    regiones; luego el ciclo se repite. Así el modelo mejora con el tiempo
+    sin saturar Open-Meteo (1 sola descarga de historial por corrida).
+    Devuelve (modelos_actualizados, nombre_region_reentrenada) o (modelos, None).
+    """
+    import datetime, urllib.parse
+    import numpy as np
+    zonas = list(modelos.keys())
+    if not zonas:
+        return modelos, None
+    # elegir la región a reentrenar hoy (rotación por día)
+    zona = zonas[dia_rotativo % len(zonas)]
+    modelo = modelos[zona]
+    lat = modelo.get("lat"); lon = modelo.get("lon")
+    if lat is None or lon is None:
+        return modelos, None
+    # descargar historial reciente (últimos ~2 años, ligero y actualizado)
+    hoy = datetime.date.today()
+    inicio = (hoy - datetime.timedelta(days=730)).isoformat()
+    try:
+        url = "https://archive-api.open-meteo.com/v1/archive?" + urllib.parse.urlencode({
+            "latitude": lat, "longitude": lon,
+            "start_date": inicio, "end_date": hoy.isoformat(),
+            "daily": "temperature_2m_max,temperature_2m_min,precipitation_sum",
+            "timezone": "America/Santiago",
+        })
+        r = requests.get(url, timeout=25)
+        if r.status_code != 200:
+            return modelos, None
+        d = r.json().get("daily", {})
+    except Exception:
+        return modelos, None
+    tiempos = d.get("time", [])
+    tmax = d.get("temperature_2m_max", [])
+    tmin = d.get("temperature_2m_min", [])
+    prec = d.get("precipitation_sum", [])
+    if len(tiempos) < 100:
+        return modelos, None
+    # acumular por día del año los datos NUEVOS
+    nuevos_max, nuevos_min, nuevos_lluvia = {}, {}, {}
+    for t, tM, tm, pr in zip(tiempos, tmax, tmin, prec):
+        try:
+            doy = datetime.date.fromisoformat(t).timetuple().tm_yday
+        except Exception:
+            continue
+        if tM is not None:
+            nuevos_max.setdefault(doy, []).append(tM)
+        if tm is not None:
+            nuevos_min.setdefault(doy, []).append(tm)
+        nuevos_lluvia.setdefault(doy, []).append(1 if (pr or 0) > 1 else 0)
+    # MEZCLAR lo aprendido antes con lo nuevo (media móvil: 70% viejo, 30% nuevo)
+    # esto es el "aprendizaje": el modelo se ajusta gradualmente con datos frescos
+    def suavizar_doy(doy, datos):
+        vals = []
+        for dd in range(doy - 5, doy + 6):
+            k = ((dd - 1) % 365) + 1
+            if k in datos:
+                vals += datos[k]
+        return float(np.mean(vals)) if vals else None
+    for doy in range(1, 367):
+        k = str(doy)
+        nM = suavizar_doy(doy, nuevos_max)
+        if nM is not None and k in modelo["clim_max"] and modelo["clim_max"][k] is not None:
+            modelo["clim_max"][k] = round(modelo["clim_max"][k] * 0.7 + nM * 0.3, 1)
+        nm = suavizar_doy(doy, nuevos_min)
+        if nm is not None and k in modelo["clim_min"] and modelo["clim_min"][k] is not None:
+            modelo["clim_min"][k] = round(modelo["clim_min"][k] * 0.7 + nm * 0.3, 1)
+        nl_vals = []
+        for dd in range(doy - 5, doy + 6):
+            kk = ((dd - 1) % 365) + 1
+            nl_vals += nuevos_lluvia.get(kk, [])
+        if nl_vals and k in modelo["prob_lluvia"]:
+            nl = 100 * float(np.mean(nl_vals))
+            modelo["prob_lluvia"][k] = round(modelo["prob_lluvia"][k] * 0.7 + nl * 0.3)
+    modelo["ultimo_reentreno"] = hoy.isoformat()
+    modelos[zona] = modelo
+    return modelos, modelo.get("ciudad", zona)
+
+
 def validar_clima(previo, clima_actual):
     """
     Compara lo que el modelo de clima predijo ANTES con la temperatura real
@@ -703,15 +786,26 @@ def clima_regiones():
     """
     import datetime, urllib.parse, time
     modelos = {}
+    ruta_modelos = None
     for ruta in ("modelos_clima.json", "/mnt/user-data/outputs/modelos_clima.json"):
         if os.path.exists(ruta):
             try:
-                modelos = json.load(open(ruta)); break
+                modelos = json.load(open(ruta)); ruta_modelos = ruta; break
             except Exception:
                 pass
     if not modelos:
         return []
     hoy = datetime.date.today()
+    # AUTO-APRENDIZAJE CONTINUO: reentrenar UNA región (rotativa por día del
+    # año). En ~9 días refresca todas; el modelo mejora solo con el tiempo.
+    try:
+        dia_rotativo = hoy.timetuple().tm_yday
+        modelos, reentrenada = reentrenar_una_region(modelos, dia_rotativo)
+        if reentrenada and ruta_modelos:
+            # guardar el modelo actualizado (aprendizaje persistente)
+            json.dump(modelos, open(ruta_modelos, "w"), ensure_ascii=False)
+    except Exception:
+        pass
     # 1. intentar traer el dato actual de TODAS las regiones, pero con tiempo
     # total limitado. Si Open-Meteo bloquea o tarda, se sigue solo con el
     # modelo propio (que SIEMPRE funciona, sin internet). Esto evita que el
