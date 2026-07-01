@@ -1,7 +1,7 @@
 {
-  "actualizado": "2026-07-01T18:26:21.926593+00:00",
-  "ultimo_sismo": "2026-07-01T09:38:41+00:00",
-  "n_eventos_escaneados": 6273,
+  "actualizado": "2026-07-01T22:51:31.761918+00:00",
+  "ultimo_sismo": "2026-07-01T20:15:59+00:00",
+  "n_eventos_escaneados": 6276,
   "fuente_datos": "USGS (histórico) + CSN y sismologia.cl (reciente)",
   "vigilancia": {
     "estado": "NORMAL",
@@ -10,10 +10,34 @@
   "actividad_reciente": [],
   "monitor_en_vivo": [
     {
+      "mag": 4.0,
+      "zona": "Coquimbo (La Serena)",
+      "lugar": "182 km al oeste de Punta de Choros",
+      "hace_horas": 0.0,
+      "profundidad": 10,
+      "hora_utc": "01-07 20:15"
+    },
+    {
+      "mag": 4.4,
+      "zona": "Maule–Ñuble",
+      "lugar": "43 km al oeste de Chillán",
+      "hace_horas": 0.4,
+      "profundidad": 59,
+      "hora_utc": "01-07 19:52"
+    },
+    {
+      "mag": 3.5,
+      "zona": "Tarapacá (Iquique)",
+      "lugar": "77 km al norte de Calama",
+      "hace_horas": 1.8,
+      "profundidad": 97,
+      "hora_utc": "01-07 18:27"
+    },
+    {
       "mag": 3.5,
       "zona": "Biobío–Araucanía",
-      "lugar": "16 km al sureste de Valdivia",
-      "hace_horas": 0.0,
+      "lugar": "Biobío–Araucanía",
+      "hace_horas": 10.6,
       "profundidad": 47,
       "hora_utc": "01-07 09:38"
     },
@@ -21,7 +45,7 @@
       "mag": 4.1,
       "zona": "Tarapacá (Iquique)",
       "lugar": "Tarapacá (Iquique)",
-      "hace_horas": 1.6,
+      "hace_horas": 12.3,
       "profundidad": 167,
       "hora_utc": "01-07 08:00"
     },
@@ -29,7 +53,7 @@
       "mag": 3.7,
       "zona": "Tarapacá (Iquique)",
       "lugar": "Tarapacá (Iquique)",
-      "hace_horas": 6.8,
+      "hace_horas": 17.4,
       "profundidad": 123,
       "hora_utc": "01-07 02:50"
     },
@@ -37,7 +61,7 @@
       "mag": 3.8,
       "zona": "Tarapacá (Iquique)",
       "lugar": "Tarapacá (Iquique)",
-      "hace_horas": 15.3,
+      "hace_horas": 25.9,
       "profundidad": 48,
       "hora_utc": "30-06 18:19"
     },
@@ -45,7 +69,7 @@
       "mag": 4.1,
       "zona": "Antofagasta",
       "lugar": "Antofagasta",
-      "hace_horas": 18.8,
+      "hace_horas": 29.4,
       "profundidad": 246,
       "hora_utc": "30-06 14:49"
     },
@@ -53,7 +77,7 @@
       "mag": 3.5,
       "zona": "Antofagasta",
       "lugar": "Antofagasta",
-      "hace_horas": 20.3,
+      "hace_horas": 30.9,
       "profundidad": 87,
       "hora_utc": "30-06 13:19"
     },
@@ -61,7 +85,7 @@
       "mag": 4.2,
       "zona": "Atacama (Copiapó)",
       "lugar": "Atacama (Copiapó)",
-      "hace_horas": 25.2,
+      "hace_horas": 35.8,
       "profundidad": 24,
       "hora_utc": "30-06 08:26"
     },
@@ -69,7 +93,7 @@
       "mag": 3.5,
       "zona": "Antofagasta",
       "lugar": "Antofagasta",
-      "hace_horas": 40.6,
+      "hace_horas": 51.2,
       "profundidad": 247,
       "hora_utc": "29-06 17:04"
     },
@@ -77,33 +101,9 @@
       "mag": 3.8,
       "zona": "Biobío–Araucanía",
       "lugar": "Biobío–Araucanía",
-      "hace_horas": 41.3,
+      "hace_horas": 51.9,
       "profundidad": 15,
       "hora_utc": "29-06 16:20"
-    },
-    {
-      "mag": 3.5,
-      "zona": "Antofagasta",
-      "lugar": "Antofagasta",
-      "hace_horas": 46.0,
-      "profundidad": 224,
-      "hora_utc": "29-06 11:36"
-    },
-    {
-      "mag": 3.8,
-      "zona": "Tarapacá (Iquique)",
-      "lugar": "Tarapacá (Iquique)",
-      "hace_horas": 47.4,
-      "profundidad": 144,
-      "hora_utc": "29-06 10:15"
-    },
-    {
-      "mag": 3.6,
-      "zona": "Antofagasta",
-      "lugar": "Antofagasta",
-      "hace_horas": 52.0,
-      "profundidad": 49,
-      "hora_utc": "29-06 05:37"
     }
   ],
   "clima_regiones": [
@@ -116,7 +116,7 @@
           "t_min": 16,
           "t_max": 20,
           "lluvia_mm": 0.0,
-          "prob_lluvia": 3,
+          "prob_lluvia": 1,
           "viento": 0,
           "desc": "Llovizna leve",
           "icono": "🌦️",
@@ -136,12 +136,12 @@
         {
           "fecha": "2026-07-03",
           "t_min": 15,
-          "t_max": 20,
+          "t_max": 19,
           "lluvia_mm": 0.0,
-          "prob_lluvia": 3,
+          "prob_lluvia": 5,
           "viento": 0,
-          "desc": "Nublado",
-          "icono": "☁️",
+          "desc": "Llovizna leve",
+          "icono": "🌦️",
           "confianza": 83
         },
         {
@@ -197,8 +197,8 @@
       "dias": [
         {
           "fecha": "2026-07-01",
-          "t_min": 16,
-          "t_max": 20,
+          "t_min": 15,
+          "t_max": 19,
           "lluvia_mm": 0.0,
           "prob_lluvia": 0,
           "viento": 0,
@@ -222,7 +222,7 @@
           "t_min": 15,
           "t_max": 19,
           "lluvia_mm": 0.0,
-          "prob_lluvia": 0,
+          "prob_lluvia": 1,
           "viento": 0,
           "desc": "Nublado",
           "icono": "☁️",
@@ -315,7 +315,7 @@
         {
           "fecha": "2026-07-04",
           "t_min": 12,
-          "t_max": 18,
+          "t_max": 17,
           "lluvia_mm": 0.0,
           "prob_lluvia": 1,
           "viento": 0,
@@ -326,7 +326,7 @@
         {
           "fecha": "2026-07-05",
           "t_min": 12,
-          "t_max": 18,
+          "t_max": 17,
           "lluvia_mm": 0.0,
           "prob_lluvia": 1,
           "viento": 0,
@@ -365,7 +365,7 @@
       "dias": [
         {
           "fecha": "2026-07-01",
-          "t_min": 6,
+          "t_min": 7,
           "t_max": 18,
           "lluvia_mm": 0.0,
           "prob_lluvia": 1,
@@ -381,8 +381,8 @@
           "lluvia_mm": 0.0,
           "prob_lluvia": 1,
           "viento": 0,
-          "desc": "Nublado",
-          "icono": "☁️",
+          "desc": "Parcial nublado",
+          "icono": "⛅",
           "confianza": 87
         },
         {
@@ -392,8 +392,8 @@
           "lluvia_mm": 0.0,
           "prob_lluvia": 0,
           "viento": 0,
-          "desc": "Despejado",
-          "icono": "☀️",
+          "desc": "Mayormente despejado",
+          "icono": "🌤️",
           "confianza": 83
         },
         {
@@ -560,8 +560,8 @@
           "lluvia_mm": 0.0,
           "prob_lluvia": 7,
           "viento": 0,
-          "desc": "Parcial nublado",
-          "icono": "⛅",
+          "desc": "Nublado",
+          "icono": "☁️",
           "confianza": 83
         },
         {
@@ -618,7 +618,7 @@
         {
           "fecha": "2026-07-01",
           "t_min": 0,
-          "t_max": 10,
+          "t_max": 12,
           "lluvia_mm": 0.0,
           "prob_lluvia": 5,
           "viento": 0,
@@ -628,7 +628,7 @@
         },
         {
           "fecha": "2026-07-02",
-          "t_min": 2,
+          "t_min": 1,
           "t_max": 11,
           "lluvia_mm": 0.0,
           "prob_lluvia": 11,
@@ -642,7 +642,7 @@
           "t_min": 3,
           "t_max": 12,
           "lluvia_mm": 0.0,
-          "prob_lluvia": 16,
+          "prob_lluvia": 15,
           "viento": 0,
           "desc": "Nublado",
           "icono": "☁️",
@@ -704,7 +704,7 @@
           "t_min": 4,
           "t_max": 12,
           "lluvia_mm": 0.0,
-          "prob_lluvia": 19,
+          "prob_lluvia": 23,
           "viento": 0,
           "desc": "Llovizna intensa",
           "icono": "🌧️",
@@ -712,7 +712,7 @@
         },
         {
           "fecha": "2026-07-02",
-          "t_min": 3,
+          "t_min": 4,
           "t_max": 12,
           "lluvia_mm": 0.0,
           "prob_lluvia": 15,
@@ -726,7 +726,7 @@
           "t_min": 3,
           "t_max": 12,
           "lluvia_mm": 0.0,
-          "prob_lluvia": 29,
+          "prob_lluvia": 23,
           "viento": 0,
           "desc": "Nublado",
           "icono": "☁️",
@@ -785,13 +785,13 @@
       "dias": [
         {
           "fecha": "2026-07-01",
-          "t_min": 2,
+          "t_min": 1,
           "t_max": 8,
           "lluvia_mm": 0.0,
           "prob_lluvia": 10,
           "viento": 0,
-          "desc": "Mayormente despejado",
-          "icono": "🌤️",
+          "desc": "Parcial nublado",
+          "icono": "⛅",
           "confianza": 90
         },
         {
@@ -812,8 +812,8 @@
           "lluvia_mm": 0.0,
           "prob_lluvia": 30,
           "viento": 0,
-          "desc": "Despejado",
-          "icono": "☀️",
+          "desc": "Mayormente despejado",
+          "icono": "🌤️",
           "confianza": 83
         },
         {
@@ -870,11 +870,11 @@
   "clima_acierto": null,
   "pronostico_ubicacion": {
     "zona": "Tarapacá (Iquique)",
-    "lat_punto": -21.79,
-    "lon_punto": -68.46,
+    "lat_punto": -21.7,
+    "lon_punto": -68.42,
     "mag_esperada_aprox": 4.7,
     "mostrar_circulo": false,
-    "prob_M5_7d": 0.347,
+    "prob_M5_7d": 0.354,
     "radio_km": 420,
     "acierto_100km_pct": 19,
     "acierto_200km_pct": 36,
@@ -883,11 +883,11 @@
   "modo_replicas": null,
   "alerta_tsunami": null,
   "parametros_aprendidos": {
-    "mu": 0.6602442646749507,
-    "K": 0.0009552536161508583,
-    "alpha": 1.581015501403798,
-    "c": 0.02268693811087821,
-    "p": 1.7937745712953697,
+    "mu": 0.6602458193780798,
+    "K": 0.000954977564657288,
+    "alpha": 1.5810411223905345,
+    "c": 0.02269271048923623,
+    "p": 1.7939699399001403,
     "b": 1.4254692940163836,
     "n_eventos_aprendizaje": 1264,
     "convergencia": true
@@ -897,15 +897,15 @@
       "zona": "Tarapacá (Iquique)",
       "lat0": -23,
       "lat1": -20,
-      "prob_M5_7d": 0.347,
+      "prob_M5_7d": 0.354,
       "prob_M6_7d": 0.024,
       "nivel": "NORMAL",
       "regimen": "NORMAL",
       "mag_esperada": 5.3,
       "mag_maxima_historica": 6.9,
-      "n_ult7d": 19,
-      "n_ult30d": 42,
-      "factor_actividad": 2.03,
+      "n_ult7d": 20,
+      "n_ult30d": 43,
+      "factor_actividad": 2.08,
       "mag_max_ult30d": 4.7
     },
     {
@@ -918,7 +918,7 @@
       "regimen": "NORMAL",
       "mag_esperada": 5.2,
       "mag_maxima_historica": 7.4,
-      "n_ult7d": 14,
+      "n_ult7d": 13,
       "n_ult30d": 34,
       "factor_actividad": 2.14,
       "mag_max_ult30d": 4.9
@@ -927,15 +927,15 @@
       "zona": "Coquimbo (La Serena)",
       "lat0": -32,
       "lat1": -29,
-      "prob_M5_7d": 0.22,
+      "prob_M5_7d": 0.231,
       "prob_M6_7d": 0.019,
       "nivel": "NORMAL",
       "regimen": "NORMAL",
       "mag_esperada": 5.2,
       "mag_maxima_historica": 6.4,
-      "n_ult7d": 7,
-      "n_ult30d": 17,
-      "factor_actividad": 1.7,
+      "n_ult7d": 6,
+      "n_ult30d": 18,
+      "factor_actividad": 1.8,
       "mag_max_ult30d": 5.0
     },
     {
@@ -969,6 +969,21 @@
       "mag_max_ult30d": 4.3
     },
     {
+      "zona": "Maule–Ñuble",
+      "lat0": -38,
+      "lat1": -35,
+      "prob_M5_7d": 0.072,
+      "prob_M6_7d": 0.013,
+      "nivel": "NORMAL",
+      "regimen": "NORMAL",
+      "mag_esperada": 5.2,
+      "mag_maxima_historica": 6.7,
+      "n_ult7d": 2,
+      "n_ult30d": 3,
+      "factor_actividad": 0.98,
+      "mag_max_ult30d": 4.4
+    },
+    {
       "zona": "Arica–Parinacota",
       "lat0": -20,
       "lat1": -17,
@@ -982,21 +997,6 @@
       "n_ult30d": 5,
       "factor_actividad": 0.58,
       "mag_max_ult30d": 4.7
-    },
-    {
-      "zona": "Maule–Ñuble",
-      "lat0": -38,
-      "lat1": -35,
-      "prob_M5_7d": 0.049,
-      "prob_M6_7d": 0.013,
-      "nivel": "NORMAL",
-      "regimen": "NORMAL",
-      "mag_esperada": 5.2,
-      "mag_maxima_historica": 6.7,
-      "n_ult7d": 1,
-      "n_ult30d": 2,
-      "factor_actividad": 0.66,
-      "mag_max_ult30d": 4.3
     },
     {
       "zona": "Biobío–Araucanía",
@@ -1659,6 +1659,15 @@
       "p": 1.794,
       "b": 1.425,
       "n_total": 6273
+    },
+    {
+      "fecha": "2026-07-01T22:51:31.761878+00:00",
+      "mu": 0.6602,
+      "K": 0.001,
+      "alpha": 1.581,
+      "p": 1.794,
+      "b": 1.425,
+      "n_total": 6276
     }
   ],
   "descargo": "Sistema auto-adaptativo con calibración. Probabilidades por zona para 7 días, NO predicción de día/hora/lugar. Oficial: SENAPRED, sismologia.cl."
