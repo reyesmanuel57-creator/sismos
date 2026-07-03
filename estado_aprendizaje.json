@@ -1,7 +1,7 @@
 {
-  "actualizado": "2026-07-02T20:47:46.415249+00:00",
-  "ultimo_sismo": "2026-07-02T18:53:43+00:00",
-  "n_eventos_escaneados": 6275,
+  "actualizado": "2026-07-03T08:38:59.680146+00:00",
+  "ultimo_sismo": "2026-07-03T03:13:05+00:00",
+  "n_eventos_escaneados": 6272,
   "fuente_datos": "USGS (histórico) + CSN y sismologia.cl (reciente)",
   "vigilancia": {
     "estado": "NORMAL",
@@ -10,18 +10,26 @@
   "actividad_reciente": [],
   "monitor_en_vivo": [
     {
+      "mag": 3.7,
+      "zona": "Tarapacá (Iquique)",
+      "lugar": "53 km al suroeste de Mina Collahuasi",
+      "hace_horas": 0.0,
+      "profundidad": 116,
+      "hora_utc": "03-07 03:13"
+    },
+    {
       "mag": 3.9,
       "zona": "Arica–Parinacota",
-      "lugar": "37 km al sureste de Arica",
-      "hace_horas": 0.0,
+      "lugar": "Arica–Parinacota",
+      "hace_horas": 8.3,
       "profundidad": 75,
       "hora_utc": "02-07 18:53"
     },
     {
       "mag": 4.0,
       "zona": "Los Lagos–Aysén",
-      "lugar": "44 km al noroeste de Ancud",
-      "hace_horas": 2.3,
+      "lugar": "Los Lagos–Aysén",
+      "hace_horas": 10.6,
       "profundidad": 43,
       "hora_utc": "02-07 16:35"
     },
@@ -29,15 +37,23 @@
       "mag": 3.7,
       "zona": "Antofagasta",
       "lugar": "Antofagasta",
-      "hace_horas": 17.6,
+      "hace_horas": 25.9,
       "profundidad": 239,
       "hora_utc": "02-07 01:20"
+    },
+    {
+      "mag": 4.5,
+      "zona": "Biobío–Araucanía",
+      "lugar": "150 km WSW of Lebu, Chile",
+      "hace_horas": 26.8,
+      "profundidad": 10,
+      "hora_utc": "02-07 00:25"
     },
     {
       "mag": 4.1,
       "zona": "Biobío–Araucanía",
       "lugar": "Biobío–Araucanía",
-      "hace_horas": 18.5,
+      "hace_horas": 26.8,
       "profundidad": 10,
       "hora_utc": "02-07 00:25"
     },
@@ -45,7 +61,7 @@
       "mag": 4.0,
       "zona": "Coquimbo (La Serena)",
       "lugar": "Coquimbo (La Serena)",
-      "hace_horas": 22.6,
+      "hace_horas": 31.0,
       "profundidad": 10,
       "hora_utc": "01-07 20:15"
     },
@@ -53,7 +69,7 @@
       "mag": 4.4,
       "zona": "Maule–Ñuble",
       "lugar": "15 km NNE of Tomé, Chile",
-      "hace_horas": 23.0,
+      "hace_horas": 31.4,
       "profundidad": 46,
       "hora_utc": "01-07 19:52"
     },
@@ -61,7 +77,7 @@
       "mag": 4.4,
       "zona": "Maule–Ñuble",
       "lugar": "Maule–Ñuble",
-      "hace_horas": 23.0,
+      "hace_horas": 31.4,
       "profundidad": 59,
       "hora_utc": "01-07 19:52"
     },
@@ -69,7 +85,7 @@
       "mag": 3.5,
       "zona": "Tarapacá (Iquique)",
       "lugar": "Tarapacá (Iquique)",
-      "hace_horas": 24.4,
+      "hace_horas": 32.8,
       "profundidad": 97,
       "hora_utc": "01-07 18:27"
     },
@@ -77,7 +93,7 @@
       "mag": 3.5,
       "zona": "Biobío–Araucanía",
       "lugar": "Biobío–Araucanía",
-      "hace_horas": 33.3,
+      "hace_horas": 41.6,
       "profundidad": 47,
       "hora_utc": "01-07 09:38"
     },
@@ -85,25 +101,9 @@
       "mag": 4.1,
       "zona": "Tarapacá (Iquique)",
       "lugar": "Tarapacá (Iquique)",
-      "hace_horas": 34.9,
+      "hace_horas": 43.2,
       "profundidad": 167,
       "hora_utc": "01-07 08:00"
-    },
-    {
-      "mag": 4.5,
-      "zona": "Tarapacá (Iquique)",
-      "lugar": "83 km NNE of Ollagüe, Chile",
-      "hace_horas": 34.9,
-      "profundidad": 171,
-      "hora_utc": "01-07 08:00"
-    },
-    {
-      "mag": 3.7,
-      "zona": "Tarapacá (Iquique)",
-      "lugar": "Tarapacá (Iquique)",
-      "hace_horas": 40.1,
-      "profundidad": 123,
-      "hora_utc": "01-07 02:50"
     }
   ],
   "clima_regiones": [
@@ -112,48 +112,37 @@
       "ciudad": "Arica",
       "dias": [
         {
-          "fecha": "2026-07-02",
-          "t_min": 16,
-          "t_max": 20,
-          "lluvia_mm": 0.0,
-          "prob_lluvia": 1,
-          "viento": 0,
-          "desc": "Nublado",
-          "icono": "☁️",
-          "confianza": 90
-        },
-        {
           "fecha": "2026-07-03",
           "t_min": 15,
           "t_max": 20,
           "lluvia_mm": 0.0,
-          "prob_lluvia": 6,
+          "prob_lluvia": 3,
           "viento": 0,
           "desc": "Llovizna leve",
           "icono": "🌦️",
-          "confianza": 87
+          "confianza": 90
         },
         {
           "fecha": "2026-07-04",
-          "t_min": 15,
-          "t_max": 19,
+          "t_min": 14,
+          "t_max": 20,
           "lluvia_mm": 0.0,
           "prob_lluvia": 3,
           "viento": 0,
           "desc": "Nublado",
           "icono": "☁️",
-          "confianza": 83
+          "confianza": 87
         },
         {
           "fecha": "2026-07-05",
-          "t_min": 14,
-          "t_max": 18,
+          "t_min": 15,
+          "t_max": 19,
           "lluvia_mm": 0.0,
-          "prob_lluvia": 6,
+          "prob_lluvia": 5,
           "viento": 0,
-          "desc": "Mayormente despejado",
-          "icono": "🌤️",
-          "confianza": 80
+          "desc": "Nublado",
+          "icono": "☁️",
+          "confianza": 83
         },
         {
           "fecha": "2026-07-06",
@@ -164,7 +153,7 @@
           "viento": 0,
           "desc": "Mayormente despejado",
           "icono": "🌤️",
-          "confianza": 77
+          "confianza": 80
         },
         {
           "fecha": "2026-07-07",
@@ -175,7 +164,7 @@
           "viento": 0,
           "desc": "Mayormente despejado",
           "icono": "🌤️",
-          "confianza": 74
+          "confianza": 77
         },
         {
           "fecha": "2026-07-08",
@@ -183,6 +172,17 @@
           "t_max": 18,
           "lluvia_mm": 0.0,
           "prob_lluvia": 6,
+          "viento": 0,
+          "desc": "Mayormente despejado",
+          "icono": "🌤️",
+          "confianza": 74
+        },
+        {
+          "fecha": "2026-07-09",
+          "t_min": 14,
+          "t_max": 18,
+          "lluvia_mm": 0.0,
+          "prob_lluvia": 5,
           "viento": 0,
           "desc": "Mayormente despejado",
           "icono": "🌤️",
@@ -196,29 +196,29 @@
       "ciudad": "Iquique",
       "dias": [
         {
-          "fecha": "2026-07-02",
+          "fecha": "2026-07-03",
           "t_min": 15,
-          "t_max": 19,
+          "t_max": 20,
           "lluvia_mm": 0.0,
-          "prob_lluvia": 0,
+          "prob_lluvia": 3,
           "viento": 0,
           "desc": "Nublado",
           "icono": "☁️",
           "confianza": 90
         },
         {
-          "fecha": "2026-07-03",
+          "fecha": "2026-07-04",
           "t_min": 15,
-          "t_max": 19,
+          "t_max": 20,
           "lluvia_mm": 0.0,
-          "prob_lluvia": 0,
+          "prob_lluvia": 3,
           "viento": 0,
           "desc": "Nublado",
           "icono": "☁️",
           "confianza": 87
         },
         {
-          "fecha": "2026-07-04",
+          "fecha": "2026-07-05",
           "t_min": 15,
           "t_max": 19,
           "lluvia_mm": 0.0,
@@ -229,7 +229,7 @@
           "confianza": 83
         },
         {
-          "fecha": "2026-07-05",
+          "fecha": "2026-07-06",
           "t_min": 13,
           "t_max": 18,
           "lluvia_mm": 0.0,
@@ -240,7 +240,7 @@
           "confianza": 80
         },
         {
-          "fecha": "2026-07-06",
+          "fecha": "2026-07-07",
           "t_min": 13,
           "t_max": 18,
           "lluvia_mm": 0.0,
@@ -251,7 +251,7 @@
           "confianza": 77
         },
         {
-          "fecha": "2026-07-07",
+          "fecha": "2026-07-08",
           "t_min": 13,
           "t_max": 18,
           "lluvia_mm": 0.0,
@@ -262,7 +262,7 @@
           "confianza": 74
         },
         {
-          "fecha": "2026-07-08",
+          "fecha": "2026-07-09",
           "t_min": 13,
           "t_max": 18,
           "lluvia_mm": 0.0,
@@ -280,9 +280,9 @@
       "ciudad": "Antofagasta",
       "dias": [
         {
-          "fecha": "2026-07-02",
-          "t_min": 13,
-          "t_max": 17,
+          "fecha": "2026-07-03",
+          "t_min": 14,
+          "t_max": 18,
           "lluvia_mm": 0.0,
           "prob_lluvia": 0,
           "viento": 0,
@@ -291,9 +291,9 @@
           "confianza": 90
         },
         {
-          "fecha": "2026-07-03",
-          "t_min": 13,
-          "t_max": 18,
+          "fecha": "2026-07-04",
+          "t_min": 14,
+          "t_max": 20,
           "lluvia_mm": 0.0,
           "prob_lluvia": 0,
           "viento": 0,
@@ -302,26 +302,15 @@
           "confianza": 87
         },
         {
-          "fecha": "2026-07-04",
-          "t_min": 13,
-          "t_max": 18,
+          "fecha": "2026-07-05",
+          "t_min": 14,
+          "t_max": 19,
           "lluvia_mm": 0.0,
           "prob_lluvia": 0,
           "viento": 0,
           "desc": "Nublado",
           "icono": "☁️",
           "confianza": 83
-        },
-        {
-          "fecha": "2026-07-05",
-          "t_min": 12,
-          "t_max": 17,
-          "lluvia_mm": 0.0,
-          "prob_lluvia": 1,
-          "viento": 0,
-          "desc": "Mayormente despejado",
-          "icono": "🌤️",
-          "confianza": 80
         },
         {
           "fecha": "2026-07-06",
@@ -332,7 +321,7 @@
           "viento": 0,
           "desc": "Mayormente despejado",
           "icono": "🌤️",
-          "confianza": 77
+          "confianza": 80
         },
         {
           "fecha": "2026-07-07",
@@ -343,10 +332,21 @@
           "viento": 0,
           "desc": "Mayormente despejado",
           "icono": "🌤️",
-          "confianza": 74
+          "confianza": 77
         },
         {
           "fecha": "2026-07-08",
+          "t_min": 12,
+          "t_max": 17,
+          "lluvia_mm": 0.0,
+          "prob_lluvia": 1,
+          "viento": 0,
+          "desc": "Mayormente despejado",
+          "icono": "🌤️",
+          "confianza": 74
+        },
+        {
+          "fecha": "2026-07-09",
           "t_min": 12,
           "t_max": 17,
           "lluvia_mm": 0.0,
@@ -364,48 +364,37 @@
       "ciudad": "Copiapó",
       "dias": [
         {
-          "fecha": "2026-07-02",
-          "t_min": 7,
-          "t_max": 20,
-          "lluvia_mm": 0.0,
-          "prob_lluvia": 0,
-          "viento": 0,
-          "desc": "Nublado",
-          "icono": "☁️",
-          "confianza": 90
-        },
-        {
           "fecha": "2026-07-03",
-          "t_min": 9,
+          "t_min": 8,
           "t_max": 22,
           "lluvia_mm": 0.0,
           "prob_lluvia": 0,
           "viento": 0,
           "desc": "Mayormente despejado",
           "icono": "🌤️",
-          "confianza": 87
+          "confianza": 90
         },
         {
           "fecha": "2026-07-04",
           "t_min": 9,
-          "t_max": 22,
+          "t_max": 21,
           "lluvia_mm": 0.0,
           "prob_lluvia": 0,
           "viento": 0,
           "desc": "Despejado",
           "icono": "☀️",
-          "confianza": 83
+          "confianza": 87
         },
         {
           "fecha": "2026-07-05",
           "t_min": 10,
-          "t_max": 22,
+          "t_max": 23,
           "lluvia_mm": 0.0,
-          "prob_lluvia": 1,
+          "prob_lluvia": 0,
           "viento": 0,
-          "desc": "Mayormente despejado",
-          "icono": "🌤️",
-          "confianza": 80
+          "desc": "Nublado",
+          "icono": "☁️",
+          "confianza": 83
         },
         {
           "fecha": "2026-07-06",
@@ -416,7 +405,7 @@
           "viento": 0,
           "desc": "Mayormente despejado",
           "icono": "🌤️",
-          "confianza": 77
+          "confianza": 80
         },
         {
           "fecha": "2026-07-07",
@@ -427,11 +416,22 @@
           "viento": 0,
           "desc": "Mayormente despejado",
           "icono": "🌤️",
-          "confianza": 74
+          "confianza": 77
         },
         {
           "fecha": "2026-07-08",
           "t_min": 9,
+          "t_max": 20,
+          "lluvia_mm": 0.0,
+          "prob_lluvia": 1,
+          "viento": 0,
+          "desc": "Mayormente despejado",
+          "icono": "🌤️",
+          "confianza": 74
+        },
+        {
+          "fecha": "2026-07-09",
+          "t_min": 8,
           "t_max": 20,
           "lluvia_mm": 0.0,
           "prob_lluvia": 1,
@@ -448,8 +448,8 @@
       "ciudad": "La Serena",
       "dias": [
         {
-          "fecha": "2026-07-02",
-          "t_min": 3,
+          "fecha": "2026-07-03",
+          "t_min": 7,
           "t_max": 15,
           "lluvia_mm": 0.0,
           "prob_lluvia": 1,
@@ -459,9 +459,9 @@
           "confianza": 90
         },
         {
-          "fecha": "2026-07-03",
-          "t_min": 7,
-          "t_max": 15,
+          "fecha": "2026-07-04",
+          "t_min": 4,
+          "t_max": 16,
           "lluvia_mm": 0.0,
           "prob_lluvia": 2,
           "viento": 0,
@@ -470,55 +470,55 @@
           "confianza": 87
         },
         {
-          "fecha": "2026-07-04",
-          "t_min": 6,
-          "t_max": 16,
+          "fecha": "2026-07-05",
+          "t_min": 7,
+          "t_max": 18,
           "lluvia_mm": 0.0,
-          "prob_lluvia": 4,
+          "prob_lluvia": 3,
           "viento": 0,
           "desc": "Nublado",
           "icono": "☁️",
           "confianza": 83
         },
         {
-          "fecha": "2026-07-05",
-          "t_min": 9,
+          "fecha": "2026-07-06",
+          "t_min": 8,
           "t_max": 16,
           "lluvia_mm": 0.0,
-          "prob_lluvia": 9,
+          "prob_lluvia": 7,
           "viento": 0,
           "desc": "Mayormente despejado",
           "icono": "🌤️",
           "confianza": 80
         },
         {
-          "fecha": "2026-07-06",
-          "t_min": 9,
+          "fecha": "2026-07-07",
+          "t_min": 8,
           "t_max": 16,
           "lluvia_mm": 0.0,
-          "prob_lluvia": 10,
+          "prob_lluvia": 7,
           "viento": 0,
           "desc": "Mayormente despejado",
           "icono": "🌤️",
           "confianza": 77
         },
         {
-          "fecha": "2026-07-07",
-          "t_min": 9,
+          "fecha": "2026-07-08",
+          "t_min": 8,
           "t_max": 16,
           "lluvia_mm": 0.0,
-          "prob_lluvia": 10,
+          "prob_lluvia": 8,
           "viento": 0,
           "desc": "Mayormente despejado",
           "icono": "🌤️",
           "confianza": 74
         },
         {
-          "fecha": "2026-07-08",
-          "t_min": 9,
-          "t_max": 16,
+          "fecha": "2026-07-09",
+          "t_min": 8,
+          "t_max": 15,
           "lluvia_mm": 0.0,
-          "prob_lluvia": 11,
+          "prob_lluvia": 8,
           "viento": 0,
           "desc": "Mayormente despejado",
           "icono": "🌤️",
@@ -532,48 +532,37 @@
       "ciudad": "Santiago",
       "dias": [
         {
-          "fecha": "2026-07-02",
-          "t_min": 2,
-          "t_max": 13,
+          "fecha": "2026-07-03",
+          "t_min": 3,
+          "t_max": 14,
           "lluvia_mm": 0.0,
-          "prob_lluvia": 3,
+          "prob_lluvia": 2,
           "viento": 0,
           "desc": "Despejado",
           "icono": "☀️",
           "confianza": 90
         },
         {
-          "fecha": "2026-07-03",
+          "fecha": "2026-07-04",
           "t_min": 4,
           "t_max": 14,
           "lluvia_mm": 0.0,
-          "prob_lluvia": 5,
+          "prob_lluvia": 71,
           "viento": 0,
-          "desc": "Despejado",
-          "icono": "☀️",
+          "desc": "Chubascos",
+          "icono": "🌧️",
           "confianza": 87
         },
         {
-          "fecha": "2026-07-04",
-          "t_min": 5,
+          "fecha": "2026-07-05",
+          "t_min": 3,
           "t_max": 14,
           "lluvia_mm": 0.0,
-          "prob_lluvia": 41,
+          "prob_lluvia": 55,
           "viento": 0,
-          "desc": "Nublado",
-          "icono": "☁️",
+          "desc": "Llovizna",
+          "icono": "🌦️",
           "confianza": 83
-        },
-        {
-          "fecha": "2026-07-05",
-          "t_min": 6,
-          "t_max": 15,
-          "lluvia_mm": 0.0,
-          "prob_lluvia": 16,
-          "viento": 0,
-          "desc": "Parcial nublado",
-          "icono": "⛅",
-          "confianza": 80
         },
         {
           "fecha": "2026-07-06",
@@ -584,7 +573,7 @@
           "viento": 0,
           "desc": "Parcial nublado",
           "icono": "⛅",
-          "confianza": 77
+          "confianza": 80
         },
         {
           "fecha": "2026-07-07",
@@ -595,7 +584,7 @@
           "viento": 0,
           "desc": "Parcial nublado",
           "icono": "⛅",
-          "confianza": 74
+          "confianza": 77
         },
         {
           "fecha": "2026-07-08",
@@ -603,6 +592,17 @@
           "t_max": 14,
           "lluvia_mm": 0.0,
           "prob_lluvia": 20,
+          "viento": 0,
+          "desc": "Parcial nublado",
+          "icono": "⛅",
+          "confianza": 74
+        },
+        {
+          "fecha": "2026-07-09",
+          "t_min": 6,
+          "t_max": 14,
+          "lluvia_mm": 0.0,
+          "prob_lluvia": 23,
           "viento": 0,
           "desc": "Parcial nublado",
           "icono": "⛅",
@@ -616,9 +616,9 @@
       "ciudad": "Talca",
       "dias": [
         {
-          "fecha": "2026-07-02",
-          "t_min": 0,
-          "t_max": 10,
+          "fecha": "2026-07-03",
+          "t_min": 1,
+          "t_max": 11,
           "lluvia_mm": 0.0,
           "prob_lluvia": 5,
           "viento": 0,
@@ -627,37 +627,26 @@
           "confianza": 90
         },
         {
-          "fecha": "2026-07-03",
-          "t_min": 1,
-          "t_max": 11,
-          "lluvia_mm": 0.0,
-          "prob_lluvia": 10,
-          "viento": 0,
-          "desc": "Nublado",
-          "icono": "☁️",
-          "confianza": 87
-        },
-        {
           "fecha": "2026-07-04",
-          "t_min": 1,
-          "t_max": 10,
+          "t_min": 0,
+          "t_max": 9,
           "lluvia_mm": 0.0,
-          "prob_lluvia": 65,
+          "prob_lluvia": 74,
           "viento": 0,
           "desc": "Chubascos",
           "icono": "🌦️",
-          "confianza": 83
+          "confianza": 87
         },
         {
           "fecha": "2026-07-05",
-          "t_min": 5,
+          "t_min": 3,
           "t_max": 13,
           "lluvia_mm": 0.0,
-          "prob_lluvia": 32,
+          "prob_lluvia": 40,
           "viento": 0,
-          "desc": "Parcial nublado",
-          "icono": "⛅",
-          "confianza": 80
+          "desc": "Llovizna",
+          "icono": "🌦️",
+          "confianza": 83
         },
         {
           "fecha": "2026-07-06",
@@ -668,7 +657,7 @@
           "viento": 0,
           "desc": "Parcial nublado",
           "icono": "⛅",
-          "confianza": 77
+          "confianza": 80
         },
         {
           "fecha": "2026-07-07",
@@ -679,7 +668,7 @@
           "viento": 0,
           "desc": "Parcial nublado",
           "icono": "⛅",
-          "confianza": 74
+          "confianza": 77
         },
         {
           "fecha": "2026-07-08",
@@ -690,6 +679,17 @@
           "viento": 0,
           "desc": "Parcial nublado",
           "icono": "⛅",
+          "confianza": 74
+        },
+        {
+          "fecha": "2026-07-09",
+          "t_min": 4,
+          "t_max": 13,
+          "lluvia_mm": 0.0,
+          "prob_lluvia": 37,
+          "viento": 0,
+          "desc": "Posible lluvia",
+          "icono": "🌦️",
           "confianza": 70
         }
       ],
@@ -700,48 +700,37 @@
       "ciudad": "Concepción",
       "dias": [
         {
-          "fecha": "2026-07-02",
-          "t_min": 3,
+          "fecha": "2026-07-03",
+          "t_min": 1,
           "t_max": 12,
           "lluvia_mm": 0.0,
-          "prob_lluvia": 8,
+          "prob_lluvia": 7,
           "viento": 0,
           "desc": "Nublado",
           "icono": "☁️",
           "confianza": 90
         },
         {
-          "fecha": "2026-07-03",
+          "fecha": "2026-07-04",
           "t_min": 2,
-          "t_max": 12,
+          "t_max": 9,
           "lluvia_mm": 0.0,
-          "prob_lluvia": 14,
+          "prob_lluvia": 58,
           "viento": 0,
-          "desc": "Nublado",
-          "icono": "☁️",
+          "desc": "Llovizna leve",
+          "icono": "🌦️",
           "confianza": 87
         },
         {
-          "fecha": "2026-07-04",
-          "t_min": 3,
-          "t_max": 10,
-          "lluvia_mm": 0.0,
-          "prob_lluvia": 57,
-          "viento": 0,
-          "desc": "Llovizna",
-          "icono": "🌦️",
-          "confianza": 83
-        },
-        {
           "fecha": "2026-07-05",
-          "t_min": 6,
+          "t_min": 4,
           "t_max": 12,
           "lluvia_mm": 0.0,
-          "prob_lluvia": 45,
+          "prob_lluvia": 24,
           "viento": 0,
-          "desc": "Posible lluvia",
-          "icono": "🌦️",
-          "confianza": 80
+          "desc": "Nublado",
+          "icono": "☁️",
+          "confianza": 83
         },
         {
           "fecha": "2026-07-06",
@@ -752,7 +741,7 @@
           "viento": 0,
           "desc": "Posible lluvia",
           "icono": "🌦️",
-          "confianza": 77
+          "confianza": 80
         },
         {
           "fecha": "2026-07-07",
@@ -763,11 +752,22 @@
           "viento": 0,
           "desc": "Posible lluvia",
           "icono": "🌦️",
-          "confianza": 74
+          "confianza": 77
         },
         {
           "fecha": "2026-07-08",
           "t_min": 6,
+          "t_max": 12,
+          "lluvia_mm": 0.0,
+          "prob_lluvia": 48,
+          "viento": 0,
+          "desc": "Posible lluvia",
+          "icono": "🌦️",
+          "confianza": 74
+        },
+        {
+          "fecha": "2026-07-09",
+          "t_min": 5,
           "t_max": 12,
           "lluvia_mm": 0.0,
           "prob_lluvia": 48,
@@ -784,48 +784,37 @@
       "ciudad": "Puerto Montt",
       "dias": [
         {
-          "fecha": "2026-07-02",
-          "t_min": 1,
-          "t_max": 10,
+          "fecha": "2026-07-03",
+          "t_min": 0,
+          "t_max": 9,
           "lluvia_mm": 0.0,
           "prob_lluvia": 10,
           "viento": 0,
-          "desc": "Despejado",
-          "icono": "☀️",
+          "desc": "Parcial nublado",
+          "icono": "⛅",
           "confianza": 90
         },
         {
-          "fecha": "2026-07-03",
+          "fecha": "2026-07-04",
           "t_min": 1,
-          "t_max": 9,
+          "t_max": 10,
           "lluvia_mm": 0.0,
           "prob_lluvia": 20,
           "viento": 0,
-          "desc": "Parcial nublado",
-          "icono": "⛅",
+          "desc": "Nublado",
+          "icono": "☁️",
           "confianza": 87
         },
         {
-          "fecha": "2026-07-04",
+          "fecha": "2026-07-05",
           "t_min": 2,
-          "t_max": 10,
+          "t_max": 9,
           "lluvia_mm": 0.0,
-          "prob_lluvia": 31,
+          "prob_lluvia": 30,
           "viento": 0,
           "desc": "Nublado",
           "icono": "☁️",
           "confianza": 83
-        },
-        {
-          "fecha": "2026-07-05",
-          "t_min": 5,
-          "t_max": 10,
-          "lluvia_mm": 0.0,
-          "prob_lluvia": 66,
-          "viento": 0,
-          "desc": "Lluvia probable",
-          "icono": "🌧️",
-          "confianza": 80
         },
         {
           "fecha": "2026-07-06",
@@ -836,7 +825,7 @@
           "viento": 0,
           "desc": "Lluvia probable",
           "icono": "🌧️",
-          "confianza": 77
+          "confianza": 80
         },
         {
           "fecha": "2026-07-07",
@@ -847,7 +836,7 @@
           "viento": 0,
           "desc": "Lluvia probable",
           "icono": "🌧️",
-          "confianza": 74
+          "confianza": 77
         },
         {
           "fecha": "2026-07-08",
@@ -855,6 +844,17 @@
           "t_max": 10,
           "lluvia_mm": 0.0,
           "prob_lluvia": 66,
+          "viento": 0,
+          "desc": "Lluvia probable",
+          "icono": "🌧️",
+          "confianza": 74
+        },
+        {
+          "fecha": "2026-07-09",
+          "t_min": 5,
+          "t_max": 10,
+          "lluvia_mm": 0.0,
+          "prob_lluvia": 64,
           "viento": 0,
           "desc": "Lluvia probable",
           "icono": "🌧️",
@@ -870,11 +870,11 @@
   "clima_acierto": null,
   "pronostico_ubicacion": {
     "zona": "Tarapacá (Iquique)",
-    "lat_punto": -21.58,
-    "lon_punto": -68.35,
+    "lat_punto": -21.4,
+    "lon_punto": -68.64,
     "mag_esperada_aprox": 4.7,
     "mostrar_circulo": false,
-    "prob_M5_7d": 0.347,
+    "prob_M5_7d": 0.353,
     "radio_km": 420,
     "acierto_100km_pct": 19,
     "acierto_200km_pct": 36,
@@ -883,13 +883,13 @@
   "modo_replicas": null,
   "alerta_tsunami": null,
   "parametros_aprendidos": {
-    "mu": 0.6597889033626405,
-    "K": 0.000961510709625183,
-    "alpha": 1.5815459645716121,
-    "c": 0.02266932948195686,
-    "p": 1.7915137361280145,
-    "b": 1.4278947878040642,
-    "n_eventos_aprendizaje": 1265,
+    "mu": 0.663293335599533,
+    "K": 0.0007273722441217422,
+    "alpha": 1.587903409994902,
+    "c": 0.017692239879137053,
+    "p": 1.7694249009423384,
+    "b": 1.4364643987005514,
+    "n_eventos_aprendizaje": 1263,
     "convergencia": true
   },
   "zonas": [
@@ -897,46 +897,31 @@
       "zona": "Tarapacá (Iquique)",
       "lat0": -23,
       "lat1": -20,
-      "prob_M5_7d": 0.347,
+      "prob_M5_7d": 0.353,
       "prob_M6_7d": 0.024,
       "nivel": "NORMAL",
       "regimen": "NORMAL",
       "mag_esperada": 5.3,
       "mag_maxima_historica": 6.9,
       "n_ult7d": 19,
-      "n_ult30d": 42,
-      "factor_actividad": 2.03,
+      "n_ult30d": 43,
+      "factor_actividad": 2.08,
       "mag_max_ult30d": 4.7
     },
     {
       "zona": "Antofagasta",
       "lat0": -26,
       "lat1": -23,
-      "prob_M5_7d": 0.268,
+      "prob_M5_7d": 0.255,
       "prob_M6_7d": 0.021,
       "nivel": "NORMAL",
       "regimen": "NORMAL",
       "mag_esperada": 5.2,
       "mag_maxima_historica": 7.4,
-      "n_ult7d": 14,
-      "n_ult30d": 34,
-      "factor_actividad": 2.15,
+      "n_ult7d": 13,
+      "n_ult30d": 32,
+      "factor_actividad": 2.03,
       "mag_max_ult30d": 4.9
-    },
-    {
-      "zona": "Coquimbo (La Serena)",
-      "lat0": -32,
-      "lat1": -29,
-      "prob_M5_7d": 0.193,
-      "prob_M6_7d": 0.019,
-      "nivel": "NORMAL",
-      "regimen": "NORMAL",
-      "mag_esperada": 5.3,
-      "mag_maxima_historica": 6.4,
-      "n_ult7d": 5,
-      "n_ult30d": 15,
-      "factor_actividad": 1.5,
-      "mag_max_ult30d": 5.0
     },
     {
       "zona": "Atacama (Copiapó)",
@@ -954,6 +939,21 @@
       "mag_max_ult30d": 5.5
     },
     {
+      "zona": "Coquimbo (La Serena)",
+      "lat0": -32,
+      "lat1": -29,
+      "prob_M5_7d": 0.179,
+      "prob_M6_7d": 0.019,
+      "nivel": "NORMAL",
+      "regimen": "NORMAL",
+      "mag_esperada": 5.2,
+      "mag_maxima_historica": 6.4,
+      "n_ult7d": 5,
+      "n_ult30d": 14,
+      "factor_actividad": 1.41,
+      "mag_max_ult30d": 5.0
+    },
+    {
       "zona": "Valparaíso–Metropolitana",
       "lat0": -35,
       "lat1": -32,
@@ -966,7 +966,7 @@
       "n_ult7d": 0,
       "n_ult30d": 6,
       "factor_actividad": 0.96,
-      "mag_max_ult30d": 4.3
+      "mag_max_ult30d": 4.6
     },
     {
       "zona": "Maule–Ñuble",
@@ -984,34 +984,34 @@
       "mag_max_ult30d": 4.4
     },
     {
+      "zona": "Biobío–Araucanía",
+      "lat0": -41,
+      "lat1": -38,
+      "prob_M5_7d": 0.085,
+      "prob_M6_7d": 0.008,
+      "nivel": "NORMAL",
+      "regimen": "ENJAMBRE",
+      "mag_esperada": 5.3,
+      "mag_maxima_historica": 6.7,
+      "n_ult7d": 4,
+      "n_ult30d": 4,
+      "factor_actividad": 3.0,
+      "mag_max_ult30d": 4.5
+    },
+    {
       "zona": "Arica–Parinacota",
       "lat0": -20,
       "lat1": -17,
-      "prob_M5_7d": 0.08,
+      "prob_M5_7d": 0.067,
       "prob_M6_7d": 0.003,
       "nivel": "NORMAL",
       "regimen": "NORMAL",
       "mag_esperada": 5.2,
       "mag_maxima_historica": 6.0,
       "n_ult7d": 2,
-      "n_ult30d": 6,
-      "factor_actividad": 0.7,
+      "n_ult30d": 5,
+      "factor_actividad": 0.58,
       "mag_max_ult30d": 4.7
-    },
-    {
-      "zona": "Biobío–Araucanía",
-      "lat0": -41,
-      "lat1": -38,
-      "prob_M5_7d": 0.065,
-      "prob_M6_7d": 0.008,
-      "nivel": "NORMAL",
-      "regimen": "NORMAL",
-      "mag_esperada": 5.3,
-      "mag_maxima_historica": 6.7,
-      "n_ult7d": 3,
-      "n_ult30d": 3,
-      "factor_actividad": 2.28,
-      "mag_max_ult30d": 4.1
     },
     {
       "zona": "Los Lagos–Aysén",
@@ -1695,6 +1695,15 @@
       "p": 1.792,
       "b": 1.428,
       "n_total": 6275
+    },
+    {
+      "fecha": "2026-07-03T08:38:59.680119+00:00",
+      "mu": 0.6633,
+      "K": 0.0007,
+      "alpha": 1.588,
+      "p": 1.769,
+      "b": 1.436,
+      "n_total": 6272
     }
   ],
   "descargo": "Sistema auto-adaptativo con calibración. Probabilidades por zona para 7 días, NO predicción de día/hora/lugar. Oficial: SENAPRED, sismologia.cl."
