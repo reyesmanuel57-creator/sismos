@@ -137,6 +137,16 @@
   .cd-conf{font-size:8px;color:var(--muted);margin-top:3px;font-family:'Space Mono',monospace;}
   .clima-nota{font-size:10px;color:var(--muted);margin-top:6px;font-family:'Space Mono',monospace;line-height:1.4;}
   .clima-val{background:rgba(91,163,208,.08);border:1px solid rgba(91,163,208,.25);border-radius:8px;padding:10px 12px;margin-bottom:10px;font-size:11px;color:var(--text);font-family:'Space Mono',monospace;line-height:1.5;}
+  .pts-box{background:#0F1620;border:1px solid var(--line);border-radius:12px;padding:14px;}
+  .pts-zona{font-family:'Space Mono',monospace;font-size:11px;color:#D64550;font-weight:700;margin-bottom:12px;}
+  .pt-item{display:flex;align-items:center;gap:12px;padding:10px 0;border-bottom:1px solid rgba(255,255,255,.05);}
+  .pt-item:last-child{border-bottom:none;}
+  .pt-prob{font-family:'Space Mono',monospace;font-weight:800;font-size:18px;min-width:50px;text-align:center;padding:6px 0;border-radius:8px;flex-shrink:0;}
+  .pt-info{flex:1;min-width:0;}
+  .pt-nombre{font-weight:700;font-size:14px;color:var(--text);}
+  .pt-coord{font-size:10px;color:var(--muted);font-family:'Space Mono',monospace;margin-top:1px;}
+  .pt-datos{font-size:11px;color:var(--muted);margin-top:3px;line-height:1.4;}
+  .pts-nota{font-size:10px;color:var(--muted);margin-top:10px;font-family:'Space Mono',monospace;line-height:1.4;border-top:1px solid rgba(255,255,255,.06);padding-top:8px;}
 </style>
 </head>
 <body>
@@ -156,6 +166,11 @@
   <div style="margin-top:18px">
     <div class="seccion-titulo">Ranking de zonas a vigilar (7 días)</div>
     <div id="zonas"></div>
+  </div>
+
+  <div style="margin-top:18px">
+    <div class="seccion-titulo">Puntos específicos de la zona más activa</div>
+    <div id="puntos-detalle"></div>
   </div>
 
   <div style="margin-top:18px">
@@ -351,6 +366,37 @@ fetch(FUENTE).then(r=>r.json()).then(d=>{
 
   dibujarMonitor(d.monitor_en_vivo);
   dibujarClima(d.clima_regiones);
+  // PUNTOS ESPECÍFICOS de la zona más activa
+  (function(){
+    const pz=d.puntos_zona_activa;
+    const cont=document.getElementById("puntos-detalle");
+    if(!cont) return;
+    if(!pz || !pz.puntos || !pz.puntos.length){
+      cont.innerHTML=`<div style="color:#8B93A7;font-size:12px;font-family:monospace;padding:10px">Sin puntos detallados en esta actualización.</div>`;
+      return;
+    }
+    function colorProb(p){
+      if(p>=10) return {bg:'rgba(214,69,80,.22)',fg:'#D64550'};
+      if(p>=5) return {bg:'rgba(232,148,59,.20)',fg:'#E8943B'};
+      return {bg:'rgba(63,167,150,.15)',fg:'#3FA796'};
+    }
+    let filas=pz.puntos.map(p=>{
+      const c=colorProb(p.prob_M5_semana);
+      return `<div class="pt-item">
+        <div class="pt-prob" style="background:${c.bg};color:${c.fg}">${p.prob_M5_semana}%</div>
+        <div class="pt-info">
+          <div class="pt-nombre">${p.nombre}</div>
+          <div class="pt-coord">${p.lat}, ${p.lon}</div>
+          <div class="pt-datos">${p.sismos_M5_historicos} sismos M5+ históricos · ${p.sismos_recientes_30d} en últimos 30d · magnitud típica M${p.mag_tipica}</div>
+        </div>
+      </div>`;
+    }).join('');
+    cont.innerHTML=`<div class="pts-box">
+      <div class="pts-zona">📍 Zona más activa: ${pz.zona}</div>
+      ${filas}
+      <div class="pts-nota">Probabilidad semanal de M≥5 en un radio de 80 km de cada punto, según la sismicidad histórica real. NO predice el evento ni su fecha: muestra qué lugares de la zona tienen más actividad histórica. El margen de los datos es de ~100 km.</div>
+    </div>`;
+  })();
   // % de acierto del modelo de clima (validación en vivo)
   const ca=d.clima_acierto;
   const cac=document.getElementById("clima-acierto");

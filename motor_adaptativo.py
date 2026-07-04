@@ -311,60 +311,133 @@ def pronostico_ubicacion(cat, zonas, hoy):
 
 def evaluar_calibracion(estado_previo, cat):
     """
-    Compara los pronósticos de la corrida ANTERIOR con lo que realmente
-    pasó después. Acumula aciertos para mostrar la confiabilidad real.
-    Un 'acierto' = la zona que tenía mayor prob_M5 fue de las que tuvo
-    actividad M>=5 en la semana siguiente.
+    Sistema de calibración con pronósticos fechados. Guarda cada pronóstico
+    con la fecha en que se hizo, y lo evalúa cuando pasan 7 días reales,
+    comparando con lo que ocurrió. Así mide su acierto aunque el motor corra
+    muchas veces al día. Acumula la tasa de acierto en zona (top-3).
     """
     calib = estado_previo.get("calibracion", {"evaluaciones":0,"aciertos_top3":0,
                                                 "brier_sum":0.0,"n_brier":0,
-                                                "historial":[]})
-    if "historial" not in calib:
-        calib["historial"] = []
-    pron_prev = estado_previo.get("zonas")
-    fecha_prev = estado_previo.get("ultimo_sismo")
-    if not pron_prev or not fecha_prev:
-        return calib
-    try:
-        t_prev = pd.to_datetime(fecha_prev, utc=True)
-    except Exception:
-        return calib
-    # ventana evaluada: 7 días después del pronóstico previo
-    fin = t_prev + pd.Timedelta(days=7)
-    if cat["time"].max() < fin:
-        return calib  # aún no pasó la semana completa, no evaluar todavía
+                                                "historial":[], "pendientes":[]})
+    for k in ("historial", "pendientes"):
+        if k not in calib:
+            calib[k] = []
 
-    # ¿qué zonas tuvieron realmente M>=5 en esa semana?
-    real = cat[(cat["time"]>t_prev)&(cat["time"]<=fin)&(cat["mag"]>=5.0)]
-    zonas_con_evento = set()
-    for _,e in real.iterrows():
-        for z in pron_prev:
-            if z["lat0"]<=e["latitude"]<z["lat1"]:
-                zonas_con_evento.add(z["zona"])
-    # top-3 zonas pronosticadas (ya vienen ordenadas por riesgo)
-    top3 = [z["zona"] for z in pron_prev[:3]]
-    acierto = len(zonas_con_evento & set(top3)) > 0 if zonas_con_evento else None
+    ahora = cat["time"].max()  # fecha del dato más reciente
+    hoy_str = ahora.strftime("%Y-%m-%d")
 
-    # Brier score: qué tan bien calibradas las probabilidades de M5 por zona
-    for z in pron_prev:
-        ocurrio = 1 if z["zona"] in zonas_con_evento else 0
-        calib["brier_sum"] += (z["prob_M5_7d"]-ocurrio)**2
-        calib["n_brier"] += 1
+    # 1. EVALUAR pronósticos pendientes cuya semana ya se cumplió
+    aun_pendientes = []
+    for pend in calib["pendientes"]:
+        try:
+            t_pron = pd.to_datetime(pend["fecha_iso"], utc=True)
+        except Exception:
+            continue
+        fin = t_pron + pd.Timedelta(days=7)
+        if ahora < fin:
+            aun_pendientes.append(pend)  # todavía no se cumple la semana
+            continue
+        # ya pasaron 7 días: ver qué zonas tuvieron M>=5 realmente
+        real = cat[(cat["time"] > t_pron) & (cat["time"] <= fin) & (cat["mag"] >= 5.0)]
+        zonas_reales = set()
+        for _, e in real.iterrows():
+            for z in pend["zonas"]:
+                if z["lat0"] <= e["latitude"] < z["lat1"]:
+                    zonas_reales.add(z["zona"])
+        top3 = [z["zona"] for z in pend["zonas"][:3]]
+        # Brier: calibración de las probabilidades
+        for z in pend["zonas"]:
+            ocurrio = 1 if z["zona"] in zonas_reales else 0
+            calib["brier_sum"] += (z["prob_M5_7d"] - ocurrio) ** 2
+            calib["n_brier"] += 1
+        if zonas_reales:  # solo evaluar semanas con actividad
+            acierto = len(zonas_reales & set(top3)) > 0
+            calib["evaluaciones"] += 1
+            if acierto:
+                calib["aciertos_top3"] += 1
+            calib["historial"].append({
+                "fecha": t_pron.strftime("%d-%m-%Y"),
+                "zona_pronosticada": top3[0] if top3 else "-",
+                "zonas_reales": list(zonas_reales),
+                "acierto": bool(acierto),
+            })
+            calib["historial"] = calib["historial"][-20:]
 
-    if acierto is not None:
-        calib["evaluaciones"] += 1
-        if acierto: calib["aciertos_top3"] += 1
-        # guardar este check en el historial (zona pronosticada vs lo que pasó)
-        check = {
-            "fecha": t_prev.strftime("%d-%m-%Y"),
-            "zona_pronosticada": top3[0] if top3 else "-",
-            "zonas_reales": list(zonas_con_evento) if zonas_con_evento else [],
-            "acierto": bool(acierto),
-        }
-        calib["historial"].append(check)
-        # mantener solo los últimos 20 checks
-        calib["historial"] = calib["historial"][-20:]
+    # 2. GUARDAR el pronóstico de hoy (si no hay ya uno de hoy) para evaluarlo
+    # en 7 días. Solo uno por día para no duplicar.
+    pron_hoy = estado_previo.get("zonas")
+    ya_hay_hoy = any(p.get("fecha_dia") == hoy_str for p in aun_pendientes)
+    if pron_hoy and not ya_hay_hoy:
+        aun_pendientes.append({
+            "fecha_iso": ahora.isoformat(),
+            "fecha_dia": hoy_str,
+            "zonas": [{"zona":z["zona"], "lat0":z["lat0"], "lat1":z["lat1"],
+                       "prob_M5_7d":z["prob_M5_7d"]} for z in pron_hoy],
+        })
+    calib["pendientes"] = aun_pendientes[-30:]  # máx 30 pendientes
     return calib
+
+
+# Puntos específicos conocidos de Chile (nombre, lat, lon).
+# Se usan para detallar la zona más activa con lugares reconocibles.
+PUNTOS_CHILE = [
+    ("Arica", -18.48, -70.32), ("Iquique", -20.21, -70.15),
+    ("Tocopilla", -22.09, -70.20), ("Calama", -22.46, -68.93),
+    ("Antofagasta", -23.65, -70.40), ("Taltal", -25.41, -70.48),
+    ("Copiapó", -27.37, -70.33), ("Vallenar", -28.57, -70.76),
+    ("La Serena", -29.90, -71.25), ("Ovalle", -30.60, -71.20),
+    ("Illapel", -31.63, -71.17), ("La Ligua", -32.45, -71.23),
+    ("Valparaíso", -33.05, -71.62), ("Santiago", -33.45, -70.67),
+    ("Cajón del Maipo", -33.73, -70.35), ("San Antonio", -33.59, -71.61),
+    ("Rancagua", -34.17, -70.74), ("Talca", -35.43, -71.67),
+    ("Concepción", -36.83, -73.05), ("Temuco", -38.74, -72.59),
+    ("Valdivia", -39.81, -73.25), ("Puerto Montt", -41.47, -72.94),
+]
+
+
+def puntos_zona_activa(cat, zonas, hoy):
+    """
+    Detalla la ZONA MÁS ACTIVA de la semana con puntos específicos conocidos
+    (ciudades/lugares dentro de esa zona), cada uno con su probabilidad basada
+    en la sismicidad histórica REAL en un radio de 80 km. No predice el evento:
+    muestra qué lugares de la zona top tienen más actividad histórica.
+    """
+    if not zonas:
+        return None
+    top = zonas[0]  # zona más activa (ya viene ordenada)
+    la0, la1 = top["lat0"], top["lat1"]
+    # puntos que caen dentro de la franja de latitud de la zona top
+    puntos_zona = [(n, la, lo) for (n, la, lo) in PUNTOS_CHILE if la0 <= la < la1]
+    if not puntos_zona:
+        return None
+    años = max((hoy - cat["time"].min()).days / 365, 0.5)
+    resultado = []
+    for nombre, lat, lon in puntos_zona:
+        # sismos históricos en radio de 80 km
+        dlat = (cat["latitude"] - lat) * 111
+        dlon = (cat["longitude"] - lon) * 111 * np.cos(np.radians(lat))
+        dist = np.sqrt(dlat**2 + dlon**2)
+        cerca = cat[dist <= 80]
+        grandes = cerca[cerca["mag"] >= 5.0]
+        # actividad reciente (últimos 30 días) en ese punto
+        recientes = cerca[cerca["time"] >= hoy - pd.Timedelta(days=30)]
+        tasa_anual = len(grandes) / años
+        # probabilidad semanal aproximada (tasa anual -> 7 días) con ajuste Poisson
+        lam = tasa_anual * 7 / 365
+        prob_semana = round((1 - np.exp(-lam)) * 100)
+        mag_tipica = round(float(grandes["mag"].median()), 1) if len(grandes) > 0 else 5.0
+        resultado.append({
+            "nombre": nombre, "lat": round(lat, 3), "lon": round(lon, 3),
+            "sismos_total": int(len(cerca)),
+            "sismos_M5_historicos": int(len(grandes)),
+            "sismos_recientes_30d": int(len(recientes)),
+            "tasa_anual_M5": round(tasa_anual, 1),
+            "prob_M5_semana": int(prob_semana),
+            "mag_tipica": mag_tipica,
+        })
+    # ordenar por probabilidad semanal (mayor primero)
+    resultado.sort(key=lambda x: x["prob_M5_semana"], reverse=True)
+    return {"zona": top["zona"], "puntos": resultado}
 
 
 def monitor_en_vivo(cat, hoy, n=12):
@@ -1001,6 +1074,7 @@ def correr(estado_previo_path="estado_aprendizaje.json"):
     monitor = monitor_en_vivo(cat, hoy, n=12)
     vigilancia = evaluar_vigilancia(zonas, eventos_recientes)
     pronostico = pronostico_ubicacion(cat, zonas, hoy)
+    puntos_detalle = puntos_zona_activa(cat, zonas, hoy)
     replicas = modo_replicas(cat, hoy)
     tsunami = alerta_tsunami(hoy)
     # CLIMA por región. Si falla (ej. límite de Open-Meteo), reusa el último
@@ -1047,6 +1121,7 @@ def correr(estado_previo_path="estado_aprendizaje.json"):
         "clima_pendientes":clima_pend,
         "clima_acierto":clima_acierto,
         "pronostico_ubicacion":pronostico,
+        "puntos_zona_activa":puntos_detalle,
         "modo_replicas":replicas,
         "alerta_tsunami":tsunami,
         "parametros_aprendidos":par,
