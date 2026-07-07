@@ -9,28 +9,39 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
 <style>
-  :root{--bg:#0E1117;--card:#1A2030;--line:#2A3142;--text:#ECEFF4;--muted:#8B93A7;
+  :root{--bg:#0B0E14;--bg2:#0E1117;--card:#161C29;--card2:#1A2030;--line:#252D3D;
+        --text:#ECEFF4;--muted:#8B93A7;--muted2:#5A6478;
         --verde:#3FA796;--naranjo:#E8943B;--rojo:#D64550;}
   *{margin:0;padding:0;box-sizing:border-box;}
-  body{background:var(--bg);color:var(--text);font-family:'Inter',sans-serif;padding-bottom:50px;}
+  body{background:var(--bg);color:var(--text);font-family:'Inter',sans-serif;
+       padding-bottom:50px;-webkit-font-smoothing:antialiased;}
   .wrap{max-width:820px;margin:0 auto;padding:0 16px;}
-  header{padding:26px 16px 0;max-width:820px;margin:0 auto;}
+  /* header con acento de onda sísmica */
+  header{padding:30px 16px 22px;max-width:820px;margin:0 auto;position:relative;overflow:hidden;}
+  header::after{content:"";position:absolute;left:0;right:0;bottom:0;height:1px;
+    background:linear-gradient(90deg,transparent,var(--verde),transparent);opacity:.35;}
   .live{display:inline-flex;align-items:center;gap:7px;font-family:'Space Mono',monospace;
         font-size:11px;letter-spacing:.14em;color:var(--verde);text-transform:uppercase;}
   .pulse{width:8px;height:8px;border-radius:50%;background:var(--verde);
          box-shadow:0 0 8px var(--verde);animation:p 2s infinite;}
   @keyframes p{0%,100%{opacity:1}50%{opacity:.3}}
-  h1{font-size:clamp(22px,5vw,30px);font-weight:800;margin-top:8px;letter-spacing:-.02em;}
-  .sub{color:var(--muted);font-size:13px;margin-top:7px;font-family:'Space Mono',monospace;}
+  h1{font-size:clamp(24px,5.5vw,34px);font-weight:800;margin-top:10px;letter-spacing:-.03em;
+     line-height:1.05;}
+  h1 .acento{color:var(--verde);}
+  .sub{color:var(--muted);font-size:13px;margin-top:9px;font-family:'Space Mono',monospace;
+       line-height:1.5;}
   .layout{display:grid;grid-template-columns:1fr;gap:14px;margin-top:22px;}
   @media(min-width:680px){.layout{grid-template-columns:200px 1fr;}}
   .mapcol{display:flex;flex-direction:column;align-items:center;}
   .mapa{position:relative;width:150px;}
   .mapa svg{width:100%;height:auto;}
-  .seccion-titulo{font-family:'Space Mono',monospace;font-size:11px;letter-spacing:.1em;
-        color:var(--muted);text-transform:uppercase;margin-bottom:12px;}
-  .zona{background:var(--card);border:1px solid var(--line);border-radius:11px;
-        padding:13px 15px;border-left-width:5px;margin-bottom:9px;}
+  .seccion-titulo{font-family:'Space Mono',monospace;font-size:11px;letter-spacing:.12em;
+        color:var(--muted);text-transform:uppercase;margin-bottom:13px;display:flex;
+        align-items:center;gap:9px;}
+  .seccion-titulo::before{content:"";width:14px;height:2px;background:var(--verde);
+        border-radius:2px;opacity:.6;flex-shrink:0;}
+  .zona{background:var(--card);border:1px solid var(--line);border-radius:12px;
+        padding:14px 16px;border-left-width:4px;margin-bottom:10px;transition:border-color .2s;}
   .zona.NORMAL{border-left-color:var(--verde);} .zona.MODERADO{border-left-color:var(--naranjo);}
   .zona.ELEVADO{border-left-color:var(--rojo);}
   .zt{display:flex;justify-content:space-between;align-items:center;gap:8px;}
@@ -41,6 +52,22 @@
   .nv.NORMAL{background:rgba(63,167,150,.15);color:var(--verde);}
   .nv.MODERADO{background:rgba(232,148,59,.15);color:var(--naranjo);}
   .nv.ELEVADO{background:rgba(214,69,80,.15);color:var(--rojo);}
+  .seccion{margin-top:30px;}
+  .frase-prob{display:flex;align-items:baseline;gap:10px;margin-top:12px;flex-wrap:wrap;}
+  .fp-num{font-size:32px;font-weight:800;letter-spacing:-.02em;line-height:1;}
+  .fp-txt{font-size:13px;color:var(--text);line-height:1.4;flex:1;min-width:140px;}
+  .fp-txt b{font-weight:700;}
+  .fp-barra{height:6px;background:rgba(255,255,255,.06);border-radius:4px;margin-top:10px;overflow:hidden;}
+  .fp-fill{height:100%;border-radius:4px;transition:width .3s;}
+  .fp-detalle{font-size:11px;color:var(--muted);margin-top:9px;font-family:'Space Mono',monospace;line-height:1.5;}
+  .fp-detalle b{color:var(--text);font-weight:700;}
+  .fp-sep{margin:0 7px;opacity:.4;}
+  .vent-tabs{display:flex;gap:12px;margin-top:12px;}
+  .vent-col{flex:1;background:rgba(255,255,255,.02);border-radius:8px;padding:9px 11px;}
+  .vent-h{font-family:'Space Mono',monospace;font-size:10px;color:var(--muted);letter-spacing:.05em;margin-bottom:6px;text-transform:uppercase;}
+  .vent-row{display:flex;justify-content:space-between;align-items:baseline;margin-top:3px;}
+  .vent-lbl{font-size:11px;color:var(--muted2);font-family:'Space Mono',monospace;}
+  .vent-val{font-weight:800;font-size:16px;color:var(--text);}
   .pr{display:flex;gap:18px;margin-top:10px;}
   .p1{flex:1;} .p1 .l{font-size:10px;color:var(--muted);font-family:'Space Mono',monospace;}
   .p1 .v{font-size:20px;font-weight:800;margin-top:1px;}
@@ -60,8 +87,13 @@
   .disc{background:var(--card);border:1px solid var(--line);border-radius:12px;
         padding:15px;margin-top:18px;font-size:12px;color:var(--muted);line-height:1.55;}
   .disc b{color:var(--text);}
-  footer{text-align:center;color:var(--muted);font-size:11px;margin-top:24px;font-family:'Space Mono',monospace;}
+  footer{text-align:center;color:var(--muted);font-size:11px;margin-top:40px;padding-top:24px;
+    font-family:'Space Mono',monospace;border-top:1px solid var(--line);line-height:1.6;}
   footer a{color:var(--verde);text-decoration:none;}
+  .foot-autor{color:var(--verde);font-weight:700;letter-spacing:.08em;font-size:12px;}
+  .foot-cita{font-style:italic;opacity:.75;font-family:'Inter',sans-serif;font-size:12px;
+    max-width:340px;margin:0 auto;line-height:1.5;}
+  .foot-disc{opacity:.6;font-size:10px;max-width:360px;margin:0 auto;line-height:1.5;}
   .banner{border-radius:12px;padding:16px 18px;margin-bottom:16px;border-left-width:6px;border-left-style:solid;}
   .banner.NORMAL{background:rgba(63,167,150,.10);border-left-color:var(--verde);}
   .banner.VIGILANCIA{background:rgba(232,148,59,.13);border-left-color:var(--naranjo);}
@@ -135,6 +167,12 @@
   .cd-tmin{font-size:10px;color:#5BA3D0;}
   .cd-lluvia{font-size:9px;color:#5BA3D0;margin-top:2px;font-family:'Space Mono',monospace;}
   .cd-conf{font-size:8px;color:var(--muted);margin-top:3px;font-family:'Space Mono',monospace;}
+  .cd-viento{font-size:9px;color:#8B93A7;margin-top:2px;font-family:'Space Mono',monospace;}
+  .clima-alertas{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:10px;}
+  .clima-alerta{font-size:10px;background:rgba(232,148,59,.12);border:1px solid rgba(232,148,59,.3);
+    color:#E8943B;padding:4px 9px;border-radius:14px;font-family:'Space Mono',monospace;}
+  .clima-alerta b{color:#ECEFF4;font-weight:700;}
+  .clima-dia-alerta{background:rgba(232,148,59,.08);border:1px solid rgba(232,148,59,.25);}
   .clima-nota{font-size:10px;color:var(--muted);margin-top:6px;font-family:'Space Mono',monospace;line-height:1.4;}
   .clima-val{background:rgba(91,163,208,.08);border:1px solid rgba(91,163,208,.25);border-radius:8px;padding:10px 12px;margin-bottom:10px;font-size:11px;color:var(--text);font-family:'Space Mono',monospace;line-height:1.5;}
   .pts-box{background:#0F1620;border:1px solid var(--line);border-radius:12px;padding:14px;}
@@ -152,7 +190,7 @@
 <body>
 <header>
   <div class="live"><span class="pulse"></span> Monitoreo activo · Chile · 9 zonas</div>
-  <h1>Monitor Sísmico Nazca</h1>
+  <h1>Monitor Sísmico <span class="acento">Nazca</span></h1>
   <div class="sub" id="sub">cargando…</div>
 </header>
 <div class="wrap">
@@ -163,18 +201,18 @@
   <div class="seccion-titulo">Monitor de sismos en vivo</div>
   <div id="monitor-vivo"></div>
   <div id="pronostico-ubicacion"></div>
-  <div style="margin-top:18px">
-    <div class="seccion-titulo">Ranking de zonas a vigilar (7 días)</div>
+  <div class="seccion">
+    <div class="seccion-titulo">Ranking de zonas a vigilar (3 y 7 días)</div>
     <div id="zonas"></div>
   </div>
 
-  <div style="margin-top:18px">
+  <div class="seccion">
     <div class="seccion-titulo">Puntos específicos de la zona más activa</div>
     <div id="puntos-detalle"></div>
   </div>
 
-  <div style="margin-top:18px">
-    <div class="seccion-titulo">Pronóstico del clima 7 días — modelo propio aprendido</div>
+  <div class="seccion">
+    <div class="seccion-titulo">Pronóstico del clima 7 días — modelo propio (con alertas)</div>
     <div id="clima-acierto"></div>
     <div id="clima"></div>
   </div>
@@ -214,15 +252,13 @@
     <a href="https://www.sismologia.cl">sismologia.cl</a>. Proyecto personal, no oficial.
   </div>
   <footer>Datos: USGS + CSN · Modelo ETAS auto-adaptativo<br>
-    Última actualización: <span id="upd">—</span> · sismos: <span id="nev">—</span><br>
-    <br>
-    <span style="color:var(--verde);font-weight:700;letter-spacing:.05em;">CREADO POR MANUEL REYES PIQUÉ</span><br>
-    <span style="font-style:italic;opacity:.85;">"En algún lugar, algo increíble está esperando ser descubierto."<br>— Carl Sagan</span><br>
-    <br>
-    <span style="opacity:.7;font-size:10px;">Proyecto personal de monitoreo. No reemplaza a SENAPRED, SHOA ni al CSN, que son las fuentes oficiales de Chile.</span></footer>
+    Última actualización: <span id="upd">—</span> · sismos: <span id="nev">—</span>
+    <div style="margin:16px 0 12px"><span class="foot-autor">CREADO POR MANUEL REYES PIQUÉ</span></div>
+    <div class="foot-cita">"En algún lugar, algo increíble está esperando ser descubierto."<br>— Carl Sagan</div>
+    <div style="margin-top:14px"><span class="foot-disc">Proyecto personal de monitoreo. No reemplaza a SENAPRED, SHOA ni al CSN, que son las fuentes oficiales de Chile.</span></div></footer>
 </div>
 <script>
-const FUENTE="https://raw.githubusercontent.com/reyesmanuel57-creator/sismos/main/estado.json";
+const FUENTE="estado.json?t="+Date.now();
 const col=n=>n==="ELEVADO"?"#D64550":n==="MODERADO"?"#E8943B":"#3FA796";
 
 // MAPA REAL de Chile con Leaflet + círculos concéntricos sobre el punto estimado
@@ -272,22 +308,41 @@ function dibujarClima(clima){
   const diaSem=f=>{const d=new Date(f+'T00:00:00');return ['Dom','Lun','Mar','Mié','Jue','Vie','Sáb'][d.getDay()];};
   let html='';
   clima.forEach(c=>{
-    let dias=c.dias.map(d=>`
-      <div class="clima-dia">
+    // recopilar alertas de la semana para el resumen de la región
+    let alertasSemana={};
+    c.dias.forEach(d=>(d.alertas||[]).forEach(a=>{
+      if(!alertasSemana[a.tipo]) alertasSemana[a.tipo]={icono:a.icono,txt:a.txt,dias:[]};
+      alertasSemana[a.tipo].dias.push(diaSem(d.fecha));
+    }));
+    let bannerAlertas='';
+    const claves=Object.keys(alertasSemana);
+    if(claves.length){
+      bannerAlertas='<div class="clima-alertas">'+claves.map(k=>{
+        const a=alertasSemana[k];
+        return `<span class="clima-alerta">${a.icono} ${a.txt} <b>${a.dias.join(', ')}</b></span>`;
+      }).join('')+'</div>';
+    }
+    let dias=c.dias.map(d=>{
+      const tieneAlerta=(d.alertas||[]).length>0;
+      const iconoAlerta=tieneAlerta?d.alertas[0].icono:'';
+      return `
+      <div class="clima-dia${tieneAlerta?' clima-dia-alerta':''}">
         <div class="cd-fecha">${diaSem(d.fecha)} ${d.fecha.slice(8,10)}</div>
-        <div class="cd-icono">${d.icono}</div>
+        <div class="cd-icono">${iconoAlerta||d.icono}</div>
         <div class="cd-temp">${d.t_max}°</div>
         <div class="cd-tmin">${d.t_min}°</div>
         ${d.prob_lluvia>10?`<div class="cd-lluvia">☔${d.prob_lluvia}%</div>`:''}
+        ${d.viento>=20?`<div class="cd-viento">💨${d.viento}</div>`:''}
         <div class="cd-conf">${d.confianza}%</div>
-      </div>`).join('');
+      </div>`;}).join('');
     html+=`<div class="clima-zona">
       <div class="clima-ciudad">${c.ciudad}</div>
       <div class="clima-zona-lbl">${c.zona}</div>
+      ${bannerAlertas}
       <div class="clima-dias">${dias}</div>
     </div>`;
   });
-  html+=`<div class="clima-nota">Método híbrido: el dato atmosférico actual (satélite/estaciones) ancla la proyección, y el modelo propio (9 años aprendidos por región) la extiende a 7 días. El % es la confianza, que baja hacia el día 7 porque el clima es caótico. No es una predicción exacta.</div>`;
+  html+=`<div class="clima-nota">Pronóstico generado por el modelo propio (9 años aprendidos por región), anclado al dato atmosférico actual en los primeros días. Las alertas (lluvia fuerte, heladas, viento, calor) las genera el modelo según lo aprendido de cada región. El % es la confianza, que baja hacia el día 7. No es una predicción exacta.</div>`;
   cont.innerHTML=html;
 }
 
@@ -453,15 +508,22 @@ fetch(FUENTE).then(r=>r.json()).then(d=>{
   const regColor={REPLICAS:'#D64550',ENJAMBRE:'#E8943B',NORMAL:'#3FA796',CALMA:'#5BA3D0'};
   const regTexto={REPLICAS:'⚡ Réplicas en curso',ENJAMBRE:'◆ Enjambre activo',NORMAL:'● Normal',CALMA:'○ Calma'};
   d.zonas.forEach((z,i)=>{const k=col(z.nivel),p5=(z.prob_M5_7d*100).toFixed(0),p6=(z.prob_M6_7d*100).toFixed(0);
+    const p5_3=((z.prob_M5_3d||0)*100).toFixed(0), p6_3=((z.prob_M6_3d||0)*100).toFixed(0);
     const rg=z.regimen||'NORMAL'; const rc=regColor[rg]||'#3FA796';
     c.innerHTML+=`<div class="zona ${z.nivel}"><div class="zt">
       <span class="rank">#${i+1}</span><span class="zn">${z.zona}</span>
-      <span class="nv ${z.nivel}">${z.nivel}</span></div><div class="pr">
-      <div class="p1"><div class="l">M≥5.0 / 7 días</div><div class="v">${p5}%</div>
-      <div class="b"><div class="f" style="width:${p5}%;background:${k}"></div></div></div>
-      <div class="p1"><div class="l">M≥6.0 / 7 días</div><div class="v" style="color:${k}">${p6}%</div>
-      <div class="b"><div class="f" style="width:${Math.min(100,p6*5)}%;background:${k}"></div></div></div>
-      </div><div class="cx"><span style="color:${rc};font-weight:600">${regTexto[rg]||rg}</span> · Magnitud estimada: <b style="color:#E8E6E3">M${z.mag_esperada||'5.0'}</b> · ${z.n_ult30d} sismos últimos 30d${z.mag_max_ult30d>0?` · máx M${z.mag_max_ult30d}`:''}</div>
+      <span class="nv ${z.nivel}">${z.nivel}</span></div>
+      <div class="frase-prob">
+        <span class="fp-num" style="color:${k}">${p5}%</span>
+        <span class="fp-txt">de probabilidad de un sismo <b>M≥5</b> en los próximos <b>7 días</b></span>
+      </div>
+      <div class="fp-barra"><div class="fp-fill" style="width:${p5}%;background:${k}"></div></div>
+      <div class="fp-detalle">
+        En 3 días: <b>${p5_3}%</b><span class="fp-sep">·</span>
+        Sismo mayor M≥6: <b>${p6}%</b> (7d) / <b>${p6_3}%</b> (3d)<span class="fp-sep">·</span>
+        Magnitud esperada: <b style="color:#E8E6E3">M${z.mag_esperada||'5.0'}</b>
+      </div>
+      <div class="cx"><span style="color:${rc};font-weight:600">${regTexto[rg]||rg}</span> · ${z.n_ult30d} sismos últimos 30d${z.mag_max_ult30d>0?` · máx M${z.mag_max_ult30d}`:''}</div>
       ${miniMapa(z, i)}</div>`;});
   initMiniMapas();
 

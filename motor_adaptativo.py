@@ -247,6 +247,7 @@ def estimar(cat, par):
         mag_maxima=round(float(z["mag"].max()),1) if len(z)>0 else 0.0
         out.append({"zona":nombre,"lat0":la0,"lat1":la1,
                     "prob_M5_7d":round(prob(5.0),3),"prob_M6_7d":round(p6,3),
+                    "prob_M5_3d":round(prob(5.0,dias=3),3),"prob_M6_3d":round(prob(6.0,dias=3),3),
                     "nivel":nivel,"regimen":regimen,
                     "mag_esperada":mag_esperada,"mag_maxima_historica":mag_maxima,
                     "n_ult7d":int(len(ult7)),"n_ult30d":int(len(ult30)),
@@ -934,6 +935,10 @@ def clima_regiones():
                 if prob_real is not None:
                     prob = prob * (1 - peso_real) + prob_real * peso_real
                 fuente_dia = "híbrido (dato actual + modelo)"
+            # datos enriquecidos del modelo propio (aprendidos de 9 años)
+            lluvia_fuerte = modelo.get("lluvia_fuerte", {}).get(doy_key, 0)
+            prob_helada = modelo.get("prob_helada", {}).get(doy_key, 0)
+            viento = modelo.get("viento_tipico", {}).get(doy_key, 0)
             # icono: usar el real si está, si no derivar de la probabilidad
             if code_real is not None:
                 desc, icono = WMO.get(int(code_real), ("—", "•"))
@@ -945,12 +950,31 @@ def clima_regiones():
                 desc, icono = "Parcial nublado", "⛅"
             else:
                 desc, icono = "Mayormente despejado", "🌤️"
+            # ALERTAS generadas por el modelo propio (no copiadas).
+            # Umbrales calibrados a la escala real de cada dato aprendido.
+            alertas = []
+            if lluvia_fuerte >= 12:
+                alertas.append({"tipo":"lluvia_fuerte","txt":"Posible lluvia fuerte","icono":"⛈️"})
+            elif prob >= 55:
+                alertas.append({"tipo":"lluvia","txt":"Lluvia probable","icono":"🌧️"})
+            if round(tm) <= 0 or prob_helada >= 10:
+                alertas.append({"tipo":"helada","txt":"Riesgo de helada","icono":"❄️"})
+            elif round(tm) <= 3:
+                alertas.append({"tipo":"frio","txt":"Frío intenso","icono":"🥶"})
+            if viento >= 25:
+                alertas.append({"tipo":"viento","txt":"Viento fuerte","icono":"💨"})
+            if round(tM) >= 32:
+                alertas.append({"tipo":"calor","txt":"Calor extremo","icono":"🔥"})
             conf = [0.90, 0.87, 0.83, 0.80, 0.77, 0.74, 0.70][i]
             dias.append({
                 "fecha": fecha.isoformat(),
                 "t_min": round(tm), "t_max": round(tM),
                 "lluvia_mm": 0.0, "prob_lluvia": int(round(prob)),
-                "viento": 0, "desc": desc, "icono": icono,
+                "lluvia_fuerte_pct": int(lluvia_fuerte),
+                "prob_helada": int(prob_helada),
+                "viento": int(round(viento)),
+                "desc": desc, "icono": icono,
+                "alertas": alertas,
                 "confianza": int(conf * 100),
             })
         if dias:
