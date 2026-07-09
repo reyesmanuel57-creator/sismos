@@ -800,25 +800,124 @@ def reentrenar_una_region(modelos, dia_rotativo):
     return modelos, modelo.get("ciudad", zona)
 
 
-def validar_clima(previo, clima_actual):
+# Estaciones meteorológicas reales de Chile (red DGAC/DMC vía boostr.cl),
+# asignadas a cada zona. Son mediciones EN EL SUELO, independientes de los
+# modelos atmosféricos globales: sirven para mostrar el estado actual y para
+# VALIDAR el pronóstico contra un dato que no proviene del mismo modelo.
+ESTACIONES_CHILE = {
+    "Arica–Parinacota": "SCAR",           # Arica
+    "Tarapacá (Iquique)": "SCDA",         # Iquique
+    "Antofagasta": "SCFA",                # Antofagasta
+    "Atacama (Copiapó)": "SCAT",          # Caldera
+    "Coquimbo (La Serena)": "SCSE",       # La Serena/Coquimbo
+    "Valparaíso–Metropolitana": "SCEL",   # Santiago Poniente
+    "Maule–Ñuble": "SCIC",                # Curicó
+    "Biobío–Araucanía": "SCIE",           # Concepción
+    "Los Lagos–Aysén": "SCTE",            # Puerto Montt
+}
+
+
+def observaciones_chile():
     """
-    Compara lo que el modelo de clima predijo ANTES con la temperatura real
-    de hoy, y acumula el % de acierto (±2°C y ±3°C). Validación en vivo:
-    mide qué tan bien funciona el modelo propio contra la realidad.
+    Trae las observaciones actuales de las estaciones meteorológicas chilenas
+    (una sola llamada). Devuelve {zona: {...}} con temperatura, condición y
+    humedad medidas en el suelo. Si falla, devuelve {} y nada se rompe.
+    """
+    try:
+        r = requests.get("https://api.boostr.cl/weather.json",
+                         headers={"User-Agent": "Mozilla/5.0"}, timeout=10)
+        if r.status_code != 200:
+            return {}
+        datos = r.json().get("data", [])
+    except Exception:
+        return {}
+    por_codigo = {e.get("code"): e for e in datos if e.get("code")}
+    salida = {}
+    for zona, codigo in ESTACIONES_CHILE.items():
+        e = por_codigo.get(codigo)
+        if not e:
+            continue
+        try:
+            temp = float(e.get("temperature"))
+        except (TypeError, ValueError):
+            continue
+        salida[zona] = {
+            "estacion": codigo,
+            "ciudad": e.get("city", ""),
+            "temperatura": round(temp, 1),
+            "condicion": e.get("condition", ""),
+            "humedad": e.get("humidity"),
+            "hora": e.get("updated_at", ""),
+        }
+    return salida
+
+
+def acumular_observaciones(previo, obs, hoy_str):
+    """
+    El motor corre varias veces al día. Cada corrida registra la temperatura
+    medida por la estación chilena; guardando el máximo y el mínimo del día se
+    reconstruye la temperatura máxima/mínima REAL observada. Ese dato sirve
+    después para validar el pronóstico contra medición independiente.
+    """
+    acc = previo.get("obs_diarias", {})
+    if not isinstance(acc, dict):
+        acc = {}
+    for zona, o in obs.items():
+        t = o.get("temperatura")
+        if t is None:
+            continue
+        z = acc.setdefault(zona, {})
+        dia = z.get(hoy_str)
+        if dia is None:
+            z[hoy_str] = {"t_max_obs": t, "t_min_obs": t, "n": 1}
+        else:
+            dia["t_max_obs"] = max(dia["t_max_obs"], t)
+            dia["t_min_obs"] = min(dia["t_min_obs"], t)
+            dia["n"] = dia.get("n", 1) + 1
+        # conservar solo los últimos 20 días por zona
+        if len(z) > 20:
+            for k in sorted(z.keys())[:-20]:
+                z.pop(k, None)
+    return acc
+
+
+def validar_clima(previo, clima_actual, obs_diarias=None):
+    """
+    Compara lo que el modelo predijo días atrás con la temperatura máxima
+    REALMENTE MEDIDA hoy por las estaciones meteorológicas chilenas. Es una
+    validación honesta: el dato de contraste es independiente de los modelos
+    que se usaron para pronosticar. Acumula el % de acierto (±2°C y ±3°C).
     """
     import datetime
     hist = previo.get("clima_validacion", {"comparaciones": [], "n": 0,
                                             "ok2": 0, "ok3": 0, "err_sum": 0.0})
-    # buscar predicciones que el modelo hizo para HOY (guardadas días atrás)
+    for k in ("n", "ok2", "ok3"):
+        hist.setdefault(k, 0)
+    hist.setdefault("err_sum", 0.0)
     pendientes = previo.get("clima_pendientes", [])
     hoy = datetime.date.today().isoformat()
     nuevos_pendientes = []
-    # temperatura real de hoy por región (del dato actual del clima)
+    # temperatura máxima REAL de hoy, medida por las estaciones chilenas.
+    # Solo se usa si la estación reportó al menos 3 lecturas en el día
+    # (si no, el máximo observado aún no es representativo).
     real_hoy = {}
-    for c in clima_actual:
-        if c["dias"]:
-            d0 = c["dias"][0]
-            real_hoy[c["zona"]] = d0["t_max"]
+    fuente_real = "estaciones chilenas"
+    if obs_diarias:
+        for zona, dias in obs_diarias.items():
+            d = dias.get(hoy)
+            if d and d.get("n", 0) >= 3:
+                real_hoy[zona] = d["t_max_obs"]
+    if not real_hoy:
+        # sin observaciones suficientes todavía: no validar (mejor no medir
+        # que medirse contra uno mismo).
+        for p in pendientes:
+            if p["fecha"] >= hoy:
+                nuevos_pendientes.append(p)
+        for c in clima_actual:
+            for d in c["dias"][1:]:
+                nuevos_pendientes.append({"zona": c["zona"], "fecha": d["fecha"],
+                                          "t_max_pred": d["t_max"]})
+        return hist, nuevos_pendientes[-300:], None
     # evaluar pendientes cuya fecha objetivo es hoy
     for p in pendientes:
         if p["fecha"] == hoy and p["zona"] in real_hoy:
@@ -844,6 +943,7 @@ def validar_clima(previo, clima_actual):
             "acierto_2c": round(100 * hist["ok2"] / hist["n"]),
             "acierto_3c": round(100 * hist["ok3"] / hist["n"]),
             "error_medio": round(hist["err_sum"] / hist["n"], 1),
+            "fuente": fuente_real,
         }
     return hist, nuevos_pendientes, resumen
 
@@ -884,10 +984,35 @@ def clima_regiones():
     # total limitado. Si Open-Meteo bloquea o tarda, se sigue solo con el
     # modelo propio (que SIEMPRE funciona, sin internet). Esto evita que el
     # workflow se cuelgue o que el clima quede vacío.
+    # 1. ENSEMBLE ATMOSFÉRICO: consultar VARIOS modelos globales a la vez
+    # (europeo ECMWF, americano GFS, alemán ICON, canadiense GEM, francés).
+    # Se usa la MEDIANA de los modelos (robusta) y su DISPERSIÓN, que mide
+    # la incertidumbre real: si los modelos coinciden hay certeza; si
+    # discrepan, menos. Una sola llamada por región (no satura la API).
+    # Si falla, se sigue solo con el modelo propio (que nunca depende de red).
+    MODELOS_ATM = ["ecmwf_ifs025", "gfs_seamless", "icon_seamless",
+                   "gem_seamless", "meteofrance_seamless"]
+
+    def _consenso(daily, campo, i):
+        """Mediana y dispersión del campo entre los modelos, para el día i."""
+        vals = []
+        for mm in MODELOS_ATM:
+            serie = daily.get(f"{campo}_{mm}")
+            if serie and i < len(serie) and serie[i] is not None:
+                vals.append(float(serie[i]))
+        if not vals:
+            return None, None, 0
+        vals.sort()
+        n = len(vals)
+        mediana = vals[n // 2] if n % 2 else (vals[n // 2 - 1] + vals[n // 2]) / 2
+        media = sum(vals) / n
+        desv = (sum((v - media) ** 2 for v in vals) / n) ** 0.5
+        return mediana, desv, n
+
     anclajes = {}
     t_inicio = time.time()
     for zona, modelo in modelos.items():
-        if time.time() - t_inicio > 25:  # tope de tiempo total para el dato actual
+        if time.time() - t_inicio > 30:  # tope de tiempo total
             break
         lat = modelo.get("lat"); lon = modelo.get("lon")
         if lat is None or lon is None:
@@ -895,10 +1020,12 @@ def clima_regiones():
         try:
             url = "https://api.open-meteo.com/v1/forecast?" + urllib.parse.urlencode({
                 "latitude": lat, "longitude": lon,
-                "daily": "temperature_2m_max,temperature_2m_min,precipitation_probability_max,weathercode",
-                "timezone": "America/Santiago", "forecast_days": 3,
+                "daily": "temperature_2m_max,temperature_2m_min,"
+                         "precipitation_probability_max,precipitation_sum,weathercode",
+                "timezone": "America/Santiago", "forecast_days": 5,
+                "models": ",".join(MODELOS_ATM),
             })
-            r = requests.get(url, timeout=6)  # timeout corto
+            r = requests.get(url, timeout=9)
             if r.status_code == 200:
                 anclajes[zona] = r.json().get("daily", {})
         except Exception:
@@ -917,28 +1044,42 @@ def clima_regiones():
             if tM is None:
                 continue
             tM = float(tM); tm = float(tm) if tm is not None else tM - 8
+            # mm que el modelo espera SI llueve (intensidad aprendida)
+            mm_modelo = float(modelo.get("mm_esperado", {}).get(doy_key, 0) or 0)
+            mm_dia = mm_modelo
             fuente_dia = "modelo propio"
             code_real = None
-            # 2. HÍBRIDO: si hay dato actual y es de los primeros días, anclar
+            n_modelos = 0
+            desv_temp = None
+            # 2. HÍBRIDO: consenso de los modelos atmosféricos + modelo propio.
+            # El ensemble manda en los primeros días; el modelo propio en los
+            # últimos (cuando los modelos globales pierden habilidad).
             if anclaje and i < len(anclaje.get("time", [])):
-                dia_real = anclaje
-                tM_real = dia_real["temperature_2m_max"][i]
-                tm_real = dia_real["temperature_2m_min"][i]
-                prob_real = dia_real["precipitation_probability_max"][i]
-                code_real = dia_real["weathercode"][i]
-                # peso del dato real: alto hoy, baja con los días
-                peso_real = [0.85, 0.70, 0.55][i] if i < 3 else 0.0
+                tM_real, dM, nM = _consenso(anclaje, "temperature_2m_max", i)
+                tm_real, dm, _ = _consenso(anclaje, "temperature_2m_min", i)
+                prob_real, _, _ = _consenso(anclaje, "precipitation_probability_max", i)
+                mm_real, dmm, _ = _consenso(anclaje, "precipitation_sum", i)
+                code_real, _, _ = _consenso(anclaje, "weathercode", i)
+                n_modelos = nM
+                desv_temp = dM
+                # peso del ensemble: alto los primeros días, baja hacia el 5º
+                peso_real = [0.88, 0.80, 0.68, 0.52, 0.35][i] if i < 5 else 0.0
                 if tM_real is not None:
                     tM = tM * (1 - peso_real) + tM_real * peso_real
                 if tm_real is not None:
                     tm = tm * (1 - peso_real) + tm_real * peso_real
                 if prob_real is not None:
                     prob = prob * (1 - peso_real) + prob_real * peso_real
-                fuente_dia = "híbrido (dato actual + modelo)"
+                if mm_real is not None:
+                    mm_dia = mm_modelo * (1 - peso_real) + float(mm_real) * peso_real
+                fuente_dia = f"ensemble {nM} modelos + modelo propio"
             # datos enriquecidos del modelo propio (aprendidos de 9 años)
             lluvia_fuerte = modelo.get("lluvia_fuerte", {}).get(doy_key, 0)
             prob_helada = modelo.get("prob_helada", {}).get(doy_key, 0)
             viento = modelo.get("viento_tipico", {}).get(doy_key, 0)
+            mm_max_hist = modelo.get("mm_max_historico", {}).get(doy_key, 0)
+            # si la probabilidad es baja, los mm esperados también bajan
+            mm_mostrar = round(mm_dia, 1) if prob >= 20 else 0.0
             # icono: usar el real si está, si no derivar de la probabilidad
             if code_real is not None:
                 desc, icono = WMO.get(int(code_real), ("—", "•"))
@@ -953,10 +1094,14 @@ def clima_regiones():
             # ALERTAS generadas por el modelo propio (no copiadas).
             # Umbrales calibrados a la escala real de cada dato aprendido.
             alertas = []
-            if lluvia_fuerte >= 12:
-                alertas.append({"tipo":"lluvia_fuerte","txt":"Posible lluvia fuerte","icono":"⛈️"})
+            if mm_mostrar >= 20 or (lluvia_fuerte >= 12 and prob >= 45):
+                alertas.append({"tipo":"lluvia_fuerte",
+                                "txt":f"Lluvia fuerte (~{mm_mostrar:.0f}mm)" if mm_mostrar>=20 else "Posible lluvia fuerte",
+                                "icono":"⛈️"})
             elif prob >= 55:
-                alertas.append({"tipo":"lluvia","txt":"Lluvia probable","icono":"🌧️"})
+                alertas.append({"tipo":"lluvia",
+                                "txt":f"Lluvia probable (~{mm_mostrar:.0f}mm)" if mm_mostrar>0 else "Lluvia probable",
+                                "icono":"🌧️"})
             if round(tm) <= 0 or prob_helada >= 10:
                 alertas.append({"tipo":"helada","txt":"Riesgo de helada","icono":"❄️"})
             elif round(tm) <= 3:
@@ -965,14 +1110,24 @@ def clima_regiones():
                 alertas.append({"tipo":"viento","txt":"Viento fuerte","icono":"💨"})
             if round(tM) >= 32:
                 alertas.append({"tipo":"calor","txt":"Calor extremo","icono":"🔥"})
+            # CONFIANZA MEDIDA: base por horizonte, ajustada por el acuerdo
+            # real entre los modelos atmosféricos. Si discrepan mucho
+            # (dispersión alta), la certeza baja de verdad. Ya no es fija.
             conf = [0.90, 0.87, 0.83, 0.80, 0.77, 0.74, 0.70][i]
+            if desv_temp is not None and n_modelos >= 3:
+                # desviación de 0°C → +5% de confianza; 5°C o más → -18%
+                ajuste = 0.05 - min(desv_temp, 5.0) * 0.046
+                conf = max(0.45, min(0.96, conf + ajuste))
             dias.append({
                 "fecha": fecha.isoformat(),
                 "t_min": round(tm), "t_max": round(tM),
-                "lluvia_mm": 0.0, "prob_lluvia": int(round(prob)),
+                "lluvia_mm": mm_mostrar, "prob_lluvia": int(round(prob)),
+                "mm_max_historico": float(mm_max_hist or 0),
                 "lluvia_fuerte_pct": int(lluvia_fuerte),
                 "prob_helada": int(prob_helada),
                 "viento": int(round(viento)),
+                "n_modelos": int(n_modelos),
+                "acuerdo_modelos": round(float(desv_temp), 1) if desv_temp is not None else None,
                 "desc": desc, "icono": icono,
                 "alertas": alertas,
                 "confianza": int(conf * 100),
@@ -980,7 +1135,7 @@ def clima_regiones():
         if dias:
             tiene_real = anclaje is not None
             salida.append({"zona": zona, "ciudad": modelo["ciudad"], "dias": dias,
-                           "metodo": "híbrido: dato actual + modelo propio" if tiene_real
+                           "metodo": "ensemble de 5 modelos atmosféricos + modelo propio" if tiene_real
                                      else "modelo propio (sin dato actual)"})
     return salida
 
@@ -1118,9 +1273,23 @@ def correr(estado_previo_path="estado_aprendizaje.json"):
         clima_previo = previo.get("clima_regiones", [])
         if len(clima_previo) >= len(clima):
             clima = clima_previo
-    # validación en vivo: comparar predicciones pasadas con la realidad
+    # OBSERVACIONES REALES de las estaciones meteorológicas chilenas.
+    # Sirven para mostrar el estado actual medido en el suelo y, sobre todo,
+    # para validar el pronóstico contra un dato independiente del modelo.
+    import datetime as _dt
     try:
-        clima_hist, clima_pend, clima_acierto = validar_clima(previo, clima)
+        obs = observaciones_chile()
+    except Exception:
+        obs = {}
+    hoy_str = _dt.date.today().isoformat()
+    try:
+        obs_diarias = acumular_observaciones(previo, obs, hoy_str) if obs else previo.get("obs_diarias", {})
+    except Exception:
+        obs_diarias = previo.get("obs_diarias", {})
+    clima_diag += f" | estaciones chilenas: {len(obs)}"
+    # validación en vivo contra las estaciones chilenas (dato independiente)
+    try:
+        clima_hist, clima_pend, clima_acierto = validar_clima(previo, clima, obs_diarias)
     except Exception:
         clima_hist, clima_pend, clima_acierto = {}, [], None
 
@@ -1140,6 +1309,8 @@ def correr(estado_previo_path="estado_aprendizaje.json"):
         "actividad_reciente":eventos_recientes,
         "monitor_en_vivo":monitor,
         "clima_regiones":clima,
+        "observaciones_chile":obs,
+        "obs_diarias":obs_diarias,
         "clima_diagnostico":clima_diag,
         "clima_validacion":clima_hist,
         "clima_pendientes":clima_pend,

@@ -166,6 +166,20 @@
   .cd-temp{font-size:12px;font-weight:700;color:var(--text);}
   .cd-tmin{font-size:10px;color:#5BA3D0;}
   .cd-lluvia{font-size:9px;color:#5BA3D0;margin-top:2px;font-family:'Space Mono',monospace;}
+  .cd-mm{font-size:10px;color:#7FC3E8;font-weight:700;margin-top:1px;font-family:'Space Mono',monospace;}
+  .obs-chile{display:flex;align-items:center;flex-wrap:wrap;gap:7px;margin:9px 0 4px;
+    background:rgba(63,167,150,.07);border:1px solid rgba(63,167,150,.22);
+    border-radius:8px;padding:7px 10px;}
+  .obs-punto{width:7px;height:7px;border-radius:50%;background:var(--verde);
+    box-shadow:0 0 7px var(--verde);animation:p 2s infinite;flex-shrink:0;}
+  .obs-txt{font-size:11.5px;color:var(--text);line-height:1.4;flex:1;min-width:150px;}
+  .obs-t{color:var(--verde);font-weight:800;}
+  .obs-est{font-size:9px;color:var(--muted2);font-family:'Space Mono',monospace;white-space:nowrap;}
+  .ens-badge{font-size:9px;padding:2px 7px;border-radius:12px;margin-left:6px;
+    font-family:'Space Mono',monospace;white-space:nowrap;}
+  .ens-alto{background:rgba(63,167,150,.14);color:#3FA796;border:1px solid rgba(63,167,150,.3);}
+  .ens-medio{background:rgba(232,148,59,.12);color:#E8943B;border:1px solid rgba(232,148,59,.28);}
+  .ens-bajo{background:rgba(214,69,80,.12);color:#D64550;border:1px solid rgba(214,69,80,.28);}
   .cd-conf{font-size:8px;color:var(--muted);margin-top:3px;font-family:'Space Mono',monospace;}
   .cd-viento{font-size:9px;color:#8B93A7;margin-top:2px;font-family:'Space Mono',monospace;}
   .clima-alertas{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:10px;}
@@ -298,7 +312,7 @@ function dibujarMonitor(eventos){
   </div>`;
 }
 
-function dibujarClima(clima){
+function dibujarClima(clima, obs){
   const cont=document.getElementById("clima");
   if(!cont) return;
   if(!clima || !clima.length){
@@ -332,17 +346,36 @@ function dibujarClima(clima){
         <div class="cd-temp">${d.t_max}°</div>
         <div class="cd-tmin">${d.t_min}°</div>
         ${d.prob_lluvia>10?`<div class="cd-lluvia">☔${d.prob_lluvia}%</div>`:''}
+        ${d.lluvia_mm>0?`<div class="cd-mm">${d.lluvia_mm}mm</div>`:''}
         ${d.viento>=20?`<div class="cd-viento">💨${d.viento}</div>`:''}
         <div class="cd-conf">${d.confianza}%</div>
       </div>`;}).join('');
     html+=`<div class="clima-zona">
       <div class="clima-ciudad">${c.ciudad}</div>
-      <div class="clima-zona-lbl">${c.zona}</div>
+      <div class="clima-zona-lbl">${c.zona}${(()=>{
+        const d0=c.dias&&c.dias[0];
+        if(d0&&d0.n_modelos>=3){
+          const ac=d0.acuerdo_modelos;
+          const nivel = ac<=1 ? 'alto' : (ac<=2.5 ? 'medio' : 'bajo');
+          return ` <span class="ens-badge ens-${nivel}">🛰️ ${d0.n_modelos} modelos · acuerdo ${nivel}</span>`;
+        }
+        return '';
+      })()}</div>
+      ${(()=>{
+        const o = obs && obs[c.zona];
+        if(!o) return '';
+        return `<div class="obs-chile">
+          <span class="obs-punto"></span>
+          <span class="obs-txt">Ahora en <b>${o.ciudad}</b>: <b class="obs-t">${o.temperatura}°</b>
+          · ${o.condicion}${o.humedad!=null?` · humedad ${o.humedad}%`:''}</span>
+          <span class="obs-est">estación ${o.estacion} · ${o.hora||''}</span>
+        </div>`;
+      })()}
       ${bannerAlertas}
       <div class="clima-dias">${dias}</div>
     </div>`;
   });
-  html+=`<div class="clima-nota">Pronóstico generado por el modelo propio (9 años aprendidos por región), anclado al dato atmosférico actual en los primeros días. Las alertas (lluvia fuerte, heladas, viento, calor) las genera el modelo según lo aprendido de cada región. El % es la confianza, que baja hacia el día 7. No es una predicción exacta.</div>`;
+  html+=`<div class="clima-nota">Tres fuentes: (1) <b>ensemble de 5 modelos atmosféricos</b> (ECMWF europeo, GFS americano, ICON alemán, GEM canadiense, MeteoFrance); (2) <b>modelo propio</b> con 9 años aprendidos por región, que sostiene los días finales; (3) <b>estaciones meteorológicas chilenas</b> que miden en el suelo el estado actual y permiten validar el pronóstico contra un dato independiente. La confianza NO es fija: se mide según cuánto coinciden los modelos entre sí. Los mm son el agua estimada de ese día. No es una predicción exacta: el clima es caótico.</div>`;
   cont.innerHTML=html;
 }
 
@@ -420,7 +453,7 @@ fetch(FUENTE).then(r=>r.json()).then(d=>{
   }
 
   dibujarMonitor(d.monitor_en_vivo);
-  dibujarClima(d.clima_regiones);
+  dibujarClima(d.clima_regiones, d.observaciones_chile||{});
   // PUNTOS ESPECÍFICOS de la zona más activa
   (function(){
     const pz=d.puntos_zona_activa;
@@ -457,9 +490,9 @@ fetch(FUENTE).then(r=>r.json()).then(d=>{
   const cac=document.getElementById("clima-acierto");
   if(cac){
     if(ca && ca.n>=5){
-      cac.innerHTML=`<div class="clima-val">✓ Mi modelo acierta a ±2°C el <b>${ca.acierto_2c}%</b> de las veces · ±3°C el <b>${ca.acierto_3c}%</b> · error medio ±${ca.error_medio}°C <span style="color:var(--muted)">(medido con ${ca.n} comparaciones reales)</span></div>`;
+      cac.innerHTML=`<div class="clima-val">✓ Mi modelo acierta a ±2°C el <b>${ca.acierto_2c}%</b> de las veces · ±3°C el <b>${ca.acierto_3c}%</b> · error medio ±${ca.error_medio}°C <span style="color:var(--muted)">(medido con ${ca.n} comparaciones contra ${ca.fuente||'medición real'})</span></div>`;
     } else {
-      cac.innerHTML=`<div class="clima-val" style="color:var(--muted)">El modelo está midiendo su acierto: compara cada día su predicción con la temperatura real. El % aparecerá tras unos días de datos.</div>`;
+      cac.innerHTML=`<div class="clima-val" style="color:var(--muted)">El modelo está midiendo su acierto: compara cada día su predicción con la temperatura medida por las estaciones meteorológicas chilenas (dato independiente). El % aparecerá tras unos días de datos.</div>`;
     }
   }
 
