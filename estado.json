@@ -1,5 +1,5 @@
 {
-  "actualizado": "2026-07-09T11:21:17.628306+00:00",
+  "actualizado": "2026-07-09T11:28:55.502653+00:00",
   "ultimo_sismo": "2026-07-09T10:54:23+00:00",
   "n_eventos_escaneados": 6287,
   "fuente_datos": "USGS (histórico) + CSN y sismologia.cl (reciente)",
@@ -902,8 +902,8 @@
           "viento": 14,
           "n_modelos": 5,
           "acuerdo_modelos": 0.4,
-          "desc": "Lluvia",
-          "icono": "🌧️",
+          "desc": "Chubascos",
+          "icono": "🌦️",
           "alertas": [
             {
               "tipo": "lluvia",
@@ -1050,7 +1050,7 @@
           "fecha": "2026-07-10",
           "t_min": 10,
           "t_max": 14,
-          "lluvia_mm": 21.8,
+          "lluvia_mm": 20.2,
           "prob_lluvia": 89,
           "mm_max_historico": 48.2,
           "lluvia_fuerte_pct": 11,
@@ -1063,7 +1063,7 @@
           "alertas": [
             {
               "tipo": "lluvia_fuerte",
-              "txt": "Lluvia fuerte (~22mm)",
+              "txt": "Lluvia fuerte (~20mm)",
               "icono": "⛈️"
             }
           ],
@@ -1073,7 +1073,7 @@
           "fecha": "2026-07-11",
           "t_min": 8,
           "t_max": 14,
-          "lluvia_mm": 3.9,
+          "lluvia_mm": 3.8,
           "prob_lluvia": 25,
           "mm_max_historico": 48.2,
           "lluvia_fuerte_pct": 9,
@@ -1107,7 +1107,7 @@
           "fecha": "2026-07-13",
           "t_min": 6,
           "t_max": 13,
-          "lluvia_mm": 10.1,
+          "lluvia_mm": 10.4,
           "prob_lluvia": 45,
           "mm_max_historico": 48.2,
           "lluvia_fuerte_pct": 12,
@@ -1230,8 +1230,8 @@
           "viento": 24,
           "n_modelos": 5,
           "acuerdo_modelos": 1.0,
-          "desc": "Nublado",
-          "icono": "☁️",
+          "desc": "Niebla",
+          "icono": "🌫️",
           "alertas": [],
           "confianza": 83
         },
@@ -1380,9 +1380,9 @@
       "estacion": "SCAT",
       "ciudad": "Caldera",
       "temperatura": 8.0,
-      "condicion": "Niebla",
+      "condicion": "Despejado",
       "humedad": 100,
-      "hora": "06:06:00"
+      "hora": "07:00:00"
     },
     "Coquimbo (La Serena)": {
       "estacion": "SCSE",
@@ -1406,7 +1406,7 @@
       "temperatura": 9.0,
       "condicion": "Despejado",
       "humedad": 100,
-      "hora": "06:00:00"
+      "hora": "07:00:00"
     },
     "Biobío–Araucanía": {
       "estacion": "SCIE",
@@ -1430,63 +1430,63 @@
       "2026-07-09": {
         "t_max_obs": 18.0,
         "t_min_obs": 18.0,
-        "n": 4
+        "n": 5
       }
     },
     "Tarapacá (Iquique)": {
       "2026-07-09": {
         "t_max_obs": 16.0,
         "t_min_obs": 16.0,
-        "n": 4
+        "n": 5
       }
     },
     "Antofagasta": {
       "2026-07-09": {
         "t_max_obs": 14.0,
         "t_min_obs": 14.0,
-        "n": 4
+        "n": 5
       }
     },
     "Atacama (Copiapó)": {
       "2026-07-09": {
         "t_max_obs": 8.0,
         "t_min_obs": 8.0,
-        "n": 4
+        "n": 5
       }
     },
     "Coquimbo (La Serena)": {
       "2026-07-09": {
         "t_max_obs": 10.0,
         "t_min_obs": 10.0,
-        "n": 4
+        "n": 5
       }
     },
     "Valparaíso–Metropolitana": {
       "2026-07-09": {
         "t_max_obs": 12.0,
         "t_min_obs": 12.0,
-        "n": 4
+        "n": 5
       }
     },
     "Maule–Ñuble": {
       "2026-07-09": {
         "t_max_obs": 9.0,
         "t_min_obs": 9.0,
-        "n": 4
+        "n": 5
       }
     },
     "Biobío–Araucanía": {
       "2026-07-09": {
         "t_max_obs": 7.0,
         "t_min_obs": 7.0,
-        "n": 4
+        "n": 5
       }
     },
     "Los Lagos–Aysén": {
       "2026-07-09": {
         "t_max_obs": 7.0,
         "t_min_obs": 7.0,
-        "n": 4
+        "n": 5
       }
     }
   },
@@ -1498,6 +1498,276 @@
     "err_sum": 0.0
   },
   "clima_pendientes": [
+    {
+      "zona": "Arica–Parinacota",
+      "fecha": "2026-07-10",
+      "t_max_pred": 20
+    },
+    {
+      "zona": "Arica–Parinacota",
+      "fecha": "2026-07-11",
+      "t_max_pred": 20
+    },
+    {
+      "zona": "Arica–Parinacota",
+      "fecha": "2026-07-12",
+      "t_max_pred": 19
+    },
+    {
+      "zona": "Arica–Parinacota",
+      "fecha": "2026-07-13",
+      "t_max_pred": 19
+    },
+    {
+      "zona": "Arica–Parinacota",
+      "fecha": "2026-07-14",
+      "t_max_pred": 18
+    },
+    {
+      "zona": "Arica–Parinacota",
+      "fecha": "2026-07-15",
+      "t_max_pred": 18
+    },
+    {
+      "zona": "Tarapacá (Iquique)",
+      "fecha": "2026-07-10",
+      "t_max_pred": 17
+    },
+    {
+      "zona": "Tarapacá (Iquique)",
+      "fecha": "2026-07-11",
+      "t_max_pred": 17
+    },
+    {
+      "zona": "Tarapacá (Iquique)",
+      "fecha": "2026-07-12",
+      "t_max_pred": 17
+    },
+    {
+      "zona": "Tarapacá (Iquique)",
+      "fecha": "2026-07-13",
+      "t_max_pred": 18
+    },
+    {
+      "zona": "Tarapacá (Iquique)",
+      "fecha": "2026-07-14",
+      "t_max_pred": 18
+    },
+    {
+      "zona": "Tarapacá (Iquique)",
+      "fecha": "2026-07-15",
+      "t_max_pred": 18
+    },
+    {
+      "zona": "Antofagasta",
+      "fecha": "2026-07-10",
+      "t_max_pred": 19
+    },
+    {
+      "zona": "Antofagasta",
+      "fecha": "2026-07-11",
+      "t_max_pred": 18
+    },
+    {
+      "zona": "Antofagasta",
+      "fecha": "2026-07-12",
+      "t_max_pred": 17
+    },
+    {
+      "zona": "Antofagasta",
+      "fecha": "2026-07-13",
+      "t_max_pred": 18
+    },
+    {
+      "zona": "Antofagasta",
+      "fecha": "2026-07-14",
+      "t_max_pred": 17
+    },
+    {
+      "zona": "Antofagasta",
+      "fecha": "2026-07-15",
+      "t_max_pred": 17
+    },
+    {
+      "zona": "Atacama (Copiapó)",
+      "fecha": "2026-07-10",
+      "t_max_pred": 29
+    },
+    {
+      "zona": "Atacama (Copiapó)",
+      "fecha": "2026-07-11",
+      "t_max_pred": 27
+    },
+    {
+      "zona": "Atacama (Copiapó)",
+      "fecha": "2026-07-12",
+      "t_max_pred": 26
+    },
+    {
+      "zona": "Atacama (Copiapó)",
+      "fecha": "2026-07-13",
+      "t_max_pred": 22
+    },
+    {
+      "zona": "Atacama (Copiapó)",
+      "fecha": "2026-07-14",
+      "t_max_pred": 22
+    },
+    {
+      "zona": "Atacama (Copiapó)",
+      "fecha": "2026-07-15",
+      "t_max_pred": 22
+    },
+    {
+      "zona": "Coquimbo (La Serena)",
+      "fecha": "2026-07-10",
+      "t_max_pred": 21
+    },
+    {
+      "zona": "Coquimbo (La Serena)",
+      "fecha": "2026-07-11",
+      "t_max_pred": 19
+    },
+    {
+      "zona": "Coquimbo (La Serena)",
+      "fecha": "2026-07-12",
+      "t_max_pred": 18
+    },
+    {
+      "zona": "Coquimbo (La Serena)",
+      "fecha": "2026-07-13",
+      "t_max_pred": 16
+    },
+    {
+      "zona": "Coquimbo (La Serena)",
+      "fecha": "2026-07-14",
+      "t_max_pred": 16
+    },
+    {
+      "zona": "Coquimbo (La Serena)",
+      "fecha": "2026-07-15",
+      "t_max_pred": 16
+    },
+    {
+      "zona": "Valparaíso–Metropolitana",
+      "fecha": "2026-07-10",
+      "t_max_pred": 16
+    },
+    {
+      "zona": "Valparaíso–Metropolitana",
+      "fecha": "2026-07-11",
+      "t_max_pred": 19
+    },
+    {
+      "zona": "Valparaíso–Metropolitana",
+      "fecha": "2026-07-12",
+      "t_max_pred": 19
+    },
+    {
+      "zona": "Valparaíso–Metropolitana",
+      "fecha": "2026-07-13",
+      "t_max_pred": 16
+    },
+    {
+      "zona": "Valparaíso–Metropolitana",
+      "fecha": "2026-07-14",
+      "t_max_pred": 14
+    },
+    {
+      "zona": "Valparaíso–Metropolitana",
+      "fecha": "2026-07-15",
+      "t_max_pred": 14
+    },
+    {
+      "zona": "Maule–Ñuble",
+      "fecha": "2026-07-10",
+      "t_max_pred": 14
+    },
+    {
+      "zona": "Maule–Ñuble",
+      "fecha": "2026-07-11",
+      "t_max_pred": 15
+    },
+    {
+      "zona": "Maule–Ñuble",
+      "fecha": "2026-07-12",
+      "t_max_pred": 14
+    },
+    {
+      "zona": "Maule–Ñuble",
+      "fecha": "2026-07-13",
+      "t_max_pred": 14
+    },
+    {
+      "zona": "Maule–Ñuble",
+      "fecha": "2026-07-14",
+      "t_max_pred": 12
+    },
+    {
+      "zona": "Maule–Ñuble",
+      "fecha": "2026-07-15",
+      "t_max_pred": 12
+    },
+    {
+      "zona": "Biobío–Araucanía",
+      "fecha": "2026-07-10",
+      "t_max_pred": 14
+    },
+    {
+      "zona": "Biobío–Araucanía",
+      "fecha": "2026-07-11",
+      "t_max_pred": 14
+    },
+    {
+      "zona": "Biobío–Araucanía",
+      "fecha": "2026-07-12",
+      "t_max_pred": 15
+    },
+    {
+      "zona": "Biobío–Araucanía",
+      "fecha": "2026-07-13",
+      "t_max_pred": 13
+    },
+    {
+      "zona": "Biobío–Araucanía",
+      "fecha": "2026-07-14",
+      "t_max_pred": 12
+    },
+    {
+      "zona": "Biobío–Araucanía",
+      "fecha": "2026-07-15",
+      "t_max_pred": 12
+    },
+    {
+      "zona": "Los Lagos–Aysén",
+      "fecha": "2026-07-10",
+      "t_max_pred": 10
+    },
+    {
+      "zona": "Los Lagos–Aysén",
+      "fecha": "2026-07-11",
+      "t_max_pred": 10
+    },
+    {
+      "zona": "Los Lagos–Aysén",
+      "fecha": "2026-07-12",
+      "t_max_pred": 11
+    },
+    {
+      "zona": "Los Lagos–Aysén",
+      "fecha": "2026-07-13",
+      "t_max_pred": 10
+    },
+    {
+      "zona": "Los Lagos–Aysén",
+      "fecha": "2026-07-14",
+      "t_max_pred": 9
+    },
+    {
+      "zona": "Los Lagos–Aysén",
+      "fecha": "2026-07-15",
+      "t_max_pred": 10
+    },
     {
       "zona": "Arica–Parinacota",
       "fecha": "2026-07-10",
@@ -4080,6 +4350,15 @@
     },
     {
       "fecha": "2026-07-09T11:21:17.628279+00:00",
+      "mu": 0.6612,
+      "K": 0.001,
+      "alpha": 1.682,
+      "p": 1.305,
+      "b": 1.437,
+      "n_total": 6287
+    },
+    {
+      "fecha": "2026-07-09T11:28:55.502628+00:00",
       "mu": 0.6612,
       "K": 0.001,
       "alpha": 1.682,
