@@ -2,24 +2,28 @@ name: Monitor Sismico Chile
 
 on:
   schedule:
-    -  cron: "*/30 * * * *"
+    - cron: "*/30 * * * *"
   workflow_dispatch: {}
-  push:
-    branches: [ "main" ]
 
 permissions:
   contents: write
 
+concurrency:
+  group: monitor-sismico
+  cancel-in-progress: false
+
 jobs:
   monitor:
     runs-on: ubuntu-latest
+    timeout-minutes: 10
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
         with:
           python-version: "3.12"
-      - run: pip install pandas numpy scipy requests
-      - name: Escanear sismos y reaprender
+      - name: Instalar dependencias
+        run: pip install pandas numpy scipy requests
+      - name: Escanear sismos, clima y reaprender
         run: python motor_adaptativo.py
       - name: Publicar estado actualizado
         run: |
@@ -27,5 +31,6 @@ jobs:
           git config user.name "github-actions"
           git config user.email "actions@github.com"
           git add estado.json estado_aprendizaje.json modelos_clima.json
-          git commit -m "Actualizacion sismica $(date -u +'%F %H:%M')" || echo "sin cambios"
+          git commit -m "Actualizacion $(date -u +'%F %H:%M')" || echo "sin cambios"
+          git pull --rebase --autostash || true
           git push || echo "nada que pushear"
