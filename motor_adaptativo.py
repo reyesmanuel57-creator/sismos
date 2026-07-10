@@ -905,33 +905,52 @@ DIAS_ESPERA_ERA5 = 3      # ERA5 publica con ~2 días de retraso
 def verdad_era5(modelos, dias=12):
     """
     Temperatura máxima y mínima REALES de los últimos días, por región, según
-    el reanálisis ERA5. Es la verdad de contraste: da el máximo del día
+    el reanálisis ERA5. Es la verdad de contraste: entrega el máximo del día
     completo, sin depender de cuántas veces alcanzó a correr el motor.
+
+    Se piden las 9 regiones en UNA sola llamada (Open-Meteo acepta varias
+    coordenadas separadas por coma y responde una lista). Antes se hacía una
+    llamada por región y en GitHub fallaban algunas por tiempo de espera.
     Devuelve {zona: {"YYYY-MM-DD": {"tmax": x, "tmin": y}}}.
     """
     import datetime, urllib.parse
-    hoy = datetime.date.today()
-    ini = (hoy - datetime.timedelta(days=dias)).isoformat()
-    fin = (hoy - datetime.timedelta(days=2)).isoformat()
-    salida = {}
+    zonas, lats, lons = [], [], []
     for zona, modelo in modelos.items():
         lat, lon = modelo.get("lat"), modelo.get("lon")
         if lat is None or lon is None:
             continue
+        zonas.append(zona); lats.append(str(lat)); lons.append(str(lon))
+    if not zonas:
+        return {}
+    hoy = datetime.date.today()
+    ini = (hoy - datetime.timedelta(days=dias)).isoformat()
+    fin = (hoy - datetime.timedelta(days=2)).isoformat()
+    url = "https://archive-api.open-meteo.com/v1/archive?" + urllib.parse.urlencode({
+        "latitude": ",".join(lats), "longitude": ",".join(lons),
+        "start_date": ini, "end_date": fin,
+        "daily": "temperature_2m_max,temperature_2m_min",
+        "timezone": "America/Santiago"})
+    datos = None
+    for intento in range(2):
         try:
-            url = "https://archive-api.open-meteo.com/v1/archive?" + urllib.parse.urlencode({
-                "latitude": lat, "longitude": lon,
-                "start_date": ini, "end_date": fin,
-                "daily": "temperature_2m_max,temperature_2m_min",
-                "timezone": "America/Santiago"})
-            d = requests.get(url, timeout=15).json().get("daily", {})
+            r = requests.get(url, timeout=25)
+            if r.status_code == 200:
+                datos = r.json(); break
         except Exception:
-            continue
+            pass
+    if datos is None:
+        return {}
+    if isinstance(datos, dict):      # una sola ubicación
+        datos = [datos]
+    salida = {}
+    for zona, bloque in zip(zonas, datos):
+        d = (bloque or {}).get("daily", {})
         reg = {}
         for t, mx, mn in zip(d.get("time", []), d.get("temperature_2m_max", []),
                              d.get("temperature_2m_min", [])):
             if mx is not None:
-                reg[t] = {"tmax": float(mx), "tmin": float(mn) if mn is not None else None}
+                reg[t] = {"tmax": float(mx),
+                          "tmin": float(mn) if mn is not None else None}
         if reg:
             salida[zona] = reg
     return salida
