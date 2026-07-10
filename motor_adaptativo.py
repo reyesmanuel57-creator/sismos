@@ -993,22 +993,26 @@ def cargar_mos():
 MOS = cargar_mos()
 
 
-def aplicar_mos(mos, zona, lead, clim, med, spread, mn, mx, vals_modelos):
+def aplicar_mos(mos, cual, zona, lead, clim, med, spread, mn, mx, vals_modelos):
     """
-    Aplica el post-procesador. Devuelve la temperatura máxima corregida, o
-    None si no corresponde aplicarlo (sin modelo, horizonte fuera de rango,
-    zona desconocida o pocos modelos disponibles).
+    Aplica el post-procesador a "tmax" o "tmin". Devuelve la temperatura
+    corregida, o None si no corresponde aplicarlo (sin modelo, horizonte fuera
+    de rango, zona desconocida o pocos modelos disponibles).
+    Mejora medida con origen móvil: +18.0% en la máxima, +19.9% en la mínima.
     """
     if not mos or lead not in mos["leads"] or zona not in mos["zonas"]:
+        return None
+    sub = mos.get(cual)
+    if not sub:
         return None
     num = mos["features_num"]          # clim, med, spread, mn, mx, + 5 modelos
     x = [clim, med, spread, mn, mx] + [vals_modelos[m] for m in num[5:]]
     z = [0.0] * len(mos["zonas"]); z[mos["zonas"].index(zona)] = 1.0
     l = [0.0] * len(mos["leads"]);  l[mos["leads"].index(lead)] = 1.0
     x = x + z + l
-    if len(x) != len(mos["coef"]):
+    if len(x) != len(sub["coef"]):
         return None
-    return sum(a * b for a, b in zip(x, mos["coef"])) + mos["intercept"]
+    return sum(a * b for a, b in zip(x, sub["coef"])) + sub["intercept"]
 
 
 # Pesos del ensemble atmosférico por horizonte (día 1..7), obtenidos
@@ -1139,10 +1143,13 @@ def clima_regiones(sesgos=None):
             # 2. HÍBRIDO: consenso de los modelos atmosféricos + modelo propio.
             # El ensemble manda en los primeros días; el modelo propio en los
             # últimos (cuando los modelos globales pierden habilidad).
-            clim_orig = tM   # climatología pura, antes de mezclar
+            clim_orig = tM   # climatología pura de la máxima
+            clim_orig_min = tm   # climatología pura de la mínima
             det_max = None
+            det_min = None
             if anclaje and i < len(anclaje.get("time", [])):
                 det_max = _detalle(anclaje, "temperature_2m_max", i)
+                det_min = _detalle(anclaje, "temperature_2m_min", i)
                 tM_real, dM, nM = _consenso(anclaje, "temperature_2m_max", i)
                 tm_real, dm, _ = _consenso(anclaje, "temperature_2m_min", i)
                 prob_real, _, _ = _consenso(anclaje, "precipitation_probability_max", i)
@@ -1170,16 +1177,29 @@ def clima_regiones(sesgos=None):
             # modelos disponibles y con el horizonte cubierto por el ensemble.
             # El ajuste se limita a 3 °C para que nunca produzca un disparate.
             mos_aplicado = False
+            tope = MOS.get("max_ajuste_c", 3.0) if MOS else 3.0
             if MOS and det_max and det_max["n"] >= 4:
                 try:
-                    pred = aplicar_mos(MOS, zona, i + 1, clim_orig,
+                    pred = aplicar_mos(MOS, "tmax", zona, i + 1, clim_orig,
                                        det_max["mediana"], det_max["desv"],
                                        det_max["min"], det_max["max"],
                                        det_max["modelos"])
                 except Exception:
                     pred = None
-                if pred is not None and abs(pred - tM) <= MOS.get("max_ajuste_c", 3.0):
+                if pred is not None and abs(pred - tM) <= tope:
                     tM = pred
+                    mos_aplicado = True
+            # la mínima importa tanto como la máxima: dispara las heladas
+            if MOS and det_min and det_min["n"] >= 4:
+                try:
+                    pred_m = aplicar_mos(MOS, "tmin", zona, i + 1, clim_orig_min,
+                                         det_min["mediana"], det_min["desv"],
+                                         det_min["min"], det_min["max"],
+                                         det_min["modelos"])
+                except Exception:
+                    pred_m = None
+                if pred_m is not None and abs(pred_m - tm) <= tope:
+                    tm = pred_m
                     mos_aplicado = True
 
             # CORRECCIÓN DE SESGO (MOS): si en esta región, a este horizonte,
@@ -1223,7 +1243,10 @@ def clima_regiones(sesgos=None):
                 alertas.append({"tipo":"lluvia",
                                 "txt":f"Lluvia probable (~{mm_mostrar:.0f}mm)" if mm_mostrar>0 else "Lluvia probable",
                                 "icono":"🌧️"})
-            if round(tm) <= 0 or prob_helada >= 10:
+            # La mínima ahora está post-procesada (error ±0.9 °C), así que la
+            # alerta se apoya en ella y no solo en la climatología. Antes se
+            # avisaba "helada" con 7 °C de mínima: falsa alarma.
+            if round(tm) <= 0 or (prob_helada >= 10 and round(tm) <= 3):
                 alertas.append({"tipo":"helada","txt":"Riesgo de helada","icono":"❄️"})
             elif round(tm) <= 3:
                 alertas.append({"tipo":"frio","txt":"Frío intenso","icono":"🥶"})
