@@ -17,8 +17,10 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 10
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-python@v5
+      # v6 corre sobre Node 24. Node 20 se elimina de los runners
+      # el 16 de septiembre de 2026, así que v4/v5 dejarian de funcionar.
+      - uses: actions/checkout@v6
+      - uses: actions/setup-python@v6
         with:
           python-version: "3.12"
       - name: Instalar dependencias
