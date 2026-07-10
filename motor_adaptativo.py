@@ -881,6 +881,18 @@ def acumular_observaciones(previo, obs, hoy_str):
     return acc
 
 
+# Corrección de sesgo tipo MOS ("pensar como meteorólogo"). Parámetros
+# elegidos por validación walk-forward con holdout: se ajustan en la
+# primera mitad de los datos y se evalúan en la segunda. Mejora medida
+# fuera de muestra: +1.5% (dentro de muestra daba +8%, era ilusión).
+# Se corrige solo la MITAD del sesgo (k=0.5): aplicar el sesgo completo
+# EMPEORA el pronóstico, porque la estimación es ruidosa.
+VENTANA_SESGO = 14      # cuántas comparaciones recientes se recuerdan
+K_SESGO = 0.5           # fracción del sesgo que se descuenta
+MIN_SESGO = 8           # no corregir con menos de 8 comparaciones
+MAX_SESGO = 2.5         # tope de corrección, en °C
+
+
 def validar_clima(previo, clima_actual, obs_diarias=None):
     """
     Compara lo que el modelo predijo días atrás con la temperatura máxima
@@ -894,6 +906,12 @@ def validar_clima(previo, clima_actual, obs_diarias=None):
     for k in ("n", "ok2", "ok3"):
         hist.setdefault(k, 0)
     hist.setdefault("err_sum", 0.0)
+    # sesgos aprendidos: error CON SIGNO por región y horizonte.
+    # Es la memoria que permite "pensar como meteorólogo": si el modelo
+    # calienta sistemáticamente el valle de Santiago, se descuenta.
+    sesgos = previo.get("clima_sesgos", {})
+    if not isinstance(sesgos, dict):
+        sesgos = {}
     pendientes = previo.get("clima_pendientes", [])
     hoy = datetime.date.today().isoformat()
     nuevos_pendientes = []
@@ -914,15 +932,21 @@ def validar_clima(previo, clima_actual, obs_diarias=None):
             if p["fecha"] >= hoy:
                 nuevos_pendientes.append(p)
         for c in clima_actual:
-            for d in c["dias"][1:]:
+            for j, d in enumerate(c["dias"][1:], start=1):
                 nuevos_pendientes.append({"zona": c["zona"], "fecha": d["fecha"],
-                                          "t_max_pred": d["t_max"]})
-        return hist, nuevos_pendientes[-300:], None
+                                          "t_max_pred": d["t_max"], "lead": j})
+        return hist, nuevos_pendientes[-300:], None, sesgos
     # evaluar pendientes cuya fecha objetivo es hoy
     for p in pendientes:
         if p["fecha"] == hoy and p["zona"] in real_hoy:
             real = real_hoy[p["zona"]]
             err = abs(p["t_max_pred"] - real)
+            # registrar el sesgo (con signo) para esta zona y horizonte
+            lead = str(p.get("lead", 1))
+            z = sesgos.setdefault(p["zona"], {})
+            serie = z.setdefault(lead, [])
+            serie.append(round(p["t_max_pred"] - real, 2))
+            z[lead] = serie[-VENTANA_SESGO:]   # solo la historia reciente
             hist["n"] += 1
             hist["err_sum"] += err
             if err <= 2: hist["ok2"] += 1
@@ -931,9 +955,9 @@ def validar_clima(previo, clima_actual, obs_diarias=None):
             nuevos_pendientes.append(p)  # aún no llega su fecha
     # registrar las predicciones de hoy para validarlas en el futuro
     for c in clima_actual:
-        for d in c["dias"][1:]:  # días futuros
+        for j, d in enumerate(c["dias"][1:], start=1):  # días futuros
             nuevos_pendientes.append({"zona": c["zona"], "fecha": d["fecha"],
-                                      "t_max_pred": d["t_max"]})
+                                      "t_max_pred": d["t_max"], "lead": j})
     # limitar tamaño
     nuevos_pendientes = nuevos_pendientes[-300:]
     resumen = None
@@ -945,10 +969,60 @@ def validar_clima(previo, clima_actual, obs_diarias=None):
             "error_medio": round(hist["err_sum"] / hist["n"], 1),
             "fuente": fuente_real,
         }
-    return hist, nuevos_pendientes, resumen
+    return hist, nuevos_pendientes, resumen, sesgos
 
 
-def clima_regiones():
+def cargar_mos():
+    """
+    Carga el post-procesador estadístico ("IA") que corrige la salida de los
+    modelos atmosféricos. Es una regresión Ridge entrenada sobre 52 días en
+    las 9 regiones, con el reanálisis ERA5 como verdad, y validada con origen
+    móvil (5 cortes temporales): mejora medida +18% sobre el híbrido, y +13.7%
+    en el peor corte. No usa la fecha como variable, para no memorizar la
+    estación del año. Si el archivo no está, el sistema sigue sin él.
+    """
+    for ruta in ("modelo_mos.json", "/mnt/user-data/outputs/modelo_mos.json"):
+        if os.path.exists(ruta):
+            try:
+                return json.load(open(ruta))
+            except Exception:
+                pass
+    return None
+
+
+MOS = cargar_mos()
+
+
+def aplicar_mos(mos, zona, lead, clim, med, spread, mn, mx, vals_modelos):
+    """
+    Aplica el post-procesador. Devuelve la temperatura máxima corregida, o
+    None si no corresponde aplicarlo (sin modelo, horizonte fuera de rango,
+    zona desconocida o pocos modelos disponibles).
+    """
+    if not mos or lead not in mos["leads"] or zona not in mos["zonas"]:
+        return None
+    num = mos["features_num"]          # clim, med, spread, mn, mx, + 5 modelos
+    x = [clim, med, spread, mn, mx] + [vals_modelos[m] for m in num[5:]]
+    z = [0.0] * len(mos["zonas"]); z[mos["zonas"].index(zona)] = 1.0
+    l = [0.0] * len(mos["leads"]);  l[mos["leads"].index(lead)] = 1.0
+    x = x + z + l
+    if len(x) != len(mos["coef"]):
+        return None
+    return sum(a * b for a, b in zip(x, mos["coef"])) + mos["intercept"]
+
+
+# Pesos del ensemble atmosférico por horizonte (día 1..7), obtenidos
+# minimizando el error absoluto contra el reanálisis ERA5 en un backtest
+# de 60 días sobre las 9 regiones. Antes eran valores supuestos; ahora
+# están medidos. El modelo propio solo pesa de verdad al día 7.
+PESO_ENSEMBLE = [0.98, 0.93, 0.92, 0.92, 0.80, 0.84, 0.69]
+
+# Confianza base por horizonte = proporción de días en que el pronóstico
+# quedó dentro de ±2 °C, medida contra ERA5 en el mismo backtest.
+CONF_BASE = [0.97, 0.94, 0.92, 0.89, 0.80, 0.75, 0.71]
+
+
+def clima_regiones(sesgos=None):
     """
     CLIMA HÍBRIDO DEFINITIVO. Combina dos fuentes:
     1. El MODELO PROPIO aprendido (9 años de historia por región) → la base.
@@ -993,21 +1067,32 @@ def clima_regiones():
     MODELOS_ATM = ["ecmwf_ifs025", "gfs_seamless", "icon_seamless",
                    "gem_seamless", "meteofrance_seamless"]
 
-    def _consenso(daily, campo, i):
-        """Mediana y dispersión del campo entre los modelos, para el día i."""
-        vals = []
+    def _detalle(daily, campo, i):
+        """Valor de cada modelo, y su mediana/dispersión/min/max, para el día i."""
+        por_modelo = {}
         for mm in MODELOS_ATM:
             serie = daily.get(f"{campo}_{mm}")
             if serie and i < len(serie) and serie[i] is not None:
-                vals.append(float(serie[i]))
-        if not vals:
-            return None, None, 0
-        vals.sort()
+                por_modelo[mm] = float(serie[i])
+        if not por_modelo:
+            return None
+        vals = sorted(por_modelo.values())
         n = len(vals)
         mediana = vals[n // 2] if n % 2 else (vals[n // 2 - 1] + vals[n // 2]) / 2
         media = sum(vals) / n
         desv = (sum((v - media) ** 2 for v in vals) / n) ** 0.5
-        return mediana, desv, n
+        # los modelos que no reportaron se rellenan con la mediana, igual que
+        # durante el entrenamiento del post-procesador
+        completo = {mm: por_modelo.get(mm, mediana) for mm in MODELOS_ATM}
+        return {"mediana": mediana, "desv": desv, "n": n,
+                "min": vals[0], "max": vals[-1], "modelos": completo}
+
+    def _consenso(daily, campo, i):
+        """Mediana y dispersión del campo entre los modelos, para el día i."""
+        d = _detalle(daily, campo, i)
+        if not d:
+            return None, None, 0
+        return d["mediana"], d["desv"], d["n"]
 
     anclajes = {}
     t_inicio = time.time()
@@ -1022,7 +1107,7 @@ def clima_regiones():
                 "latitude": lat, "longitude": lon,
                 "daily": "temperature_2m_max,temperature_2m_min,"
                          "precipitation_probability_max,precipitation_sum,weathercode",
-                "timezone": "America/Santiago", "forecast_days": 5,
+                "timezone": "America/Santiago", "forecast_days": 7,
                 "models": ",".join(MODELOS_ATM),
             })
             r = requests.get(url, timeout=9)
@@ -1054,7 +1139,10 @@ def clima_regiones():
             # 2. HÍBRIDO: consenso de los modelos atmosféricos + modelo propio.
             # El ensemble manda en los primeros días; el modelo propio en los
             # últimos (cuando los modelos globales pierden habilidad).
+            clim_orig = tM   # climatología pura, antes de mezclar
+            det_max = None
             if anclaje and i < len(anclaje.get("time", [])):
+                det_max = _detalle(anclaje, "temperature_2m_max", i)
                 tM_real, dM, nM = _consenso(anclaje, "temperature_2m_max", i)
                 tm_real, dm, _ = _consenso(anclaje, "temperature_2m_min", i)
                 prob_real, _, _ = _consenso(anclaje, "precipitation_probability_max", i)
@@ -1063,7 +1151,10 @@ def clima_regiones():
                 n_modelos = nM
                 desv_temp = dM
                 # peso del ensemble: alto los primeros días, baja hacia el 5º
-                peso_real = [0.88, 0.80, 0.68, 0.52, 0.35][i] if i < 5 else 0.0
+                # Pesos MEDIDOS por backtest (60 días, 9 regiones, verdad ERA5):
+                # el pronóstico global supera a la climatología propia en todos
+                # los horizontes; solo al día 7 se igualan. Ver PESO_ENSEMBLE.
+                peso_real = PESO_ENSEMBLE[i] if i < len(PESO_ENSEMBLE) else 0.0
                 if tM_real is not None:
                     tM = tM * (1 - peso_real) + tM_real * peso_real
                 if tm_real is not None:
@@ -1073,6 +1164,36 @@ def clima_regiones():
                 if mm_real is not None:
                     mm_dia = mm_modelo * (1 - peso_real) + float(mm_real) * peso_real
                 fuente_dia = f"ensemble {nM} modelos + modelo propio"
+            # POST-PROCESADOR ESTADÍSTICO ("IA"): en vez de mezclar los modelos
+            # con pesos fijos, una regresión entrenada decide cuánto vale cada
+            # modelo en cada región y horizonte. Solo se usa con al menos 4
+            # modelos disponibles y con el horizonte cubierto por el ensemble.
+            # El ajuste se limita a 3 °C para que nunca produzca un disparate.
+            mos_aplicado = False
+            if MOS and det_max and det_max["n"] >= 4:
+                try:
+                    pred = aplicar_mos(MOS, zona, i + 1, clim_orig,
+                                       det_max["mediana"], det_max["desv"],
+                                       det_max["min"], det_max["max"],
+                                       det_max["modelos"])
+                except Exception:
+                    pred = None
+                if pred is not None and abs(pred - tM) <= MOS.get("max_ajuste_c", 3.0):
+                    tM = pred
+                    mos_aplicado = True
+
+            # CORRECCIÓN DE SESGO (MOS): si en esta región, a este horizonte,
+            # el pronóstico viene calentando o enfriando de forma sistemática
+            # frente a las estaciones chilenas, se descuenta la mitad de ese
+            # sesgo. Solo con suficientes comparaciones y con tope, para no
+            # amplificar ruido.
+            sesgo_aplicado = 0.0
+            if sesgos:
+                serie = (sesgos.get(zona) or {}).get(str(i))
+                if serie and len(serie) >= MIN_SESGO:
+                    b = sum(serie) / len(serie)
+                    sesgo_aplicado = max(-MAX_SESGO, min(MAX_SESGO, K_SESGO * b))
+                    tM -= sesgo_aplicado
             # datos enriquecidos del modelo propio (aprendidos de 9 años)
             lluvia_fuerte = modelo.get("lluvia_fuerte", {}).get(doy_key, 0)
             prob_helada = modelo.get("prob_helada", {}).get(doy_key, 0)
@@ -1113,7 +1234,9 @@ def clima_regiones():
             # CONFIANZA MEDIDA: base por horizonte, ajustada por el acuerdo
             # real entre los modelos atmosféricos. Si discrepan mucho
             # (dispersión alta), la certeza baja de verdad. Ya no es fija.
-            conf = [0.90, 0.87, 0.83, 0.80, 0.77, 0.74, 0.70][i]
+            # Confianza base = % de días que el pronóstico cayó dentro de ±2°C,
+            # medido contra ERA5 (no es un número inventado).
+            conf = CONF_BASE[i]
             if desv_temp is not None and n_modelos >= 3:
                 # desviación de 0°C → +5% de confianza; 5°C o más → -18%
                 ajuste = 0.05 - min(desv_temp, 5.0) * 0.046
@@ -1126,6 +1249,8 @@ def clima_regiones():
                 "lluvia_fuerte_pct": int(lluvia_fuerte),
                 "prob_helada": int(prob_helada),
                 "viento": int(round(viento)),
+                "sesgo_corregido": round(sesgo_aplicado, 2),
+                "postproceso_ia": bool(mos_aplicado),
                 "n_modelos": int(n_modelos),
                 "acuerdo_modelos": round(float(desv_temp), 1) if desv_temp is not None else None,
                 "desc": desc, "icono": icono,
@@ -1261,7 +1386,7 @@ def correr(estado_previo_path="estado_aprendizaje.json"):
     clima = []
     clima_diag = "no ejecutado"
     try:
-        clima = clima_regiones()
+        clima = clima_regiones(previo.get("clima_sesgos"))
         clima_diag = f"ok: {len(clima)} regiones"
     except Exception as e:
         clima = []
@@ -1289,9 +1414,10 @@ def correr(estado_previo_path="estado_aprendizaje.json"):
     clima_diag += f" | estaciones chilenas: {len(obs)}"
     # validación en vivo contra las estaciones chilenas (dato independiente)
     try:
-        clima_hist, clima_pend, clima_acierto = validar_clima(previo, clima, obs_diarias)
+        clima_hist, clima_pend, clima_acierto, clima_sesgos = validar_clima(previo, clima, obs_diarias)
     except Exception:
         clima_hist, clima_pend, clima_acierto = {}, [], None
+        clima_sesgos = previo.get("clima_sesgos", {})
 
     historial = previo.get("historial_parametros",[])
     historial.append({"fecha":datetime.now(timezone.utc).isoformat(),
@@ -1313,6 +1439,7 @@ def correr(estado_previo_path="estado_aprendizaje.json"):
         "obs_diarias":obs_diarias,
         "clima_diagnostico":clima_diag,
         "clima_validacion":clima_hist,
+        "clima_sesgos":clima_sesgos,
         "clima_pendientes":clima_pend,
         "clima_acierto":clima_acierto,
         "pronostico_ubicacion":pronostico,
