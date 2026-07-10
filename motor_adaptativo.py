@@ -893,83 +893,123 @@ MIN_SESGO = 8           # no corregir con menos de 8 comparaciones
 MAX_SESGO = 2.5         # tope de corrección, en °C
 
 
-def validar_clima(previo, clima_actual, obs_diarias=None):
+# Versión del esquema de validación. Al subirla, se descarta la memoria de
+# sesgo anterior. Necesario porque la validación v1 reconstruía la máxima
+# diaria muestreando estaciones cada corrida; como GitHub no ejecuta el motor
+# tantas veces al día, esa "máxima observada" quedaba por debajo de la real y
+# el sistema aprendía un sesgo falso de varios grados.
+VALIDACION_VERSION = 2
+DIAS_ESPERA_ERA5 = 3      # ERA5 publica con ~2 días de retraso
+
+
+def verdad_era5(modelos, dias=12):
     """
-    Compara lo que el modelo predijo días atrás con la temperatura máxima
-    REALMENTE MEDIDA hoy por las estaciones meteorológicas chilenas. Es una
-    validación honesta: el dato de contraste es independiente de los modelos
-    que se usaron para pronosticar. Acumula el % de acierto (±2°C y ±3°C).
+    Temperatura máxima y mínima REALES de los últimos días, por región, según
+    el reanálisis ERA5. Es la verdad de contraste: da el máximo del día
+    completo, sin depender de cuántas veces alcanzó a correr el motor.
+    Devuelve {zona: {"YYYY-MM-DD": {"tmax": x, "tmin": y}}}.
+    """
+    import datetime, urllib.parse
+    hoy = datetime.date.today()
+    ini = (hoy - datetime.timedelta(days=dias)).isoformat()
+    fin = (hoy - datetime.timedelta(days=2)).isoformat()
+    salida = {}
+    for zona, modelo in modelos.items():
+        lat, lon = modelo.get("lat"), modelo.get("lon")
+        if lat is None or lon is None:
+            continue
+        try:
+            url = "https://archive-api.open-meteo.com/v1/archive?" + urllib.parse.urlencode({
+                "latitude": lat, "longitude": lon,
+                "start_date": ini, "end_date": fin,
+                "daily": "temperature_2m_max,temperature_2m_min",
+                "timezone": "America/Santiago"})
+            d = requests.get(url, timeout=15).json().get("daily", {})
+        except Exception:
+            continue
+        reg = {}
+        for t, mx, mn in zip(d.get("time", []), d.get("temperature_2m_max", []),
+                             d.get("temperature_2m_min", [])):
+            if mx is not None:
+                reg[t] = {"tmax": float(mx), "tmin": float(mn) if mn is not None else None}
+        if reg:
+            salida[zona] = reg
+    return salida
+
+
+def validar_clima(previo, clima_actual, verdad=None):
+    """
+    Compara cada pronóstico guardado con la temperatura REAL de ese día, según
+    el reanálisis ERA5. Acumula el acierto (±2 °C y ±3 °C) y el sesgo con signo
+    por región y horizonte, que luego se descuenta a medias.
+
+    Por qué ERA5 y no las estaciones: el motor no corre suficientes veces al
+    día como para capturar el momento más caliente, así que el "máximo
+    observado" en las estaciones queda sistemáticamente bajo. Validar contra
+    eso enseñaba un sesgo falso. ERA5 entrega el máximo del día completo.
     """
     import datetime
-    hist = previo.get("clima_validacion", {"comparaciones": [], "n": 0,
-                                            "ok2": 0, "ok3": 0, "err_sum": 0.0})
-    for k in ("n", "ok2", "ok3"):
-        hist.setdefault(k, 0)
-    hist.setdefault("err_sum", 0.0)
-    # sesgos aprendidos: error CON SIGNO por región y horizonte.
-    # Es la memoria que permite "pensar como meteorólogo": si el modelo
-    # calienta sistemáticamente el valle de Santiago, se descuenta.
-    sesgos = previo.get("clima_sesgos", {})
+    base = {"n": 0, "ok2": 0, "ok3": 0, "err_sum": 0.0}
+    hist = previo.get("clima_validacion") or {}
+    sesgos = previo.get("clima_sesgos") or {}
+    # si la validación previa venía del esquema viejo, se descarta entera
+    if previo.get("validacion_version") != VALIDACION_VERSION:
+        hist, sesgos = dict(base), {}
+    for k, v in base.items():
+        hist.setdefault(k, v)
     if not isinstance(sesgos, dict):
         sesgos = {}
+
     pendientes = previo.get("clima_pendientes", [])
-    hoy = datetime.date.today().isoformat()
-    nuevos_pendientes = []
-    # temperatura máxima REAL de hoy, medida por las estaciones chilenas.
-    # Solo se usa si la estación reportó al menos 3 lecturas en el día
-    # (si no, el máximo observado aún no es representativo).
-    real_hoy = {}
-    fuente_real = "estaciones chilenas"
-    if obs_diarias:
-        for zona, dias in obs_diarias.items():
-            d = dias.get(hoy)
-            if d and d.get("n", 0) >= 3:
-                real_hoy[zona] = d["t_max_obs"]
-    if not real_hoy:
-        # sin observaciones suficientes todavía: no validar (mejor no medir
-        # que medirse contra uno mismo).
-        for p in pendientes:
-            if p["fecha"] >= hoy:
-                nuevos_pendientes.append(p)
-        for c in clima_actual:
-            for j, d in enumerate(c["dias"][1:], start=1):
-                nuevos_pendientes.append({"zona": c["zona"], "fecha": d["fecha"],
-                                          "t_max_pred": d["t_max"], "lead": j})
-        return hist, nuevos_pendientes[-300:], None, sesgos
-    # evaluar pendientes cuya fecha objetivo es hoy
+    hoy = datetime.date.today()
+    limite = (hoy - datetime.timedelta(days=DIAS_ESPERA_ERA5)).isoformat()
+    verdad = verdad or {}
+
+    quedan = []
     for p in pendientes:
-        if p["fecha"] == hoy and p["zona"] in real_hoy:
-            real = real_hoy[p["zona"]]
-            err = abs(p["t_max_pred"] - real)
-            # registrar el sesgo (con signo) para esta zona y horizonte
-            lead = str(p.get("lead", 1))
-            z = sesgos.setdefault(p["zona"], {})
-            serie = z.setdefault(lead, [])
-            serie.append(round(p["t_max_pred"] - real, 2))
-            z[lead] = serie[-VENTANA_SESGO:]   # solo la historia reciente
-            hist["n"] += 1
-            hist["err_sum"] += err
-            if err <= 2: hist["ok2"] += 1
-            if err <= 3: hist["ok3"] += 1
-        elif p["fecha"] > hoy:
-            nuevos_pendientes.append(p)  # aún no llega su fecha
-    # registrar las predicciones de hoy para validarlas en el futuro
+        zona, f = p.get("zona"), p.get("fecha")
+        if not zona or not f:
+            continue
+        if f > limite:
+            quedan.append(p)          # todavía no hay verdad para ese día
+            continue
+        real = (verdad.get(zona) or {}).get(f)
+        if not real:
+            # sin verdad disponible: se descarta si ya es muy viejo
+            if f >= (hoy - datetime.timedelta(days=14)).isoformat():
+                quedan.append(p)
+            continue
+        pred = p.get("t_max_pred")
+        if pred is None:
+            continue
+        err = abs(pred - real["tmax"])
+        hist["n"] += 1
+        hist["err_sum"] += err
+        if err <= 2: hist["ok2"] += 1
+        if err <= 3: hist["ok3"] += 1
+        lead = str(p.get("lead", 1))
+        z = sesgos.setdefault(zona, {})
+        serie = z.setdefault(lead, [])
+        serie.append(round(pred - real["tmax"], 2))
+        z[lead] = serie[-VENTANA_SESGO:]
+
+    # registrar los pronósticos de hoy para evaluarlos cuando ERA5 los cubra
+    hechos = {(p["zona"], p["fecha"]) for p in quedan}
     for c in clima_actual:
-        for j, d in enumerate(c["dias"][1:], start=1):  # días futuros
-            nuevos_pendientes.append({"zona": c["zona"], "fecha": d["fecha"],
-                                      "t_max_pred": d["t_max"], "lead": j})
-    # limitar tamaño
-    nuevos_pendientes = nuevos_pendientes[-300:]
+        for j, d in enumerate(c["dias"][1:], start=1):
+            if (c["zona"], d["fecha"]) in hechos:
+                continue
+            quedan.append({"zona": c["zona"], "fecha": d["fecha"],
+                           "t_max_pred": d["t_max"], "lead": j})
+
     resumen = None
-    if hist["n"] >= 5:
-        resumen = {
-            "n": hist["n"],
-            "acierto_2c": round(100 * hist["ok2"] / hist["n"]),
-            "acierto_3c": round(100 * hist["ok3"] / hist["n"]),
-            "error_medio": round(hist["err_sum"] / hist["n"], 1),
-            "fuente": fuente_real,
-        }
-    return hist, nuevos_pendientes, resumen, sesgos
+    if hist["n"] >= 10:
+        resumen = {"n": hist["n"],
+                   "acierto_2c": round(100 * hist["ok2"] / hist["n"]),
+                   "acierto_3c": round(100 * hist["ok3"] / hist["n"]),
+                   "error_medio": round(hist["err_sum"] / hist["n"], 2),
+                   "fuente": "reanálisis ERA5"}
+    return hist, quedan[-400:], resumen, sesgos
 
 
 def cargar_mos():
@@ -1436,8 +1476,20 @@ def correr(estado_previo_path="estado_aprendizaje.json"):
         obs_diarias = previo.get("obs_diarias", {})
     clima_diag += f" | estaciones chilenas: {len(obs)}"
     # validación en vivo contra las estaciones chilenas (dato independiente)
+    # verdad de contraste: ERA5 (máximo real del día, sin depender de cuántas
+    # veces alcanzó a correr el motor). Las estaciones chilenas se siguen
+    # usando para mostrar el estado actual.
     try:
-        clima_hist, clima_pend, clima_acierto, clima_sesgos = validar_clima(previo, clima, obs_diarias)
+        _mods = {}
+        for _r in ("modelos_clima.json", "/mnt/user-data/outputs/modelos_clima.json"):
+            if os.path.exists(_r):
+                _mods = json.load(open(_r)); break
+        verdad = verdad_era5(_mods) if _mods else {}
+    except Exception:
+        verdad = {}
+    clima_diag += f" | verdad ERA5: {len(verdad)} regiones"
+    try:
+        clima_hist, clima_pend, clima_acierto, clima_sesgos = validar_clima(previo, clima, verdad)
     except Exception:
         clima_hist, clima_pend, clima_acierto = {}, [], None
         clima_sesgos = previo.get("clima_sesgos", {})
@@ -1462,6 +1514,7 @@ def correr(estado_previo_path="estado_aprendizaje.json"):
         "obs_diarias":obs_diarias,
         "clima_diagnostico":clima_diag,
         "clima_validacion":clima_hist,
+        "validacion_version":VALIDACION_VERSION,
         "clima_sesgos":clima_sesgos,
         "clima_pendientes":clima_pend,
         "clima_acierto":clima_acierto,

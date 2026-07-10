@@ -375,7 +375,7 @@ function dibujarClima(clima, obs){
       <div class="clima-dias">${dias}</div>
     </div>`;
   });
-  html+=`<div class="clima-nota"><b>Precisión medida</b> (backtest de 60 días en las 9 regiones, contrastado con el reanálisis ERA5): error de la temperatura máxima ±0.6 °C a 1 día, ±0.8 °C a 3 días, ±1.2 °C a 5 días y ±1.5 °C a 7 días. Fuentes: ensemble de 5 modelos atmosféricos (ECMWF, GFS, ICON, GEM, MeteoFrance), modelo propio con 9 años aprendidos por región, y estaciones meteorológicas chilenas para el estado actual y la validación independiente. Los pesos de la mezcla y la confianza de cada día no son supuestos: se calcularon minimizando el error real. Sobre el ensemble corre un <b>post-procesador estadístico</b> (regresión entrenada con el reanálisis ERA5) que aprende cuánto vale cada modelo en cada región: mejora medida <b>+18%</b>, validada con cinco cortes temporales distintos y sin usar la fecha, para no memorizar la estación del año. Además el sistema aprende su propio <b>sesgo</b> frente a las estaciones chilenas y descuenta la mitad (descontarlo entero empeora el resultado). Aun así, el clima es caótico y ningún pronóstico es exacto.</div>`;
+  html+=`<div class="clima-nota"><b>Precisión medida</b> (backtest de 60 días en las 9 regiones, contrastado con el reanálisis ERA5): error de la temperatura máxima ±0.6 °C a 1 día, ±0.8 °C a 3 días, ±1.2 °C a 5 días y ±1.5 °C a 7 días. Fuentes: ensemble de 5 modelos atmosféricos (ECMWF, GFS, ICON, GEM, MeteoFrance), modelo propio con 9 años aprendidos por región, y estaciones meteorológicas chilenas para el estado actual y la validación independiente. Los pesos de la mezcla y la confianza de cada día no son supuestos: se calcularon minimizando el error real. Sobre el ensemble corre un <b>post-procesador estadístico</b> (regresión entrenada con el reanálisis ERA5) que aprende cuánto vale cada modelo en cada región: mejora medida <b>+18%</b>, validada con cinco cortes temporales distintos y sin usar la fecha, para no memorizar la estación del año. Además el sistema aprende su propio <b>sesgo</b> frente al reanálisis ERA5 y descuenta la mitad (descontarlo entero empeora el resultado). Las estaciones chilenas muestran el estado actual medido en el suelo. Aun así, el clima es caótico y ningún pronóstico es exacto.</div>`;
   cont.innerHTML=html;
 }
 
@@ -492,7 +492,7 @@ fetch(FUENTE).then(r=>r.json()).then(d=>{
     if(ca && ca.n>=5){
       cac.innerHTML=`<div class="clima-val">✓ Mi modelo acierta a ±2°C el <b>${ca.acierto_2c}%</b> de las veces · ±3°C el <b>${ca.acierto_3c}%</b> · error medio ±${ca.error_medio}°C <span style="color:var(--muted)">(medido con ${ca.n} comparaciones contra ${ca.fuente||'medición real'})</span></div>`;
     } else {
-      cac.innerHTML=`<div class="clima-val" style="color:var(--muted)">El modelo está midiendo su acierto: compara cada día su predicción con la temperatura medida por las estaciones meteorológicas chilenas (dato independiente). El % aparecerá tras unos días de datos.</div>`;
+      cac.innerHTML=`<div class="clima-val" style="color:var(--muted)">El modelo está midiendo su acierto: compara cada pronóstico con la temperatura real de ese día según el reanálisis ERA5. El % aparecerá tras unos días de datos.</div>`;
     }
   }
 
