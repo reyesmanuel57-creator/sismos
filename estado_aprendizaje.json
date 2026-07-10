@@ -1,5 +1,5 @@
 {
-  "actualizado": "2026-07-10T04:07:20.643619+00:00",
+  "actualizado": "2026-07-10T04:18:45.252284+00:00",
   "ultimo_sismo": "2026-07-10T01:59:41+00:00",
   "n_eventos_escaneados": 6281,
   "fuente_datos": "USGS (histórico) + CSN y sismologia.cl (reciente)",
@@ -1529,34 +1529,34 @@
     "Atacama (Copiapó)": {
       "estacion": "SCAT",
       "ciudad": "Caldera",
-      "temperatura": 11.0,
+      "temperatura": 12.0,
       "condicion": "Despejado",
-      "humedad": 87,
-      "hora": "23:00:00"
+      "humedad": 88,
+      "hora": "00:00:00"
     },
     "Coquimbo (La Serena)": {
       "estacion": "SCSE",
       "ciudad": "La Serena/Coquimbo",
       "temperatura": 13.0,
       "condicion": "Despejado",
-      "humedad": 51,
-      "hora": "23:00:00"
+      "humedad": 62,
+      "hora": "00:00:00"
     },
     "Valparaíso–Metropolitana": {
       "estacion": "SCEL",
       "ciudad": "Santiago Poniente",
       "temperatura": 12.0,
-      "condicion": "Cubierto",
+      "condicion": "Nublado",
       "humedad": 50,
-      "hora": "23:00:00"
+      "hora": "00:00:00"
     },
     "Maule–Ñuble": {
       "estacion": "SCIC",
       "ciudad": "Curicó",
-      "temperatura": 13.0,
+      "temperatura": 12.0,
       "condicion": "Despejado",
       "humedad": 100,
-      "hora": "23:00:00"
+      "hora": "00:00:00"
     },
     "Biobío–Araucanía": {
       "estacion": "SCIE",
@@ -1585,7 +1585,7 @@
       "2026-07-10": {
         "t_max_obs": 18.0,
         "t_min_obs": 18.0,
-        "n": 4
+        "n": 5
       }
     },
     "Tarapacá (Iquique)": {
@@ -1597,7 +1597,7 @@
       "2026-07-10": {
         "t_max_obs": 18.0,
         "t_min_obs": 17.0,
-        "n": 4
+        "n": 5
       }
     },
     "Antofagasta": {
@@ -1609,7 +1609,7 @@
       "2026-07-10": {
         "t_max_obs": 15.0,
         "t_min_obs": 14.0,
-        "n": 4
+        "n": 5
       }
     },
     "Atacama (Copiapó)": {
@@ -1621,7 +1621,7 @@
       "2026-07-10": {
         "t_max_obs": 13.0,
         "t_min_obs": 11.0,
-        "n": 4
+        "n": 5
       }
     },
     "Coquimbo (La Serena)": {
@@ -1633,7 +1633,7 @@
       "2026-07-10": {
         "t_max_obs": 15.0,
         "t_min_obs": 13.0,
-        "n": 4
+        "n": 5
       }
     },
     "Valparaíso–Metropolitana": {
@@ -1645,7 +1645,7 @@
       "2026-07-10": {
         "t_max_obs": 14.0,
         "t_min_obs": 12.0,
-        "n": 4
+        "n": 5
       }
     },
     "Maule–Ñuble": {
@@ -1657,7 +1657,7 @@
       "2026-07-10": {
         "t_max_obs": 13.0,
         "t_min_obs": 11.0,
-        "n": 4
+        "n": 5
       }
     },
     "Biobío–Araucanía": {
@@ -1669,7 +1669,7 @@
       "2026-07-10": {
         "t_max_obs": 11.0,
         "t_min_obs": 11.0,
-        "n": 4
+        "n": 5
       }
     },
     "Los Lagos–Aysén": {
@@ -1681,87 +1681,19 @@
       "2026-07-10": {
         "t_max_obs": 7.0,
         "t_min_obs": 4.0,
-        "n": 4
+        "n": 5
       }
     }
   },
-  "clima_diagnostico": "ok: 9 regiones | modelos_clima.json existe: True | estaciones chilenas: 9",
+  "clima_diagnostico": "ok: 9 regiones | modelos_clima.json existe: True | estaciones chilenas: 9 | verdad ERA5: 7 regiones",
   "clima_validacion": {
-    "n": 32,
-    "ok2": 11,
-    "ok3": 24,
-    "err_sum": 128.0
+    "n": 0,
+    "ok2": 0,
+    "ok3": 0,
+    "err_sum": 0.0
   },
-  "clima_sesgos": {
-    "Coquimbo (La Serena)": {
-      "1": [
-        6.0,
-        6.0,
-        5.0,
-        5.0
-      ]
-    },
-    "Valparaíso–Metropolitana": {
-      "1": [
-        2.0,
-        2.0,
-        3.0,
-        3.0
-      ]
-    },
-    "Maule–Ñuble": {
-      "1": [
-        1.0,
-        1.0,
-        1.0,
-        1.0
-      ]
-    },
-    "Biobío–Araucanía": {
-      "1": [
-        3.0,
-        3.0,
-        3.0,
-        3.0
-      ]
-    },
-    "Los Lagos–Aysén": {
-      "1": [
-        3.0,
-        3.0,
-        3.0,
-        3.0
-      ]
-    },
-    "Arica–Parinacota": {
-      "1": [
-        2.0,
-        2.0,
-        3.0
-      ]
-    },
-    "Tarapacá (Iquique)": {
-      "1": [
-        -1.0,
-        -1.0,
-        -1.0
-      ]
-    },
-    "Antofagasta": {
-      "1": [
-        4.0,
-        3.0,
-        3.0
-      ]
-    },
-    "Atacama (Copiapó)": {
-      "1": [
-        16.0,
-        16.0,
-        16.0
-      ]
-    }
-  },
+  "validacion_version": 2,
+  "clima_sesgos": {},
   "clima_pendientes": [
     {
       "zona": "Tarapacá (Iquique)",
@@ -3480,13 +3412,7 @@
       "lead": 6
     }
   ],
-  "clima_acierto": {
-    "n": 32,
-    "acierto_2c": 34,
-    "acierto_3c": 75,
-    "error_medio": 4.0,
-    "fuente": "estaciones chilenas"
-  },
+  "clima_acierto": null,
   "pronostico_ubicacion": {
     "zona": "Tarapacá (Iquique)",
     "lat_punto": -21.78,
@@ -5110,6 +5036,15 @@
     },
     {
       "fecha": "2026-07-10T04:07:20.643597+00:00",
+      "mu": 0.6621,
+      "K": 0.001,
+      "alpha": 1.52,
+      "p": 1.442,
+      "b": 1.435,
+      "n_total": 6281
+    },
+    {
+      "fecha": "2026-07-10T04:18:45.252257+00:00",
       "mu": 0.6621,
       "K": 0.001,
       "alpha": 1.52,
