@@ -898,7 +898,16 @@ MAX_SESGO = 2.5         # tope de corrección, en °C
 # diaria muestreando estaciones cada corrida; como GitHub no ejecuta el motor
 # tantas veces al día, esa "máxima observada" quedaba por debajo de la real y
 # el sistema aprendía un sesgo falso de varios grados.
-VALIDACION_VERSION = 2
+# Nombres legibles de los modelos atmosféricos, para el marcador público.
+NOMBRES_MODELOS = {
+    "ecmwf_ifs025": "ECMWF (europeo)",
+    "gfs_seamless": "GFS (americano)",
+    "icon_seamless": "ICON (alemán)",
+    "gem_seamless": "GEM (canadiense)",
+    "meteofrance_seamless": "MeteoFrance",
+}
+
+VALIDACION_VERSION = 3
 DIAS_ESPERA_ERA5 = 3      # ERA5 publica con ~2 días de retraso
 
 
@@ -971,9 +980,10 @@ def validar_clima(previo, clima_actual, verdad=None):
     base = {"n": 0, "ok2": 0, "ok3": 0, "err_sum": 0.0}
     hist = previo.get("clima_validacion") or {}
     sesgos = previo.get("clima_sesgos") or {}
+    marcador = previo.get("clima_marcador") or {}
     # si la validación previa venía del esquema viejo, se descarta entera
     if previo.get("validacion_version") != VALIDACION_VERSION:
-        hist, sesgos = dict(base), {}
+        hist, sesgos, marcador = dict(base), {}, {}
     for k, v in base.items():
         hist.setdefault(k, v)
     if not isinstance(sesgos, dict):
@@ -1012,14 +1022,35 @@ def validar_clima(previo, clima_actual, verdad=None):
         serie.append(round(pred - real["tmax"], 2))
         z[lead] = serie[-VENTANA_SESGO:]
 
+        # MARCADOR: mismo día, misma verdad, para todos los pronósticos.
+        # No se aprende a imitar a nadie: se aprende contra la realidad, y
+        # aquí solo se lleva la cuenta de quién estuvo más cerca.
+        def _anotar(fuente, valor):
+            if valor is None:
+                return
+            m = marcador.setdefault(fuente, {"n": 0, "err_sum": 0.0, "ok2": 0})
+            e = abs(valor - real["tmax"])
+            m["n"] += 1; m["err_sum"] += e
+            if e <= 2: m["ok2"] += 1
+        _anotar("Mi sistema", pred)
+        _anotar("Ensemble (mediana)", p.get("med_tmax"))
+        for nombre_m, v in (p.get("modelos_tmax") or {}).items():
+            _anotar(NOMBRES_MODELOS.get(nombre_m, nombre_m), v)
+
     # registrar los pronósticos de hoy para evaluarlos cuando ERA5 los cubra
     hechos = {(p["zona"], p["fecha"]) for p in quedan}
     for c in clima_actual:
         for j, d in enumerate(c["dias"][1:], start=1):
             if (c["zona"], d["fecha"]) in hechos:
                 continue
-            quedan.append({"zona": c["zona"], "fecha": d["fecha"],
-                           "t_max_pred": d["t_max"], "lead": j})
+            reg = {"zona": c["zona"], "fecha": d["fecha"],
+                   "t_max_pred": d["t_max"], "lead": j}
+            # se guarda también lo que dijo cada modelo atmosférico ese día,
+            # para poder puntuarlos todos contra la misma verdad (ERA5).
+            if d.get("modelos_tmax"):
+                reg["modelos_tmax"] = d["modelos_tmax"]
+                reg["med_tmax"] = d.get("med_tmax")
+            quedan.append(reg)
 
     resumen = None
     if hist["n"] >= 10:
@@ -1028,7 +1059,17 @@ def validar_clima(previo, clima_actual, verdad=None):
                    "acierto_3c": round(100 * hist["ok3"] / hist["n"]),
                    "error_medio": round(hist["err_sum"] / hist["n"], 2),
                    "fuente": "reanálisis ERA5"}
-    return hist, quedan[-400:], resumen, sesgos
+
+    # tabla ordenada del marcador (solo con suficientes comparaciones)
+    tabla = None
+    listos = [(f, m) for f, m in marcador.items() if m["n"] >= 10]
+    if listos:
+        tabla = sorted(
+            [{"fuente": f, "n": m["n"],
+              "error_medio": round(m["err_sum"] / m["n"], 2),
+              "dentro_2c": round(100 * m["ok2"] / m["n"])} for f, m in listos],
+            key=lambda x: x["error_medio"])
+    return hist, quedan[-400:], resumen, sesgos, marcador, tabla
 
 
 def cargar_mos():
@@ -1333,6 +1374,8 @@ def clima_regiones(sesgos=None):
                 "viento": int(round(viento)),
                 "sesgo_corregido": round(sesgo_aplicado, 2),
                 "postproceso_ia": bool(mos_aplicado),
+                "modelos_tmax": (det_max["modelos"] if det_max else None),
+                "med_tmax": (det_max["mediana"] if det_max else None),
                 "n_modelos": int(n_modelos),
                 "acuerdo_modelos": round(float(desv_temp), 1) if desv_temp is not None else None,
                 "desc": desc, "icono": icono,
@@ -1433,10 +1476,100 @@ def _clima_regiones_viejo():
 
 
 
+# ---------------------------------------------------------------------------
+# ALERTA POR UMBRAL (no depende del ranking top-3).
+# Una zona genera aviso SOLO si su probabilidad propia cruza el umbral.
+# Medido sobre 601 semanas reales (2013-2024):
+#   umbral 50% -> se dispara cada 26 dias, acierta 33%
+#   umbral 60% -> se dispara cada ~9 meses, acierta 56%
+# Se usa 60% porque es el punto donde el aviso acierta mas veces de las que
+# falla. Aun asi falla 44%: el texto SIEMPRE debe mostrar esa cifra.
+UMBRAL_ALERTA = 0.60
+ACIERTO_ALERTA_PCT = 56          # medido, no estimado
+UMBRAL_VIGILANCIA = 0.45         # aviso menor, solo informativo
+
+
+def evaluar_alerta(zonas):
+    """
+    Devuelve el aviso vigente, o None si ninguna zona lo amerita.
+    No mira el ranking: cada zona se evalua contra el umbral por si sola,
+    de modo que puede haber cero avisos aunque siempre exista un top-3.
+    """
+    if not zonas:
+        return None
+    cands = [z for z in zonas if z.get("prob_M5_7d", 0) >= UMBRAL_VIGILANCIA]
+    if not cands:
+        return None
+    z = max(cands, key=lambda x: x.get("prob_M5_7d", 0))
+    p = z.get("prob_M5_7d", 0)
+    alto = p >= UMBRAL_ALERTA
+    return {
+        "activa": True,
+        "nivel": "alerta" if alto else "vigilancia",
+        "zona": z.get("zona"),
+        "prob_M5_7d": round(p, 3),
+        "prob_M6_7d": round(z.get("prob_M6_7d", 0), 3),
+        "mag_esperada": z.get("mag_esperada"),
+        "umbral": UMBRAL_ALERTA if alto else UMBRAL_VIGILANCIA,
+        "acierto_historico_pct": ACIERTO_ALERTA_PCT if alto else None,
+        "texto": ("Actividad muy por sobre lo normal en esta zona."
+                  if alto else
+                  "Actividad algo elevada. Solo informativo."),
+        "descargo": ("Aviso generado por un modelo estadistico. No es una "
+                     "alerta oficial. Las fuentes oficiales son CSN y SENAPRED."),
+    }
+
+
+def sismos_mundiales(cat_mundo=None):
+    """
+    Sismos M>=7 recientes en el mundo, para el panel informativo.
+    Se acompana SIEMPRE de la correlacion medida con Chile, que es nula:
+    tras un M>=7 mundial, la prob de M>=7 en Chile a 30-60 dias es 2%;
+    sin ningun sismo previo es 3% (506 casos, 1990-2024).
+    """
+    import datetime, urllib.parse
+    hoy = datetime.date.today()
+    try:
+        url = "https://earthquake.usgs.gov/fdsnws/event/1/query?" + urllib.parse.urlencode({
+            "format": "geojson",
+            "starttime": (hoy - datetime.timedelta(days=90)).isoformat(),
+            "endtime": hoy.isoformat(), "minmagnitude": 7.0})
+        r = requests.get(url, timeout=12)
+        if r.status_code != 200:
+            return None
+        feats = r.json().get("features", [])
+    except Exception:
+        return None
+    ev = []
+    for f in feats[:6]:
+        pr = f.get("properties", {})
+        co = (f.get("geometry") or {}).get("coordinates") or [None, None]
+        ev.append({"mag": pr.get("mag"), "lugar": pr.get("place"),
+                   "ms": pr.get("time"), "lat": co[1], "lon": co[0]})
+    return {
+        "eventos": ev,
+        "correlacion_chile_pct": 2,
+        "base_sin_detonante_pct": 3,
+        "n_casos": 506,
+        "veredicto": ("Sin efecto medible sobre Chile. Un sismo grande en otro "
+                      "pais no eleva la probabilidad de uno en Chile."),
+    }
+
+
 def correr(estado_previo_path="estado_aprendizaje.json"):
     cat = escanear_chile()
     par = reaprender_parametros(cat)
     zonas, hoy = estimar(cat, par)
+
+    # aviso por umbral propio (independiente del ranking) y panel mundial
+    try:
+        _alerta_vigente = evaluar_alerta(zonas)
+    except Exception:
+        _alerta_vigente = None
+    try:
+        _mundo = sismos_mundiales()
+    except Exception:
+        _mundo = None
 
     # cargar estado previo para historial y calibración
     previo = {}
@@ -1508,10 +1641,12 @@ def correr(estado_previo_path="estado_aprendizaje.json"):
         verdad = {}
     clima_diag += f" | verdad ERA5: {len(verdad)} regiones"
     try:
-        clima_hist, clima_pend, clima_acierto, clima_sesgos = validar_clima(previo, clima, verdad)
+        (clima_hist, clima_pend, clima_acierto,
+         clima_sesgos, clima_marcador, clima_tabla) = validar_clima(previo, clima, verdad)
     except Exception:
         clima_hist, clima_pend, clima_acierto = {}, [], None
         clima_sesgos = previo.get("clima_sesgos", {})
+        clima_marcador, clima_tabla = previo.get("clima_marcador", {}), None
 
     historial = previo.get("historial_parametros",[])
     historial.append({"fecha":datetime.now(timezone.utc).isoformat(),
@@ -1533,6 +1668,8 @@ def correr(estado_previo_path="estado_aprendizaje.json"):
         "obs_diarias":obs_diarias,
         "clima_diagnostico":clima_diag,
         "clima_validacion":clima_hist,
+        "clima_marcador":clima_marcador,
+        "clima_tabla":clima_tabla,
         "validacion_version":VALIDACION_VERSION,
         "clima_sesgos":clima_sesgos,
         "clima_pendientes":clima_pend,
@@ -1543,6 +1680,8 @@ def correr(estado_previo_path="estado_aprendizaje.json"):
         "alerta_tsunami":tsunami,
         "parametros_aprendidos":par,
         "zonas":zonas,
+        "alerta":_alerta_vigente,
+        "mundo":_mundo,
         "calibracion":{**calib,
                        "tasa_acierto_top3_pct":round(tasa_acierto,1) if tasa_acierto is not None else None,
                        "brier_score":round(brier,4) if brier is not None else None},

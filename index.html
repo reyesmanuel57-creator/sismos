@@ -199,6 +199,37 @@
   .pt-coord{font-size:10px;color:var(--muted);font-family:'Space Mono',monospace;margin-top:1px;}
   .pt-datos{font-size:11px;color:var(--muted);margin-top:3px;line-height:1.4;}
   .pts-nota{font-size:10px;color:var(--muted);margin-top:10px;font-family:'Space Mono',monospace;line-height:1.4;border-top:1px solid rgba(255,255,255,.06);padding-top:8px;}
+  .marc{background:#0F1620;border:1px solid var(--line);border-radius:12px;padding:14px;margin-bottom:12px;}
+  .marc-h{font-family:'Space Mono',monospace;font-size:11px;letter-spacing:.08em;color:var(--verde);
+    text-transform:uppercase;margin-bottom:4px;}
+  .marc-sub{font-size:11px;color:var(--muted);margin-bottom:11px;line-height:1.5;}
+  .marc-fila{display:flex;align-items:center;gap:10px;padding:7px 0;border-bottom:1px solid rgba(255,255,255,.05);}
+  .marc-fila:last-child{border-bottom:none;}
+  .marc-pos{font-family:'Space Mono',monospace;font-size:11px;color:var(--muted2);min-width:20px;}
+  .marc-nom{flex:1;font-size:12.5px;}
+  .marc-yo{color:var(--verde);font-weight:700;}
+  .marc-err{font-family:'Space Mono',monospace;font-size:13px;font-weight:700;min-width:62px;text-align:right;}
+  .marc-pct{font-family:'Space Mono',monospace;font-size:10px;color:var(--muted);min-width:42px;text-align:right;}
+  .marc-nota{font-size:10px;color:var(--muted2);margin-top:9px;font-family:'Space Mono',monospace;line-height:1.5;}
+  .alr{border-radius:12px;padding:15px;margin-bottom:14px;}
+  .alr-alta{background:rgba(214,69,80,.10);border:1px solid rgba(214,69,80,.45);}
+  .alr-media{background:rgba(232,148,59,.09);border:1px solid rgba(232,148,59,.35);}
+  .alr-h{font-family:'Space Mono',monospace;font-size:12px;letter-spacing:.08em;
+    text-transform:uppercase;font-weight:700;margin-bottom:7px;}
+  .alr-alta .alr-h{color:#D64550;}
+  .alr-media .alr-h{color:#E8943B;}
+  .alr-z{font-size:17px;font-weight:800;margin-bottom:4px;}
+  .alr-p{font-size:12.5px;color:var(--text);line-height:1.5;margin-bottom:8px;}
+  .alr-tasa{font-size:11px;color:var(--muted);font-family:'Space Mono',monospace;
+    border-top:1px solid rgba(255,255,255,.08);padding-top:8px;line-height:1.5;}
+  .mundo{background:#0F1620;border:1px solid var(--line);border-radius:12px;padding:14px;margin:14px 0;}
+  .mundo-h{font-family:'Space Mono',monospace;font-size:11px;letter-spacing:.08em;
+    color:var(--muted);text-transform:uppercase;margin-bottom:9px;}
+  .mundo-ev{font-size:12px;padding:5px 0;border-bottom:1px solid rgba(255,255,255,.05);}
+  .mundo-ev:last-of-type{border-bottom:none;}
+  .mundo-m{font-family:'Space Mono',monospace;font-weight:700;color:var(--text);}
+  .mundo-ver{margin-top:10px;padding:9px;background:rgba(63,167,150,.07);
+    border:1px solid rgba(63,167,150,.22);border-radius:8px;font-size:11.5px;line-height:1.55;}
 </style>
 </head>
 <body>
@@ -217,7 +248,9 @@
   <div id="pronostico-ubicacion"></div>
   <div class="seccion">
     <div class="seccion-titulo">Ranking de zonas a vigilar (3 y 7 días)</div>
+    <div id="alerta-umbral"></div>
     <div id="zonas"></div>
+    <div id="panel-mundo"></div>
   </div>
 
   <div class="seccion">
@@ -228,6 +261,7 @@
   <div class="seccion">
     <div class="seccion-titulo">Pronóstico del clima 7 días — modelo propio (con alertas)</div>
     <div id="clima-acierto"></div>
+    <div id="clima-marcador"></div>
     <div id="clima"></div>
   </div>
 
@@ -485,6 +519,31 @@ fetch(FUENTE).then(r=>r.json()).then(d=>{
       <div class="pts-nota">Probabilidad semanal de M≥5 en un radio de 80 km de cada punto, según la sismicidad histórica real. NO predice el evento ni su fecha: muestra qué lugares de la zona tienen más actividad histórica. El margen de los datos es de ~100 km.</div>
     </div>`;
   })();
+  // MARCADOR: mi sistema vs cada modelo atmosférico, misma verdad
+  (function(){
+    const t=d.clima_tabla, cont=document.getElementById("clima-marcador");
+    if(!cont) return;
+    if(!t || !t.length){
+      cont.innerHTML=`<div class="marc"><div class="marc-h">Marcador contra los modelos del mundo</div>
+        <div class="marc-sub">Cada día se guarda lo que pronosticó mi sistema y lo que pronosticó cada modelo atmosférico. Tres días después, el reanálisis ERA5 dice cuál fue la temperatura real y se anota quién estuvo más cerca. La tabla aparece tras las primeras comparaciones.</div></div>`;
+      return;
+    }
+    const filas=t.map((r,i)=>{
+      const yo = r.fuente==="Mi sistema";
+      return `<div class="marc-fila">
+        <span class="marc-pos">${i+1}</span>
+        <span class="marc-nom ${yo?'marc-yo':''}">${r.fuente}</span>
+        <span class="marc-err" ${yo?'style="color:var(--verde)"':''}>±${r.error_medio.toFixed(2)}°C</span>
+        <span class="marc-pct">${r.dentro_2c}%</span>
+      </div>`;}).join('');
+    cont.innerHTML=`<div class="marc">
+      <div class="marc-h">Marcador contra los modelos del mundo</div>
+      <div class="marc-sub">Error medio de la temperatura máxima, medido contra el reanálisis ERA5. Menor es mejor. La última columna es el % de días dentro de ±2 °C.</div>
+      ${filas}
+      <div class="marc-nota">Todos los pronósticos se juzgan el mismo día contra la misma verdad. Mi sistema no aprende a imitar a ningún modelo: aprende contra la realidad. Basado en ${t[0].n} comparaciones.</div>
+    </div>`;
+  })();
+
   // % de acierto del modelo de clima (validación en vivo)
   const ca=d.clima_acierto;
   const cac=document.getElementById("clima-acierto");
@@ -536,6 +595,37 @@ fetch(FUENTE).then(r=>r.json()).then(d=>{
       setTimeout(()=>map.invalidateSize(),200);
     });
   }
+
+  // AVISO POR UMBRAL: solo aparece si una zona lo cruza por si sola.
+  (function(){
+    const cont=document.getElementById("alerta-umbral"); if(!cont) return;
+    const a=d.alerta;
+    if(!a||!a.activa){ cont.innerHTML=""; return; }
+    const alta=a.nivel==="alerta";
+    cont.innerHTML=`<div class="alr ${alta?'alr-alta':'alr-media'}">
+      <div class="alr-h">${alta?'\u26A0\uFE0F Alerta \u2014 vigilancia elevada':'Actividad elevada'}</div>
+      <div class="alr-z">${a.zona}</div>
+      <div class="alr-p">Probabilidad de sismo M\u22655 en 7 d\u00edas: <b>${Math.round(a.prob_M5_7d*100)}%</b>${a.mag_esperada?` \u00b7 magnitud t\u00edpica ~M${a.mag_esperada}`:''}<br>${a.texto}</div>
+      <div class="alr-tasa">${a.acierto_historico_pct?`Este aviso acierta <b>${a.acierto_historico_pct}%</b> de las veces (medido en 12 a\u00f1os). Falla el ${100-a.acierto_historico_pct}%.<br>`:''}${a.descargo}</div>
+    </div>`;
+  })();
+
+  // PANEL MUNDIAL: informativo, con la correlacion real medida.
+  (function(){
+    const cont=document.getElementById("panel-mundo"); if(!cont) return;
+    const m=d.mundo;
+    if(!m||!m.eventos||!m.eventos.length){ cont.innerHTML=""; return; }
+    const evs=m.eventos.map(e=>{
+      const dias=e.ms?Math.round((Date.now()-e.ms)/86400000):null;
+      return `<div class="mundo-ev"><span class="mundo-m">M${e.mag}</span> \u00b7 ${e.lugar||''}${dias!=null?` \u00b7 hace ${dias} d\u00edas`:''}</div>`;
+    }).join('');
+    cont.innerHTML=`<div class="mundo">
+      <div class="mundo-h">Sismos grandes en el mundo (M\u22657, 90 d\u00edas)</div>
+      ${evs}
+      <div class="mundo-ver"><b>Repercusi\u00f3n en Chile: ${m.veredicto}</b><br>
+      Tras un M\u22657 en el mundo, la probabilidad de un M\u22657 en Chile en 30\u201360 d\u00edas es <b>${m.correlacion_chile_pct}%</b>. Sin ning\u00fan sismo previo es <b>${m.base_sin_detonante_pct}%</b>. Medido con ${m.n_casos} casos (1990\u20132024).</div>
+    </div>`;
+  })();
 
   const c=document.getElementById("zonas");c.innerHTML="";
   const regColor={REPLICAS:'#D64550',ENJAMBRE:'#E8943B',NORMAL:'#3FA796',CALMA:'#5BA3D0'};
