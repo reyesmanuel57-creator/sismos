@@ -1,7 +1,7 @@
 {
-  "actualizado": "2026-07-31T13:12:53.808586+00:00",
-  "ultimo_sismo": "2026-07-31T03:56:02+00:00",
-  "n_eventos_escaneados": 6266,
+  "actualizado": "2026-07-31T15:36:26.167216+00:00",
+  "ultimo_sismo": "2026-07-31T14:04:27+00:00",
+  "n_eventos_escaneados": 6267,
   "fuente_datos": "USGS (histórico) + CSN y sismologia.cl (reciente)",
   "vigilancia": {
     "estado": "VIGILANCIA",
@@ -10,10 +10,18 @@
   "actividad_reciente": [],
   "monitor_en_vivo": [
     {
+      "mag": 4.0,
+      "zona": "Valparaíso–Metropolitana",
+      "lugar": "30 km al norte de Los Andes",
+      "hace_horas": 0.0,
+      "profundidad": 99,
+      "hora_utc": "31-07 14:04"
+    },
+    {
       "mag": 3.6,
       "zona": "Antofagasta",
       "lugar": "76 km al este de Socaire",
-      "hace_horas": 0.0,
+      "hace_horas": 10.1,
       "profundidad": 253,
       "hora_utc": "31-07 03:56"
     },
@@ -21,7 +29,7 @@
       "mag": 4.4,
       "zona": "Coquimbo (La Serena)",
       "lugar": "Coquimbo (La Serena)",
-      "hace_horas": 4.8,
+      "hace_horas": 15.0,
       "profundidad": 27,
       "hora_utc": "30-07 23:07"
     },
@@ -29,7 +37,7 @@
       "mag": 3.9,
       "zona": "Coquimbo (La Serena)",
       "lugar": "Coquimbo (La Serena)",
-      "hace_horas": 6.6,
+      "hace_horas": 16.8,
       "profundidad": 221,
       "hora_utc": "30-07 21:18"
     },
@@ -37,7 +45,7 @@
       "mag": 4.0,
       "zona": "Antofagasta",
       "lugar": "Antofagasta",
-      "hace_horas": 7.1,
+      "hace_horas": 17.3,
       "profundidad": 184,
       "hora_utc": "30-07 20:48"
     },
@@ -45,7 +53,7 @@
       "mag": 3.8,
       "zona": "Antofagasta",
       "lugar": "Antofagasta",
-      "hace_horas": 11.6,
+      "hace_horas": 21.8,
       "profundidad": 133,
       "hora_utc": "30-07 16:17"
     },
@@ -53,7 +61,7 @@
       "mag": 4.7,
       "zona": "Antofagasta",
       "lugar": "Antofagasta",
-      "hace_horas": 12.1,
+      "hace_horas": 22.2,
       "profundidad": 235,
       "hora_utc": "30-07 15:49"
     },
@@ -61,7 +69,7 @@
       "mag": 4.3,
       "zona": "Coquimbo (La Serena)",
       "lugar": "Coquimbo (La Serena)",
-      "hace_horas": 18.9,
+      "hace_horas": 29.0,
       "profundidad": 34,
       "hora_utc": "30-07 09:01"
     },
@@ -69,7 +77,7 @@
       "mag": 4.3,
       "zona": "Coquimbo (La Serena)",
       "lugar": "83 km WNW of Coquimbo, Chile",
-      "hace_horas": 18.9,
+      "hace_horas": 29.0,
       "profundidad": 10,
       "hora_utc": "30-07 09:01"
     },
@@ -77,7 +85,7 @@
       "mag": 4.6,
       "zona": "Tarapacá (Iquique)",
       "lugar": "58 km ENE of La Tirana, Chile",
-      "hace_horas": 21.9,
+      "hace_horas": 32.0,
       "profundidad": 98,
       "hora_utc": "30-07 06:04"
     },
@@ -85,7 +93,7 @@
       "mag": 3.5,
       "zona": "Antofagasta",
       "lugar": "Antofagasta",
-      "hace_horas": 22.9,
+      "hace_horas": 33.0,
       "profundidad": 248,
       "hora_utc": "30-07 05:01"
     },
@@ -93,17 +101,9 @@
       "mag": 3.5,
       "zona": "Tarapacá (Iquique)",
       "lugar": "Tarapacá (Iquique)",
-      "hace_horas": 25.3,
+      "hace_horas": 35.4,
       "profundidad": 133,
       "hora_utc": "30-07 02:40"
-    },
-    {
-      "mag": 3.5,
-      "zona": "Antofagasta",
-      "lugar": "Antofagasta",
-      "hace_horas": 36.5,
-      "profundidad": 138,
-      "hora_utc": "29-07 15:24"
     }
   ],
   "clima_regiones": [
@@ -116,7 +116,7 @@
           "t_min": 16,
           "t_max": 21,
           "lluvia_mm": 0.0,
-          "prob_lluvia": 1,
+          "prob_lluvia": 0,
           "mm_max_historico": 1.6,
           "lluvia_fuerte_pct": 0,
           "prob_helada": 0,
@@ -562,7 +562,7 @@
           "t_min": 15,
           "t_max": 20,
           "lluvia_mm": 0.0,
-          "prob_lluvia": 1,
+          "prob_lluvia": 0,
           "mm_max_historico": 0.4,
           "lluvia_fuerte_pct": 0,
           "prob_helada": 0,
@@ -933,7 +933,7 @@
           "t_min": 8,
           "t_max": 18,
           "lluvia_mm": 0.0,
-          "prob_lluvia": 2,
+          "prob_lluvia": 3,
           "mm_max_historico": 46.0,
           "lluvia_fuerte_pct": 1,
           "prob_helada": 0,
@@ -1135,7 +1135,7 @@
           "t_min": 3,
           "t_max": 13,
           "lluvia_mm": 1.2,
-          "prob_lluvia": 45,
+          "prob_lluvia": 47,
           "mm_max_historico": 57.0,
           "lluvia_fuerte_pct": 1,
           "prob_helada": 0,
@@ -1288,7 +1288,7 @@
           "t_min": 8,
           "t_max": 16,
           "lluvia_mm": 5.0,
-          "prob_lluvia": 22,
+          "prob_lluvia": 21,
           "mm_max_historico": 57.0,
           "lluvia_fuerte_pct": 3,
           "prob_helada": 0,
@@ -1481,7 +1481,7 @@
           "t_min": 8,
           "t_max": 16,
           "lluvia_mm": 9.7,
-          "prob_lluvia": 39,
+          "prob_lluvia": 41,
           "mm_max_historico": 40.3,
           "lluvia_fuerte_pct": 8,
           "prob_helada": 1,
@@ -1674,7 +1674,7 @@
           "t_min": 7,
           "t_max": 13,
           "lluvia_mm": 2.6,
-          "prob_lluvia": 43,
+          "prob_lluvia": 44,
           "mm_max_historico": 109.8,
           "lluvia_fuerte_pct": 11,
           "prob_helada": 0,
@@ -1873,7 +1873,7 @@
           "t_min": 7,
           "t_max": 12,
           "lluvia_mm": 3.4,
-          "prob_lluvia": 75,
+          "prob_lluvia": 72,
           "mm_max_historico": 72.3,
           "lluvia_fuerte_pct": 13,
           "prob_helada": 2,
@@ -1906,7 +1906,7 @@
           "t_min": 6,
           "t_max": 11,
           "lluvia_mm": 11.5,
-          "prob_lluvia": 81,
+          "prob_lluvia": 82,
           "mm_max_historico": 72.3,
           "lluvia_fuerte_pct": 14,
           "prob_helada": 2,
@@ -1944,7 +1944,7 @@
           "t_min": 5,
           "t_max": 11,
           "lluvia_mm": 19.4,
-          "prob_lluvia": 89,
+          "prob_lluvia": 88,
           "mm_max_historico": 72.3,
           "lluvia_fuerte_pct": 18,
           "prob_helada": 1,
@@ -1982,7 +1982,7 @@
           "t_min": 4,
           "t_max": 9,
           "lluvia_mm": 13.5,
-          "prob_lluvia": 79,
+          "prob_lluvia": 78,
           "mm_max_historico": 72.3,
           "lluvia_fuerte_pct": 18,
           "prob_helada": 1,
@@ -2023,42 +2023,42 @@
     "Arica–Parinacota": {
       "estacion": "SCAR",
       "ciudad": "Arica",
-      "temperatura": 19.0,
+      "temperatura": 20.0,
       "condicion": "Cubierto",
-      "humedad": 73,
-      "hora": "09:00:00"
+      "humedad": 64,
+      "hora": "11:00:00"
     },
     "Tarapacá (Iquique)": {
       "estacion": "SCDA",
       "ciudad": "Iquique",
-      "temperatura": 18.0,
-      "condicion": "Cubierto",
-      "humedad": 77,
-      "hora": "08:00:00"
+      "temperatura": 20.0,
+      "condicion": "Nublado",
+      "humedad": 68,
+      "hora": "11:00:00"
     },
     "Antofagasta": {
       "estacion": "SCFA",
       "ciudad": "Antofagasta",
-      "temperatura": 16.0,
-      "condicion": "Nublado",
-      "humedad": 82,
-      "hora": "08:00:00"
+      "temperatura": 19.0,
+      "condicion": "Escasa nubosidad",
+      "humedad": 68,
+      "hora": "11:00:00"
     },
     "Atacama (Copiapó)": {
       "estacion": "SCAT",
       "ciudad": "Caldera",
-      "temperatura": 14.0,
+      "temperatura": 17.0,
       "condicion": "Nublado",
-      "humedad": 82,
-      "hora": "09:00:00"
+      "humedad": 72,
+      "hora": "11:00:00"
     },
     "Coquimbo (La Serena)": {
       "estacion": "SCSE",
       "ciudad": "La Serena/Coquimbo",
-      "temperatura": 15.0,
-      "condicion": "Cubierto",
-      "humedad": 77,
-      "hora": "08:00:00"
+      "temperatura": 12.0,
+      "condicion": "Cubierto y lluvia",
+      "humedad": 94,
+      "hora": "11:00:00"
     },
     "Valparaíso–Metropolitana": {
       "estacion": "SCEL",
@@ -2066,31 +2066,31 @@
       "temperatura": 10.0,
       "condicion": "Cubierto y lluvia",
       "humedad": 87,
-      "hora": "09:00:00"
+      "hora": "11:00:00"
     },
     "Maule–Ñuble": {
       "estacion": "SCIC",
       "ciudad": "Curicó",
-      "temperatura": 11.0,
-      "condicion": "Cubierto y lluvia",
-      "humedad": 87,
-      "hora": "09:00:00"
+      "temperatura": 12.0,
+      "condicion": "Niebla",
+      "humedad": 94,
+      "hora": "11:00:00"
     },
     "Biobío–Araucanía": {
       "estacion": "SCIE",
       "ciudad": "Concepción",
-      "temperatura": 12.0,
+      "temperatura": 13.0,
       "condicion": "Cubierto",
       "humedad": 94,
-      "hora": "08:00:00"
+      "hora": "11:00:00"
     },
     "Los Lagos–Aysén": {
       "estacion": "SCTE",
       "ciudad": "Puerto Montt",
-      "temperatura": 9.0,
+      "temperatura": 8.0,
       "condicion": "Cubierto y lluvia",
-      "humedad": 87,
-      "hora": "09:00:00"
+      "humedad": 100,
+      "hora": "11:00:00"
     }
   },
   "obs_diarias": {
@@ -2191,9 +2191,9 @@
         "n": 12
       },
       "2026-07-31": {
-        "t_max_obs": 19.0,
+        "t_max_obs": 20.0,
         "t_min_obs": 18.0,
-        "n": 5
+        "n": 6
       }
     },
     "Tarapacá (Iquique)": {
@@ -2293,9 +2293,9 @@
         "n": 12
       },
       "2026-07-31": {
-        "t_max_obs": 19.0,
+        "t_max_obs": 20.0,
         "t_min_obs": 18.0,
-        "n": 5
+        "n": 6
       }
     },
     "Antofagasta": {
@@ -2395,9 +2395,9 @@
         "n": 12
       },
       "2026-07-31": {
-        "t_max_obs": 17.0,
+        "t_max_obs": 19.0,
         "t_min_obs": 16.0,
-        "n": 5
+        "n": 6
       }
     },
     "Atacama (Copiapó)": {
@@ -2497,9 +2497,9 @@
         "n": 12
       },
       "2026-07-31": {
-        "t_max_obs": 14.0,
+        "t_max_obs": 17.0,
         "t_min_obs": 13.0,
-        "n": 5
+        "n": 6
       }
     },
     "Coquimbo (La Serena)": {
@@ -2600,8 +2600,8 @@
       },
       "2026-07-31": {
         "t_max_obs": 15.0,
-        "t_min_obs": 13.0,
-        "n": 5
+        "t_min_obs": 12.0,
+        "n": 6
       }
     },
     "Valparaíso–Metropolitana": {
@@ -2703,7 +2703,7 @@
       "2026-07-31": {
         "t_max_obs": 13.0,
         "t_min_obs": 9.0,
-        "n": 5
+        "n": 6
       }
     },
     "Maule–Ñuble": {
@@ -2805,7 +2805,7 @@
       "2026-07-31": {
         "t_max_obs": 13.0,
         "t_min_obs": 11.0,
-        "n": 5
+        "n": 6
       }
     },
     "Biobío–Araucanía": {
@@ -2905,9 +2905,9 @@
         "n": 12
       },
       "2026-07-31": {
-        "t_max_obs": 12.0,
+        "t_max_obs": 13.0,
         "t_min_obs": 11.0,
-        "n": 5
+        "n": 6
       }
     },
     "Los Lagos–Aysén": {
@@ -3008,8 +3008,8 @@
       },
       "2026-07-31": {
         "t_max_obs": 11.0,
-        "t_min_obs": 9.0,
-        "n": 5
+        "t_min_obs": 8.0,
+        "n": 6
       }
     }
   },
@@ -4223,7 +4223,7 @@
     "lon_punto": -68.82,
     "mag_esperada_aprox": 4.7,
     "mostrar_circulo": false,
-    "prob_M5_7d": 0.228,
+    "prob_M5_7d": 0.22,
     "radio_km": 420,
     "acierto_100km_pct": 19,
     "acierto_200km_pct": 36,
@@ -4273,9 +4273,9 @@
       "zona": "Antofagasta",
       "lat0": -26,
       "lat1": -23,
-      "prob_M5_7d": 0.466,
+      "prob_M5_7d": 0.449,
       "prob_M6_7d": 0.021,
-      "prob_M5_3d": 0.236,
+      "prob_M5_3d": 0.225,
       "prob_M6_3d": 0.009,
       "nivel": "MODERADO",
       "regimen": "ENJAMBRE",
@@ -4298,8 +4298,8 @@
       "regimen": "NORMAL",
       "mag_esperada": 5.2,
       "mag_maxima_historica": 6.8,
-      "n_ult7d": 7,
-      "n_ult30d": 20,
+      "n_ult7d": 8,
+      "n_ult30d": 21,
       "factor_actividad": 3.0,
       "mag_max_ult30d": 5.1
     },
@@ -4324,17 +4324,17 @@
       "zona": "Tarapacá (Iquique)",
       "lat0": -23,
       "lat1": -20,
-      "prob_M5_7d": 0.228,
+      "prob_M5_7d": 0.22,
       "prob_M6_7d": 0.024,
-      "prob_M5_3d": 0.105,
+      "prob_M5_3d": 0.101,
       "prob_M6_3d": 0.01,
       "nivel": "NORMAL",
       "regimen": "NORMAL",
       "mag_esperada": 5.3,
       "mag_maxima_historica": 6.9,
       "n_ult7d": 11,
-      "n_ult30d": 24,
-      "factor_actividad": 1.17,
+      "n_ult30d": 23,
+      "factor_actividad": 1.12,
       "mag_max_ult30d": 4.6
     },
     {
@@ -4383,7 +4383,7 @@
       "regimen": "NORMAL",
       "mag_esperada": 5.2,
       "mag_maxima_historica": 6.0,
-      "n_ult7d": 1,
+      "n_ult7d": 0,
       "n_ult30d": 4,
       "factor_actividad": 0.5,
       "mag_max_ult30d": 4.8
@@ -4423,18 +4423,7 @@
       "mag_max_ult30d": 4.5
     }
   ],
-  "alerta": {
-    "activa": true,
-    "nivel": "vigilancia",
-    "zona": "Antofagasta",
-    "prob_M5_7d": 0.466,
-    "prob_M6_7d": 0.021,
-    "mag_esperada": 5.3,
-    "umbral": 0.45,
-    "acierto_historico_pct": null,
-    "texto": "Actividad algo elevada. Solo informativo.",
-    "descargo": "Aviso generado por un modelo estadistico. No es una alerta oficial. Las fuentes oficiales son CSN y SENAPRED."
-  },
+  "alerta": null,
   "mundo": {
     "eventos": [
       {
@@ -4472,12 +4461,12 @@
     "veredicto": "Sin efecto medible sobre Chile. Un sismo grande en otro pais no eleva la probabilidad de uno en Chile."
   },
   "calibracion": {
-    "evaluaciones": 18,
-    "aciertos_top3": 11,
-    "brier_sum": 24.413072999999983,
-    "n_brier": 180,
-    "tasa_acierto_top3_pct": 61.1,
-    "brier_score": 0.1356,
+    "evaluaciones": 19,
+    "aciertos_top3": 12,
+    "brier_sum": 25.18503799999998,
+    "n_brier": 189,
+    "tasa_acierto_top3_pct": 63.2,
+    "brier_score": 0.1333,
     "historial": [
       {
         "fecha": "04-07-2026",
@@ -4631,69 +4620,17 @@
           "Antofagasta"
         ],
         "acierto": true
+      },
+      {
+        "fecha": "24-07-2026",
+        "zona_pronosticada": "Antofagasta",
+        "zonas_reales": [
+          "Antofagasta"
+        ],
+        "acierto": true
       }
     ],
     "pendientes": [
-      {
-        "fecha_iso": "2026-07-24T07:41:42+00:00",
-        "fecha_dia": "2026-07-24",
-        "zonas": [
-          {
-            "zona": "Antofagasta",
-            "lat0": -26,
-            "lat1": -23,
-            "prob_M5_7d": 0.324
-          },
-          {
-            "zona": "Valparaíso–Metropolitana",
-            "lat0": -35,
-            "lat1": -32,
-            "prob_M5_7d": 0.317
-          },
-          {
-            "zona": "Tarapacá (Iquique)",
-            "lat0": -23,
-            "lat1": -20,
-            "prob_M5_7d": 0.316
-          },
-          {
-            "zona": "Atacama (Copiapó)",
-            "lat0": -29,
-            "lat1": -26,
-            "prob_M5_7d": 0.247
-          },
-          {
-            "zona": "Coquimbo (La Serena)",
-            "lat0": -32,
-            "lat1": -29,
-            "prob_M5_7d": 0.202
-          },
-          {
-            "zona": "Maule–Ñuble",
-            "lat0": -38,
-            "lat1": -35,
-            "prob_M5_7d": 0.094
-          },
-          {
-            "zona": "Arica–Parinacota",
-            "lat0": -20,
-            "lat1": -17,
-            "prob_M5_7d": 0.055
-          },
-          {
-            "zona": "Biobío–Araucanía",
-            "lat0": -41,
-            "lat1": -38,
-            "prob_M5_7d": 0.023
-          },
-          {
-            "zona": "Los Lagos–Aysén",
-            "lat0": -44,
-            "lat1": -41,
-            "prob_M5_7d": 0.021
-          }
-        ]
-      },
       {
         "fecha_iso": "2026-07-25T03:14:30+00:00",
         "fecha_dia": "2026-07-25",
@@ -5117,15 +5054,6 @@
     ]
   },
   "historial_parametros": [
-    {
-      "fecha": "2026-07-07T03:47:58.856742+00:00",
-      "mu": 0.6648,
-      "K": 0.001,
-      "alpha": 1.548,
-      "p": 1.335,
-      "b": 1.431,
-      "n_total": 6283
-    },
     {
       "fecha": "2026-07-07T10:31:58.488153+00:00",
       "mu": 0.6648,
@@ -6916,6 +6844,15 @@
       "p": 1.309,
       "b": 1.425,
       "n_total": 6266
+    },
+    {
+      "fecha": "2026-07-31T15:36:26.167191+00:00",
+      "mu": 0.6596,
+      "K": 0.0014,
+      "alpha": 1.68,
+      "p": 1.309,
+      "b": 1.425,
+      "n_total": 6267
     }
   ],
   "descargo": "Sistema auto-adaptativo con calibración. Probabilidades por zona para 7 días, NO predicción de día/hora/lugar. Oficial: SENAPRED, sismologia.cl."
