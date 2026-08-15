@@ -1,5 +1,5 @@
 {
-  "actualizado": "2026-08-15T04:55:10.883957+00:00",
+  "actualizado": "2026-08-15T05:18:54.113310+00:00",
   "ultimo_sismo": "2026-08-15T03:34:34+00:00",
   "n_eventos_escaneados": 6242,
   "fuente_datos": "USGS (histórico) + CSN y sismologia.cl (reciente)",
@@ -2017,7 +2017,7 @@
       "temperatura": 19.0,
       "condicion": "Cubierto",
       "humedad": 83,
-      "hora": "00:00:00"
+      "hora": "01:00:00"
     },
     "Tarapacá (Iquique)": {
       "estacion": "SCDA",
@@ -2025,15 +2025,15 @@
       "temperatura": 17.0,
       "condicion": "Cubierto y llovizna",
       "humedad": 100,
-      "hora": "00:00:00"
+      "hora": "01:00:00"
     },
     "Antofagasta": {
       "estacion": "SCFA",
       "ciudad": "Antofagasta",
       "temperatura": 17.0,
-      "condicion": "Cubierto",
+      "condicion": "Cubierto y llovizna",
       "humedad": 94,
-      "hora": "00:00:00"
+      "hora": "01:00:00"
     },
     "Atacama (Copiapó)": {
       "estacion": "SCAT",
@@ -2041,7 +2041,7 @@
       "temperatura": 14.0,
       "condicion": "Despejado",
       "humedad": 94,
-      "hora": "00:00:00"
+      "hora": "01:00:00"
     },
     "Coquimbo (La Serena)": {
       "estacion": "SCSE",
@@ -2049,7 +2049,7 @@
       "temperatura": 14.0,
       "condicion": "Despejado",
       "humedad": 88,
-      "hora": "00:00:00"
+      "hora": "01:00:00"
     },
     "Valparaíso–Metropolitana": {
       "estacion": "SCEL",
@@ -2057,23 +2057,23 @@
       "temperatura": 12.0,
       "condicion": "Nublado",
       "humedad": 88,
-      "hora": "00:00:00"
+      "hora": "01:00:00"
     },
     "Maule–Ñuble": {
       "estacion": "SCIC",
       "ciudad": "Curicó",
       "temperatura": 12.0,
-      "condicion": "Despejado",
+      "condicion": "Nublado",
       "humedad": 94,
-      "hora": "00:00:00"
+      "hora": "01:00:00"
     },
     "Biobío–Araucanía": {
       "estacion": "SCIE",
       "ciudad": "Concepción",
-      "temperatura": 13.0,
-      "condicion": "Nublado",
-      "humedad": 100,
-      "hora": "00:00:00"
+      "temperatura": 14.0,
+      "condicion": "Nubosidad parcial y chubascos",
+      "humedad": 94,
+      "hora": "01:00:00"
     },
     "Los Lagos–Aysén": {
       "estacion": "SCTE",
@@ -2081,7 +2081,7 @@
       "temperatura": 12.0,
       "condicion": "Cubierto",
       "humedad": 88,
-      "hora": "00:00:00"
+      "hora": "01:00:00"
     }
   },
   "obs_diarias": {
@@ -2184,7 +2184,7 @@
       "2026-08-15": {
         "t_max_obs": 19.0,
         "t_min_obs": 19.0,
-        "n": 4
+        "n": 5
       }
     },
     "Tarapacá (Iquique)": {
@@ -2286,7 +2286,7 @@
       "2026-08-15": {
         "t_max_obs": 18.0,
         "t_min_obs": 17.0,
-        "n": 4
+        "n": 5
       }
     },
     "Antofagasta": {
@@ -2388,7 +2388,7 @@
       "2026-08-15": {
         "t_max_obs": 17.0,
         "t_min_obs": 17.0,
-        "n": 4
+        "n": 5
       }
     },
     "Atacama (Copiapó)": {
@@ -2490,7 +2490,7 @@
       "2026-08-15": {
         "t_max_obs": 14.0,
         "t_min_obs": 14.0,
-        "n": 4
+        "n": 5
       }
     },
     "Coquimbo (La Serena)": {
@@ -2592,7 +2592,7 @@
       "2026-08-15": {
         "t_max_obs": 14.0,
         "t_min_obs": 14.0,
-        "n": 4
+        "n": 5
       }
     },
     "Valparaíso–Metropolitana": {
@@ -2694,7 +2694,7 @@
       "2026-08-15": {
         "t_max_obs": 13.0,
         "t_min_obs": 12.0,
-        "n": 4
+        "n": 5
       }
     },
     "Maule–Ñuble": {
@@ -2796,7 +2796,7 @@
       "2026-08-15": {
         "t_max_obs": 12.0,
         "t_min_obs": 12.0,
-        "n": 4
+        "n": 5
       }
     },
     "Biobío–Araucanía": {
@@ -2898,7 +2898,7 @@
       "2026-08-15": {
         "t_max_obs": 14.0,
         "t_min_obs": 13.0,
-        "n": 4
+        "n": 5
       }
     },
     "Los Lagos–Aysén": {
@@ -3000,7 +3000,7 @@
       "2026-08-15": {
         "t_max_obs": 12.0,
         "t_min_obs": 12.0,
-        "n": 4
+        "n": 5
       }
     }
   },
@@ -5330,15 +5330,6 @@
   },
   "historial_parametros": [
     {
-      "fecha": "2026-08-05T12:53:09.614572+00:00",
-      "mu": 0.6647,
-      "K": 0.0009,
-      "alpha": 1.668,
-      "p": 1.423,
-      "b": 1.424,
-      "n_total": 6263
-    },
-    {
       "fecha": "2026-08-05T15:10:21.855331+00:00",
       "mu": 0.6928,
       "K": 0.0009,
@@ -7122,6 +7113,15 @@
     },
     {
       "fecha": "2026-08-15T04:55:10.883930+00:00",
+      "mu": 0.6608,
+      "K": 0.0009,
+      "alpha": 1.586,
+      "p": 1.618,
+      "b": 1.429,
+      "n_total": 6242
+    },
+    {
+      "fecha": "2026-08-15T05:18:54.113287+00:00",
       "mu": 0.6608,
       "K": 0.0009,
       "alpha": 1.586,
