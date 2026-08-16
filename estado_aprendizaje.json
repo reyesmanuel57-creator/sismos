@@ -1,5 +1,5 @@
 {
-  "actualizado": "2026-08-16T11:42:56.935766+00:00",
+  "actualizado": "2026-08-16T12:24:50.626949+00:00",
   "ultimo_sismo": "2026-08-16T04:21:39+00:00",
   "n_eventos_escaneados": 6248,
   "fuente_datos": "USGS (histórico) + CSN y sismologia.cl (reciente)",
@@ -344,7 +344,7 @@
           "fecha": "2026-08-17",
           "t_min": 17,
           "t_max": 21,
-          "lluvia_mm": 0.9,
+          "lluvia_mm": 1.0,
           "prob_lluvia": 40,
           "mm_max_historico": 1.3,
           "lluvia_fuerte_pct": 0,
@@ -371,7 +371,7 @@
           "fecha": "2026-08-18",
           "t_min": 17,
           "t_max": 21,
-          "lluvia_mm": 0.4,
+          "lluvia_mm": 0.2,
           "prob_lluvia": 35,
           "mm_max_historico": 1.3,
           "lluvia_fuerte_pct": 0,
@@ -540,7 +540,7 @@
           "fecha": "2026-08-17",
           "t_min": 16,
           "t_max": 19,
-          "lluvia_mm": 1.0,
+          "lluvia_mm": 1.1,
           "prob_lluvia": 37,
           "mm_max_historico": 0.7,
           "lluvia_fuerte_pct": 0,
@@ -585,8 +585,8 @@
           "med_tmax": 18.7,
           "n_modelos": 5,
           "acuerdo_modelos": 1.5,
-          "desc": "Llovizna",
-          "icono": "🌦️",
+          "desc": "Llovizna intensa",
+          "icono": "🌧️",
           "alertas": [
             {
               "tipo": "lluvia",
@@ -760,8 +760,8 @@
           "med_tmax": 17.0,
           "n_modelos": 5,
           "acuerdo_modelos": 0.8,
-          "desc": "Lluvia",
-          "icono": "🌧️",
+          "desc": "Chubascos",
+          "icono": "🌦️",
           "alertas": [
             {
               "tipo": "lluvia",
@@ -923,7 +923,7 @@
           "fecha": "2026-08-16",
           "t_min": 9,
           "t_max": 18,
-          "lluvia_mm": 0.3,
+          "lluvia_mm": 0.2,
           "prob_lluvia": 41,
           "mm_max_historico": 7.8,
           "lluvia_fuerte_pct": 0,
@@ -968,8 +968,8 @@
           "med_tmax": 15.6,
           "n_modelos": 5,
           "acuerdo_modelos": 1.0,
-          "desc": "Lluvia",
-          "icono": "🌧️",
+          "desc": "Llovizna",
+          "icono": "🌦️",
           "alertas": [
             {
               "tipo": "lluvia",
@@ -1055,8 +1055,8 @@
           "med_tmax": 18.9,
           "n_modelos": 4,
           "acuerdo_modelos": 1.6,
-          "desc": "Nublado",
-          "icono": "☁️",
+          "desc": "Parcial nublado",
+          "icono": "⛅",
           "alertas": [],
           "confianza": 77
         },
@@ -1486,8 +1486,8 @@
           "med_tmax": 14.0,
           "n_modelos": 4,
           "acuerdo_modelos": 1.0,
-          "desc": "Parcial nublado",
-          "icono": "⛅",
+          "desc": "Nublado",
+          "icono": "☁️",
           "alertas": [],
           "confianza": 75
         },
@@ -1737,7 +1737,7 @@
           "fecha": "2026-08-16",
           "t_min": 4,
           "t_max": 9,
-          "lluvia_mm": 11.0,
+          "lluvia_mm": 9.0,
           "prob_lluvia": 99,
           "mm_max_historico": 47.7,
           "lluvia_fuerte_pct": 21,
@@ -1884,7 +1884,7 @@
           "fecha": "2026-08-20",
           "t_min": 6,
           "t_max": 11,
-          "lluvia_mm": 10.3,
+          "lluvia_mm": 10.2,
           "prob_lluvia": 85,
           "mm_max_historico": 37.5,
           "lluvia_fuerte_pct": 20,
@@ -1962,8 +1962,8 @@
           "med_tmax": 11.3,
           "n_modelos": 4,
           "acuerdo_modelos": 2.2,
-          "desc": "Despejado",
-          "icono": "☀️",
+          "desc": "Mayormente despejado",
+          "icono": "🌤️",
           "alertas": [
             {
               "tipo": "frio",
@@ -1982,9 +1982,9 @@
       "estacion": "SCAR",
       "ciudad": "Arica",
       "temperatura": 18.0,
-      "condicion": "Cubierto",
-      "humedad": 88,
-      "hora": "07:00:00"
+      "condicion": "Cubierto y llovizna",
+      "humedad": 94,
+      "hora": "08:00:00"
     },
     "Tarapacá (Iquique)": {
       "estacion": "SCDA",
@@ -1992,7 +1992,7 @@
       "temperatura": 18.0,
       "condicion": "Cubierto",
       "humedad": 83,
-      "hora": "07:00:00"
+      "hora": "08:00:00"
     },
     "Antofagasta": {
       "estacion": "SCFA",
@@ -2000,15 +2000,15 @@
       "temperatura": 15.0,
       "condicion": "Cubierto",
       "humedad": 94,
-      "hora": "07:00:00"
+      "hora": "08:00:00"
     },
     "Atacama (Copiapó)": {
       "estacion": "SCAT",
       "ciudad": "Caldera",
       "temperatura": 13.0,
-      "condicion": "Despejado",
+      "condicion": "Cubierto",
       "humedad": 100,
-      "hora": "07:17:00"
+      "hora": "08:00:00"
     },
     "Coquimbo (La Serena)": {
       "estacion": "SCSE",
@@ -2016,15 +2016,15 @@
       "temperatura": 11.0,
       "condicion": "Despejado",
       "humedad": 94,
-      "hora": "07:00:00"
+      "hora": "08:00:00"
     },
     "Valparaíso–Metropolitana": {
       "estacion": "SCEL",
       "ciudad": "Santiago Poniente",
       "temperatura": 6.0,
-      "condicion": "Niebla",
+      "condicion": "Cubierto y niebla",
       "humedad": 100,
-      "hora": "07:00:00"
+      "hora": "08:00:00"
     },
     "Maule–Ñuble": {
       "estacion": "SCIC",
@@ -2032,23 +2032,23 @@
       "temperatura": 7.0,
       "condicion": "Cubierto",
       "humedad": 100,
-      "hora": "07:00:00"
+      "hora": "08:00:00"
     },
     "Biobío–Araucanía": {
       "estacion": "SCIE",
       "ciudad": "Concepción",
-      "temperatura": 4.0,
-      "condicion": "Despejado",
-      "humedad": 93,
-      "hora": "07:00:00"
+      "temperatura": 3.0,
+      "condicion": "Escasa nubosidad",
+      "humedad": 100,
+      "hora": "08:00:00"
     },
     "Los Lagos–Aysén": {
       "estacion": "SCTE",
       "ciudad": "Puerto Montt",
-      "temperatura": 5.0,
-      "condicion": "Nubosidad parcial y chubascos",
+      "temperatura": 4.0,
+      "condicion": "Nublado",
       "humedad": 93,
-      "hora": "07:00:00"
+      "hora": "08:00:00"
     }
   },
   "obs_diarias": {
@@ -2151,7 +2151,7 @@
       "2026-08-16": {
         "t_max_obs": 19.0,
         "t_min_obs": 18.0,
-        "n": 18
+        "n": 19
       }
     },
     "Tarapacá (Iquique)": {
@@ -2253,7 +2253,7 @@
       "2026-08-16": {
         "t_max_obs": 18.0,
         "t_min_obs": 18.0,
-        "n": 18
+        "n": 19
       }
     },
     "Antofagasta": {
@@ -2355,7 +2355,7 @@
       "2026-08-16": {
         "t_max_obs": 16.0,
         "t_min_obs": 14.0,
-        "n": 18
+        "n": 19
       }
     },
     "Atacama (Copiapó)": {
@@ -2457,7 +2457,7 @@
       "2026-08-16": {
         "t_max_obs": 15.0,
         "t_min_obs": 13.0,
-        "n": 18
+        "n": 19
       }
     },
     "Coquimbo (La Serena)": {
@@ -2559,7 +2559,7 @@
       "2026-08-16": {
         "t_max_obs": 14.0,
         "t_min_obs": 11.0,
-        "n": 18
+        "n": 19
       }
     },
     "Valparaíso–Metropolitana": {
@@ -2661,7 +2661,7 @@
       "2026-08-16": {
         "t_max_obs": 10.0,
         "t_min_obs": 5.0,
-        "n": 18
+        "n": 19
       }
     },
     "Maule–Ñuble": {
@@ -2763,7 +2763,7 @@
       "2026-08-16": {
         "t_max_obs": 9.0,
         "t_min_obs": 4.0,
-        "n": 18
+        "n": 19
       }
     },
     "Biobío–Araucanía": {
@@ -2864,8 +2864,8 @@
       },
       "2026-08-16": {
         "t_max_obs": 11.0,
-        "t_min_obs": 4.0,
-        "n": 18
+        "t_min_obs": 3.0,
+        "n": 19
       }
     },
     "Los Lagos–Aysén": {
@@ -2967,7 +2967,7 @@
       "2026-08-16": {
         "t_max_obs": 6.0,
         "t_min_obs": 4.0,
-        "n": 18
+        "n": 19
       }
     }
   },
@@ -5272,15 +5272,6 @@
   },
   "historial_parametros": [
     {
-      "fecha": "2026-08-08T17:55:34.241606+00:00",
-      "mu": 0.6639,
-      "K": 0.0008,
-      "alpha": 1.673,
-      "p": 1.544,
-      "b": 1.429,
-      "n_total": 6275
-    },
-    {
       "fecha": "2026-08-08T18:26:23.504590+00:00",
       "mu": 0.6639,
       "K": 0.0008,
@@ -7064,6 +7055,15 @@
     },
     {
       "fecha": "2026-08-16T11:42:56.935741+00:00",
+      "mu": 0.6618,
+      "K": 0.0007,
+      "alpha": 1.619,
+      "p": 1.83,
+      "b": 1.426,
+      "n_total": 6248
+    },
+    {
+      "fecha": "2026-08-16T12:24:50.626924+00:00",
       "mu": 0.6618,
       "K": 0.0007,
       "alpha": 1.619,
