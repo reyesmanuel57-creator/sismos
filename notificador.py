@@ -57,7 +57,8 @@ def notificar(estado, apikey=None, telefono=None):
       3) réplicas esperadas tras un M>=6 (si el estado trae 'replicas')
     """
     apikey = apikey or os.environ.get("WSP_APIKEY")
-    telefono = telefono or os.environ.get("WSP_PHONE")
+    # destinatario: grupo si está definido WSP_GRUPO, si no el número personal
+    telefono = telefono or os.environ.get("WSP_GRUPO") or os.environ.get("WSP_PHONE")
     env = _cargar_enviados()
     ids = set(env["ids"])
     nuevos = []
