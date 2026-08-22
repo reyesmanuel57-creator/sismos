@@ -1695,6 +1695,14 @@ if __name__ == "__main__":
     print("Escaneando, reaprendiendo y calibrando...")
     estado = correr()
     json.dump(estado, open("estado_aprendizaje.json","w"), ensure_ascii=False, indent=2)
+
+    # AVISOS POR WHATSAPP (TextMeBot) — solo si hay algo nuevo y real.
+    # Requiere los secrets WSP_APIKEY y WSP_PHONE en el workflow.
+    try:
+        import notificador
+        notificador.notificar(estado)
+    except Exception as e:
+        print(f"[notificador] omitido: {e}")
     p=estado["parametros_aprendidos"]
     print(f"\nEscaneados {estado['n_eventos_escaneados']} sismos | b={p['b']:.2f}")
 
