@@ -1,5 +1,5 @@
 {
-  "actualizado": "2026-08-22T18:56:27.240027+00:00",
+  "actualizado": "2026-08-22T19:19:45.181046+00:00",
   "ultimo_sismo": "2026-08-22T18:46:26+00:00",
   "n_eventos_escaneados": 6250,
   "fuente_datos": "USGS (histórico) + CSN y sismologia.cl (reciente)",
@@ -12,7 +12,7 @@
     {
       "mag": 4.7,
       "zona": "Tarapacá (Iquique)",
-      "lugar": "Tarapacá (Iquique)",
+      "lugar": "30 km al noreste de Calama",
       "hace_horas": 0.0,
       "profundidad": 111,
       "hora_utc": "22-08 18:46"
@@ -2010,8 +2010,8 @@
       "ciudad": "Iquique",
       "temperatura": 19.0,
       "condicion": "Cubierto",
-      "humedad": 68,
-      "hora": "14:00:00"
+      "humedad": 64,
+      "hora": "15:00:00"
     },
     "Antofagasta": {
       "estacion": "SCFA",
@@ -2025,9 +2025,9 @@
       "estacion": "SCAT",
       "ciudad": "Caldera",
       "temperatura": 17.0,
-      "condicion": "Cubierto",
+      "condicion": "Nublado",
       "humedad": 72,
-      "hora": "14:00:00"
+      "hora": "15:00:00"
     },
     "Coquimbo (La Serena)": {
       "estacion": "SCSE",
@@ -2035,7 +2035,7 @@
       "temperatura": 16.0,
       "condicion": "Cubierto",
       "humedad": 77,
-      "hora": "14:00:00"
+      "hora": "15:00:00"
     },
     "Valparaíso–Metropolitana": {
       "estacion": "SCEL",
@@ -2058,16 +2058,16 @@
       "ciudad": "Concepción",
       "temperatura": 16.0,
       "condicion": "Despejado",
-      "humedad": 51,
-      "hora": "14:00:00"
+      "humedad": 55,
+      "hora": "15:00:00"
     },
     "Los Lagos–Aysén": {
       "estacion": "SCTE",
       "ciudad": "Puerto Montt",
       "temperatura": 12.0,
       "condicion": "Despejado",
-      "humedad": 58,
-      "hora": "14:00:00"
+      "humedad": 50,
+      "hora": "15:00:00"
     }
   },
   "obs_diarias": {
@@ -2170,7 +2170,7 @@
       "2026-08-22": {
         "t_max_obs": 20.0,
         "t_min_obs": 18.0,
-        "n": 31
+        "n": 32
       }
     },
     "Tarapacá (Iquique)": {
@@ -2272,7 +2272,7 @@
       "2026-08-22": {
         "t_max_obs": 19.0,
         "t_min_obs": 17.0,
-        "n": 31
+        "n": 32
       }
     },
     "Antofagasta": {
@@ -2374,7 +2374,7 @@
       "2026-08-22": {
         "t_max_obs": 22.0,
         "t_min_obs": 17.0,
-        "n": 31
+        "n": 32
       }
     },
     "Atacama (Copiapó)": {
@@ -2476,7 +2476,7 @@
       "2026-08-22": {
         "t_max_obs": 17.0,
         "t_min_obs": 14.0,
-        "n": 31
+        "n": 32
       }
     },
     "Coquimbo (La Serena)": {
@@ -2578,7 +2578,7 @@
       "2026-08-22": {
         "t_max_obs": 16.0,
         "t_min_obs": 13.0,
-        "n": 31
+        "n": 32
       }
     },
     "Valparaíso–Metropolitana": {
@@ -2680,7 +2680,7 @@
       "2026-08-22": {
         "t_max_obs": 25.0,
         "t_min_obs": 8.0,
-        "n": 31
+        "n": 32
       }
     },
     "Maule–Ñuble": {
@@ -2782,7 +2782,7 @@
       "2026-08-22": {
         "t_max_obs": 14.0,
         "t_min_obs": 4.0,
-        "n": 31
+        "n": 32
       }
     },
     "Biobío–Araucanía": {
@@ -2884,7 +2884,7 @@
       "2026-08-22": {
         "t_max_obs": 16.0,
         "t_min_obs": 7.0,
-        "n": 31
+        "n": 32
       }
     },
     "Los Lagos–Aysén": {
@@ -2986,7 +2986,7 @@
       "2026-08-22": {
         "t_max_obs": 12.0,
         "t_min_obs": 1.0,
-        "n": 31
+        "n": 32
       }
     }
   },
@@ -4412,11 +4412,11 @@
   "modo_replicas": null,
   "alerta_tsunami": null,
   "parametros_aprendidos": {
-    "mu": 0.6618320929832188,
-    "K": 0.0007871257714196539,
-    "alpha": 1.6144578894165946,
-    "c": 0.007857544709616488,
-    "p": 1.5669450412103494,
+    "mu": 0.6597057889139719,
+    "K": 0.0010573992593941753,
+    "alpha": 1.4885002950695465,
+    "c": 0.007238042720420688,
+    "p": 1.508430451078215,
     "b": 1.4321633841004715,
     "n_eventos_aprendizaje": 1264,
     "convergencia": true
@@ -4477,7 +4477,7 @@
       "zona": "Atacama (Copiapó)",
       "lat0": -29,
       "lat1": -26,
-      "prob_M5_7d": 0.148,
+      "prob_M5_7d": 0.149,
       "prob_M6_7d": 0.019,
       "prob_M5_3d": 0.067,
       "prob_M6_3d": 0.008,
@@ -5230,15 +5230,6 @@
     ]
   },
   "historial_parametros": [
-    {
-      "fecha": "2026-08-17T03:27:09.905439+00:00",
-      "mu": 0.6585,
-      "K": 0.0009,
-      "alpha": 1.543,
-      "p": 1.742,
-      "b": 1.429,
-      "n_total": 6250
-    },
     {
       "fecha": "2026-08-17T04:10:51.392880+00:00",
       "mu": 0.6585,
@@ -7027,6 +7018,15 @@
       "K": 0.0008,
       "alpha": 1.614,
       "p": 1.567,
+      "b": 1.432,
+      "n_total": 6250
+    },
+    {
+      "fecha": "2026-08-22T19:19:45.181015+00:00",
+      "mu": 0.6597,
+      "K": 0.0011,
+      "alpha": 1.489,
+      "p": 1.508,
       "b": 1.432,
       "n_total": 6250
     }
