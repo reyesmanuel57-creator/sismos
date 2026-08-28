@@ -1,7 +1,7 @@
 {
-  "actualizado": "2026-08-28T03:11:47.843884+00:00",
+  "actualizado": "2026-08-28T03:22:50.724924+00:00",
   "ultimo_sismo": "2026-08-27T23:17:42+00:00",
-  "n_eventos_escaneados": 6261,
+  "n_eventos_escaneados": 6262,
   "fuente_datos": "USGS (histórico) + CSN y sismologia.cl (reciente)",
   "vigilancia": {
     "estado": "NORMAL",
@@ -82,6 +82,14 @@
       "hora_utc": "26-08 23:20"
     },
     {
+      "mag": 4.7,
+      "zona": "Maule–Ñuble",
+      "lugar": "22 km ENE of Talca, Chile",
+      "hace_horas": 24.9,
+      "profundidad": 81,
+      "hora_utc": "26-08 22:23"
+    },
+    {
       "mag": 3.8,
       "zona": "Maule–Ñuble",
       "lugar": "Maule–Ñuble",
@@ -93,14 +101,6 @@
       "mag": 4.3,
       "zona": "Atacama (Copiapó)",
       "lugar": "75 km ENE of Diego de Almagro, Chile",
-      "hace_horas": 36.3,
-      "profundidad": 101,
-      "hora_utc": "26-08 10:59"
-    },
-    {
-      "mag": 4.4,
-      "zona": "Atacama (Copiapó)",
-      "lugar": "Atacama (Copiapó)",
       "hace_horas": 36.3,
       "profundidad": 101,
       "hora_utc": "26-08 10:59"
@@ -1376,7 +1376,7 @@
           "t_min": 6,
           "t_max": 17,
           "lluvia_mm": 2.4,
-          "prob_lluvia": 69,
+          "prob_lluvia": 70,
           "mm_max_historico": 21.5,
           "lluvia_fuerte_pct": 3,
           "prob_helada": 0,
@@ -2003,23 +2003,23 @@
       "temperatura": 17.0,
       "condicion": "Cubierto",
       "humedad": 77,
-      "hora": "22:00:00"
+      "hora": "23:00:00"
     },
     "Atacama (Copiapó)": {
       "estacion": "SCAT",
       "ciudad": "Caldera",
-      "temperatura": 13.0,
+      "temperatura": 14.0,
       "condicion": "Despejado",
-      "humedad": 94,
-      "hora": "22:00:00"
+      "humedad": 88,
+      "hora": "23:00:00"
     },
     "Coquimbo (La Serena)": {
       "estacion": "SCSE",
       "ciudad": "La Serena/Coquimbo",
       "temperatura": 14.0,
-      "condicion": "Nubosidad parcial",
+      "condicion": "Cubierto",
       "humedad": 94,
-      "hora": "22:00:00"
+      "hora": "23:00:00"
     },
     "Valparaíso–Metropolitana": {
       "estacion": "SCEL",
@@ -2027,15 +2027,15 @@
       "temperatura": 10.0,
       "condicion": "Nublado",
       "humedad": 76,
-      "hora": "22:00:00"
+      "hora": "23:00:00"
     },
     "Maule–Ñuble": {
       "estacion": "SCIC",
       "ciudad": "Curicó",
       "temperatura": 11.0,
       "condicion": "Despejado",
-      "humedad": 76,
-      "hora": "22:00:00"
+      "humedad": 71,
+      "hora": "23:00:00"
     },
     "Biobío–Araucanía": {
       "estacion": "SCIE",
@@ -2048,10 +2048,10 @@
     "Los Lagos–Aysén": {
       "estacion": "SCTE",
       "ciudad": "Puerto Montt",
-      "temperatura": 9.0,
+      "temperatura": 8.0,
       "condicion": "Nubosidad parcial y chubascos",
-      "humedad": 87,
-      "hora": "22:00:00"
+      "humedad": 93,
+      "hora": "23:00:00"
     }
   },
   "obs_diarias": {
@@ -2154,7 +2154,7 @@
       "2026-08-28": {
         "t_max_obs": 19.0,
         "t_min_obs": 19.0,
-        "n": 3
+        "n": 4
       }
     },
     "Tarapacá (Iquique)": {
@@ -2256,7 +2256,7 @@
       "2026-08-28": {
         "t_max_obs": 19.0,
         "t_min_obs": 19.0,
-        "n": 3
+        "n": 4
       }
     },
     "Antofagasta": {
@@ -2358,7 +2358,7 @@
       "2026-08-28": {
         "t_max_obs": 17.0,
         "t_min_obs": 17.0,
-        "n": 3
+        "n": 4
       }
     },
     "Atacama (Copiapó)": {
@@ -2458,9 +2458,9 @@
         "n": 2
       },
       "2026-08-28": {
-        "t_max_obs": 13.0,
+        "t_max_obs": 14.0,
         "t_min_obs": 13.0,
-        "n": 3
+        "n": 4
       }
     },
     "Coquimbo (La Serena)": {
@@ -2562,7 +2562,7 @@
       "2026-08-28": {
         "t_max_obs": 14.0,
         "t_min_obs": 14.0,
-        "n": 3
+        "n": 4
       }
     },
     "Valparaíso–Metropolitana": {
@@ -2664,7 +2664,7 @@
       "2026-08-28": {
         "t_max_obs": 10.0,
         "t_min_obs": 10.0,
-        "n": 3
+        "n": 4
       }
     },
     "Maule–Ñuble": {
@@ -2766,7 +2766,7 @@
       "2026-08-28": {
         "t_max_obs": 12.0,
         "t_min_obs": 11.0,
-        "n": 3
+        "n": 4
       }
     },
     "Biobío–Araucanía": {
@@ -2868,7 +2868,7 @@
       "2026-08-28": {
         "t_max_obs": 11.0,
         "t_min_obs": 9.0,
-        "n": 3
+        "n": 4
       }
     },
     "Los Lagos–Aysén": {
@@ -2969,8 +2969,8 @@
       },
       "2026-08-28": {
         "t_max_obs": 9.0,
-        "t_min_obs": 9.0,
-        "n": 3
+        "t_min_obs": 8.0,
+        "n": 4
       }
     }
   },
@@ -4412,13 +4412,13 @@
   "modo_replicas": null,
   "alerta_tsunami": null,
   "parametros_aprendidos": {
-    "mu": 0.6637455492897859,
-    "K": 0.0010726230425653974,
-    "alpha": 1.4456459639571082,
+    "mu": 0.6640811756039983,
+    "K": 0.0010884557403532588,
+    "alpha": 1.4423074752275702,
     "c": 0.001,
-    "p": 1.2657451810768996,
-    "b": 1.4410137713013504,
-    "n_eventos_aprendizaje": 1267,
+    "p": 1.2640079205551695,
+    "b": 1.4412075452847994,
+    "n_eventos_aprendizaje": 1268,
     "convergencia": true
   },
   "zonas": [
@@ -4511,17 +4511,17 @@
       "zona": "Maule–Ñuble",
       "lat0": -38,
       "lat1": -35,
-      "prob_M5_7d": 0.136,
+      "prob_M5_7d": 0.156,
       "prob_M6_7d": 0.013,
-      "prob_M5_3d": 0.061,
+      "prob_M5_3d": 0.07,
       "prob_M6_3d": 0.006,
       "nivel": "NORMAL",
       "regimen": "ENJAMBRE",
       "mag_esperada": 5.2,
       "mag_maxima_historica": 6.7,
-      "n_ult7d": 6,
-      "n_ult30d": 6,
-      "factor_actividad": 1.93,
+      "n_ult7d": 7,
+      "n_ult30d": 7,
+      "factor_actividad": 2.24,
       "mag_max_ult30d": 4.7
     },
     {
@@ -5230,15 +5230,6 @@
     ]
   },
   "historial_parametros": [
-    {
-      "fecha": "2026-08-21T02:20:21.560368+00:00",
-      "mu": 0.6588,
-      "K": 0.001,
-      "alpha": 1.496,
-      "p": 1.595,
-      "b": 1.431,
-      "n_total": 6248
-    },
     {
       "fecha": "2026-08-21T03:28:39.907895+00:00",
       "mu": 0.6588,
@@ -7029,6 +7020,15 @@
       "p": 1.266,
       "b": 1.441,
       "n_total": 6261
+    },
+    {
+      "fecha": "2026-08-28T03:22:50.724898+00:00",
+      "mu": 0.6641,
+      "K": 0.0011,
+      "alpha": 1.442,
+      "p": 1.264,
+      "b": 1.441,
+      "n_total": 6262
     }
   ],
   "descargo": "Sistema auto-adaptativo con calibración. Probabilidades por zona para 7 días, NO predicción de día/hora/lugar. Oficial: SENAPRED, sismologia.cl."
