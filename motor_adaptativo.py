@@ -338,7 +338,14 @@ def evaluar_calibracion(estado_previo, cat):
         if ahora < fin:
             aun_pendientes.append(pend)  # todavía no se cumple la semana
             continue
-        # ya pasaron 7 días: ver qué zonas tuvieron M>=5 realmente
+        # ya pasaron 7 días: ver qué zonas tuvieron M>=5 realmente.
+        # Si el catálogo no cubre esa fecha (hubo un hueco de corridas y los
+        # sismos viejos ya no vienen en el escaneo), no se puede evaluar de
+        # forma justa: se descarta sin contar, para no inventar un fallo.
+        cat_min = cat["time"].min()
+        if t_pron < cat_min:
+            # el catálogo empieza DESPUÉS del pronóstico -> datos incompletos
+            continue  # se cierra el pendiente sin puntuarlo (hueco de datos)
         real = cat[(cat["time"] > t_pron) & (cat["time"] <= fin) & (cat["mag"] >= 5.0)]
         zonas_reales = set()
         for _, e in real.iterrows():
@@ -362,7 +369,7 @@ def evaluar_calibracion(estado_previo, cat):
                 "zonas_reales": list(zonas_reales),
                 "acierto": bool(acierto),
             })
-            calib["historial"] = calib["historial"][-20:]
+            calib["historial"] = calib["historial"][-40:]
 
     # 2. GUARDAR el pronóstico de hoy (si no hay ya uno de hoy) para evaluarlo
     # en 7 días. Solo uno por día para no duplicar.
@@ -375,7 +382,7 @@ def evaluar_calibracion(estado_previo, cat):
             "zonas": [{"zona":z["zona"], "lat0":z["lat0"], "lat1":z["lat1"],
                        "prob_M5_7d":z["prob_M5_7d"]} for z in pron_hoy],
         })
-    calib["pendientes"] = aun_pendientes[-30:]  # máx 30 pendientes
+    calib["pendientes"] = aun_pendientes[-60:]  # hasta 60 días de pendientes
     return calib
 
 
