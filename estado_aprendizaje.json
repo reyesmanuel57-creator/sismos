@@ -1,19 +1,27 @@
 {
-  "actualizado": "2026-10-02T00:05:34.711127+00:00",
-  "ultimo_sismo": "2026-10-01T23:35:03+00:00",
-  "n_eventos_escaneados": 6272,
+  "actualizado": "2026-10-02T06:02:48.690615+00:00",
+  "ultimo_sismo": "2026-10-02T05:21:06+00:00",
+  "n_eventos_escaneados": 6271,
   "fuente_datos": "USGS (histórico) + CSN y sismologia.cl (reciente)",
   "vigilancia": {
-    "estado": "VIGILANCIA",
-    "mensaje": "Una o más zonas muestran actividad por sobre lo normal. Mantente informado y ten lista tu preparación ante sismos."
+    "estado": "NORMAL",
+    "mensaje": "Actividad sísmica dentro de lo normal para Chile. Recuerda mantener siempre tu preparación ante sismos."
   },
   "actividad_reciente": [],
   "monitor_en_vivo": [
     {
+      "mag": 4.3,
+      "zona": "Biobío–Araucanía",
+      "lugar": "NEUQUEN, ARGENTINA",
+      "hace_horas": 0.0,
+      "profundidad": 10,
+      "hora_utc": "02-10 05:21"
+    },
+    {
       "mag": 3.9,
       "zona": "Arica–Parinacota",
       "lugar": "OFF COAST OF TARAPACA, CHILE",
-      "hace_horas": 0.0,
+      "hace_horas": 5.8,
       "profundidad": 32,
       "hora_utc": "01-10 23:35"
     },
@@ -21,7 +29,7 @@
       "mag": 3.5,
       "zona": "Antofagasta",
       "lugar": "Antofagasta",
-      "hace_horas": 22.9,
+      "hace_horas": 28.7,
       "profundidad": 193,
       "hora_utc": "01-10 00:39"
     },
@@ -29,7 +37,7 @@
       "mag": 3.6,
       "zona": "Arica–Parinacota",
       "lugar": "Arica–Parinacota",
-      "hace_horas": 24.2,
+      "hace_horas": 30.0,
       "profundidad": 95,
       "hora_utc": "30-09 23:20"
     },
@@ -37,7 +45,7 @@
       "mag": 3.9,
       "zona": "Coquimbo (La Serena)",
       "lugar": "OFFSHORE COQUIMBO, CHILE",
-      "hace_horas": 45.4,
+      "hace_horas": 51.2,
       "profundidad": 47,
       "hora_utc": "30-09 02:08"
     },
@@ -45,7 +53,7 @@
       "mag": 3.9,
       "zona": "Coquimbo (La Serena)",
       "lugar": "Coquimbo (La Serena)",
-      "hace_horas": 45.4,
+      "hace_horas": 51.2,
       "profundidad": 32,
       "hora_utc": "30-09 02:08"
     },
@@ -53,7 +61,7 @@
       "mag": 3.6,
       "zona": "Coquimbo (La Serena)",
       "lugar": "Coquimbo (La Serena)",
-      "hace_horas": 46.2,
+      "hace_horas": 52.0,
       "profundidad": 47,
       "hora_utc": "30-09 01:20"
     },
@@ -61,7 +69,7 @@
       "mag": 4.1,
       "zona": "Tarapacá (Iquique)",
       "lugar": "92 km NE of San Pedro de Atacama, Chile",
-      "hace_horas": 53.2,
+      "hace_horas": 59.0,
       "profundidad": 178,
       "hora_utc": "29-09 18:21"
     },
@@ -69,7 +77,7 @@
       "mag": 4.5,
       "zona": "Tarapacá (Iquique)",
       "lugar": "Tarapacá (Iquique)",
-      "hace_horas": 53.2,
+      "hace_horas": 59.0,
       "profundidad": 191,
       "hora_utc": "29-09 18:21"
     },
@@ -77,7 +85,7 @@
       "mag": 3.6,
       "zona": "Antofagasta",
       "lugar": "Antofagasta",
-      "hace_horas": 54.9,
+      "hace_horas": 60.7,
       "profundidad": 226,
       "hora_utc": "29-09 16:39"
     },
@@ -85,7 +93,7 @@
       "mag": 3.5,
       "zona": "Antofagasta",
       "lugar": "Antofagasta",
-      "hace_horas": 62.1,
+      "hace_horas": 67.8,
       "profundidad": 195,
       "hora_utc": "29-09 09:31"
     },
@@ -93,17 +101,9 @@
       "mag": 3.5,
       "zona": "Tarapacá (Iquique)",
       "lugar": "Tarapacá (Iquique)",
-      "hace_horas": 62.3,
+      "hace_horas": 68.0,
       "profundidad": 48,
       "hora_utc": "29-09 09:18"
-    },
-    {
-      "mag": 4.2,
-      "zona": "Valparaíso–Metropolitana",
-      "lugar": "Valparaíso–Metropolitana",
-      "hace_horas": 67.5,
-      "profundidad": 72,
-      "hora_utc": "29-09 04:02"
     }
   ],
   "clima_regiones": [
@@ -113,33 +113,6 @@
       "dias": [
         {
           "fecha": "2026-10-02",
-          "t_min": 18,
-          "t_max": 23,
-          "lluvia_mm": 0.0,
-          "prob_lluvia": 0,
-          "mm_max_historico": 0.6,
-          "lluvia_fuerte_pct": 0,
-          "prob_helada": 0,
-          "viento": 16,
-          "sesgo_corregido": 0.0,
-          "postproceso_ia": true,
-          "modelos_tmax": {
-            "ecmwf_ifs025": 25.1,
-            "gfs_seamless": 19.8,
-            "icon_seamless": 22.3,
-            "gem_seamless": 27.0,
-            "meteofrance_seamless": 26.6
-          },
-          "med_tmax": 25.1,
-          "n_modelos": 5,
-          "acuerdo_modelos": 2.7,
-          "desc": "Nublado",
-          "icono": "☁️",
-          "alertas": [],
-          "confianza": 89
-        },
-        {
-          "fecha": "2026-10-03",
           "t_min": 17,
           "t_max": 23,
           "lluvia_mm": 0.0,
@@ -151,22 +124,76 @@
           "sesgo_corregido": 0.0,
           "postproceso_ia": true,
           "modelos_tmax": {
-            "ecmwf_ifs025": 24.4,
+            "ecmwf_ifs025": 24.3,
             "gfs_seamless": 20.0,
-            "icon_seamless": 22.1,
-            "gem_seamless": 24.9,
-            "meteofrance_seamless": 24.0
+            "icon_seamless": 21.8,
+            "gem_seamless": 25.4,
+            "meteofrance_seamless": 23.0
           },
-          "med_tmax": 24.0,
+          "med_tmax": 23.0,
           "n_modelos": 5,
-          "acuerdo_modelos": 1.8,
+          "acuerdo_modelos": 1.9,
           "desc": "Nublado",
           "icono": "☁️",
           "alertas": [],
-          "confianza": 90
+          "confianza": 93
+        },
+        {
+          "fecha": "2026-10-03",
+          "t_min": 18,
+          "t_max": 24,
+          "lluvia_mm": 0.0,
+          "prob_lluvia": 0,
+          "mm_max_historico": 0.6,
+          "lluvia_fuerte_pct": 0,
+          "prob_helada": 0,
+          "viento": 16,
+          "sesgo_corregido": 0.0,
+          "postproceso_ia": true,
+          "modelos_tmax": {
+            "ecmwf_ifs025": 25.3,
+            "gfs_seamless": 20.4,
+            "icon_seamless": 22.8,
+            "gem_seamless": 26.2,
+            "meteofrance_seamless": 27.7
+          },
+          "med_tmax": 25.3,
+          "n_modelos": 5,
+          "acuerdo_modelos": 2.6,
+          "desc": "Nublado",
+          "icono": "☁️",
+          "alertas": [],
+          "confianza": 87
         },
         {
           "fecha": "2026-10-04",
+          "t_min": 17,
+          "t_max": 23,
+          "lluvia_mm": 0.0,
+          "prob_lluvia": 0,
+          "mm_max_historico": 0.5,
+          "lluvia_fuerte_pct": 0,
+          "prob_helada": 0,
+          "viento": 16,
+          "sesgo_corregido": 0.0,
+          "postproceso_ia": true,
+          "modelos_tmax": {
+            "ecmwf_ifs025": 24.5,
+            "gfs_seamless": 20.3,
+            "icon_seamless": 23.2,
+            "gem_seamless": 26.2,
+            "meteofrance_seamless": 28.4
+          },
+          "med_tmax": 24.5,
+          "n_modelos": 5,
+          "acuerdo_modelos": 2.7,
+          "desc": "Nublado",
+          "icono": "☁️",
+          "alertas": [],
+          "confianza": 84
+        },
+        {
+          "fecha": "2026-10-05",
           "t_min": 18,
           "t_max": 24,
           "lluvia_mm": 0.0,
@@ -178,46 +205,19 @@
           "sesgo_corregido": 0.0,
           "postproceso_ia": true,
           "modelos_tmax": {
-            "ecmwf_ifs025": 25.5,
-            "gfs_seamless": 20.6,
-            "icon_seamless": 23.3,
-            "gem_seamless": 25.1,
-            "meteofrance_seamless": 27.2
+            "ecmwf_ifs025": 25.9,
+            "gfs_seamless": 20.5,
+            "icon_seamless": 23.4,
+            "gem_seamless": 28.1,
+            "meteofrance_seamless": 28.0
           },
-          "med_tmax": 25.1,
+          "med_tmax": 25.9,
           "n_modelos": 5,
-          "acuerdo_modelos": 2.2,
+          "acuerdo_modelos": 2.9,
           "desc": "Nublado",
           "icono": "☁️",
           "alertas": [],
-          "confianza": 86
-        },
-        {
-          "fecha": "2026-10-05",
-          "t_min": 18,
-          "t_max": 23,
-          "lluvia_mm": 0.0,
-          "prob_lluvia": 0,
-          "mm_max_historico": 0.5,
-          "lluvia_fuerte_pct": 0,
-          "prob_helada": 0,
-          "viento": 16,
-          "sesgo_corregido": 0.0,
-          "postproceso_ia": true,
-          "modelos_tmax": {
-            "ecmwf_ifs025": 24.7,
-            "gfs_seamless": 20.3,
-            "icon_seamless": 23.5,
-            "gem_seamless": 26.2,
-            "meteofrance_seamless": 27.4
-          },
-          "med_tmax": 24.7,
-          "n_modelos": 5,
-          "acuerdo_modelos": 2.4,
-          "desc": "Nublado",
-          "icono": "☁️",
-          "alertas": [],
-          "confianza": 82
+          "confianza": 80
         },
         {
           "fecha": "2026-10-06",
@@ -232,19 +232,19 @@
           "sesgo_corregido": 0.0,
           "postproceso_ia": true,
           "modelos_tmax": {
-            "ecmwf_ifs025": 26.0,
-            "gfs_seamless": 20.7,
-            "icon_seamless": 23.5,
-            "gem_seamless": 27.4,
-            "meteofrance_seamless": 24.75
+            "ecmwf_ifs025": 25.1,
+            "gfs_seamless": 20.3,
+            "icon_seamless": 23.6,
+            "gem_seamless": 28.4,
+            "meteofrance_seamless": 24.35
           },
-          "med_tmax": 24.75,
+          "med_tmax": 24.35,
           "n_modelos": 4,
-          "acuerdo_modelos": 2.6,
+          "acuerdo_modelos": 2.9,
           "desc": "Nublado",
           "icono": "☁️",
           "alertas": [],
-          "confianza": 73
+          "confianza": 71
         },
         {
           "fecha": "2026-10-07",
@@ -259,17 +259,17 @@
           "sesgo_corregido": 0.0,
           "postproceso_ia": false,
           "modelos_tmax": {
-            "ecmwf_ifs025": 24.7,
-            "gfs_seamless": 20.4,
-            "icon_seamless": 23.9,
-            "gem_seamless": 27.6,
-            "meteofrance_seamless": 24.299999999999997
+            "ecmwf_ifs025": 24.8,
+            "gfs_seamless": 20.9,
+            "icon_seamless": 23.2,
+            "gem_seamless": 27.7,
+            "meteofrance_seamless": 24.0
           },
-          "med_tmax": 24.299999999999997,
+          "med_tmax": 24.0,
           "n_modelos": 4,
-          "acuerdo_modelos": 2.6,
-          "desc": "Nublado",
-          "icono": "☁️",
+          "acuerdo_modelos": 2.5,
+          "desc": "Mayormente despejado",
+          "icono": "🌤️",
           "alertas": [],
           "confianza": 68
         },
@@ -283,22 +283,22 @@
           "lluvia_fuerte_pct": 0,
           "prob_helada": 0,
           "viento": 16,
-          "sesgo_corregido": -0.33,
+          "sesgo_corregido": -0.39,
           "postproceso_ia": false,
           "modelos_tmax": {
-            "ecmwf_ifs025": 24.8,
-            "gfs_seamless": 21.5,
-            "icon_seamless": 23.4,
-            "gem_seamless": 28.0,
-            "meteofrance_seamless": 24.1
+            "ecmwf_ifs025": 24.6,
+            "gfs_seamless": 21.3,
+            "icon_seamless": 23.0,
+            "gem_seamless": 26.8,
+            "meteofrance_seamless": 23.8
           },
-          "med_tmax": 24.1,
+          "med_tmax": 23.8,
           "n_modelos": 4,
-          "acuerdo_modelos": 2.4,
-          "desc": "Nublado",
-          "icono": "☁️",
+          "acuerdo_modelos": 2.0,
+          "desc": "Parcial nublado",
+          "icono": "⛅",
           "alertas": [],
-          "confianza": 65
+          "confianza": 66
         }
       ],
       "metodo": "ensemble de 5 modelos atmosféricos + modelo propio"
@@ -312,6 +312,33 @@
           "t_min": 16,
           "t_max": 22,
           "lluvia_mm": 0.0,
+          "prob_lluvia": 1,
+          "mm_max_historico": 0.4,
+          "lluvia_fuerte_pct": 0,
+          "prob_helada": 0,
+          "viento": 14,
+          "sesgo_corregido": 0.0,
+          "postproceso_ia": true,
+          "modelos_tmax": {
+            "ecmwf_ifs025": 19.4,
+            "gfs_seamless": 20.8,
+            "icon_seamless": 20.9,
+            "gem_seamless": 18.8,
+            "meteofrance_seamless": 19.8
+          },
+          "med_tmax": 19.8,
+          "n_modelos": 5,
+          "acuerdo_modelos": 0.8,
+          "desc": "Llovizna leve",
+          "icono": "🌦️",
+          "alertas": [],
+          "confianza": 96
+        },
+        {
+          "fecha": "2026-10-03",
+          "t_min": 17,
+          "t_max": 23,
+          "lluvia_mm": 0.0,
           "prob_lluvia": 0,
           "mm_max_historico": 0.4,
           "lluvia_fuerte_pct": 0,
@@ -320,44 +347,17 @@
           "sesgo_corregido": 0.0,
           "postproceso_ia": true,
           "modelos_tmax": {
-            "ecmwf_ifs025": 18.5,
-            "gfs_seamless": 22.8,
+            "ecmwf_ifs025": 20.0,
+            "gfs_seamless": 21.9,
             "icon_seamless": 22.5,
-            "gem_seamless": 19.4,
-            "meteofrance_seamless": 20.0
+            "gem_seamless": 19.8,
+            "meteofrance_seamless": 20.4
           },
-          "med_tmax": 20.0,
+          "med_tmax": 20.4,
           "n_modelos": 5,
-          "acuerdo_modelos": 1.7,
+          "acuerdo_modelos": 1.1,
           "desc": "Nublado",
           "icono": "☁️",
-          "alertas": [],
-          "confianza": 94
-        },
-        {
-          "fecha": "2026-10-03",
-          "t_min": 16,
-          "t_max": 22,
-          "lluvia_mm": 0.0,
-          "prob_lluvia": 3,
-          "mm_max_historico": 0.4,
-          "lluvia_fuerte_pct": 0,
-          "prob_helada": 0,
-          "viento": 14,
-          "sesgo_corregido": 0.0,
-          "postproceso_ia": true,
-          "modelos_tmax": {
-            "ecmwf_ifs025": 19.5,
-            "gfs_seamless": 21.0,
-            "icon_seamless": 21.1,
-            "gem_seamless": 18.3,
-            "meteofrance_seamless": 20.1
-          },
-          "med_tmax": 20.1,
-          "n_modelos": 5,
-          "acuerdo_modelos": 1.0,
-          "desc": "Llovizna leve",
-          "icono": "🌦️",
           "alertas": [],
           "confianza": 94
         },
@@ -366,7 +366,7 @@
           "t_min": 17,
           "t_max": 22,
           "lluvia_mm": 0.0,
-          "prob_lluvia": 1,
+          "prob_lluvia": 3,
           "mm_max_historico": 1.1,
           "lluvia_fuerte_pct": 0,
           "prob_helada": 0,
@@ -374,19 +374,19 @@
           "sesgo_corregido": 0.0,
           "postproceso_ia": true,
           "modelos_tmax": {
-            "ecmwf_ifs025": 20.0,
-            "gfs_seamless": 22.2,
-            "icon_seamless": 22.6,
-            "gem_seamless": 19.3,
-            "meteofrance_seamless": 20.3
+            "ecmwf_ifs025": 20.1,
+            "gfs_seamless": 20.9,
+            "icon_seamless": 21.9,
+            "gem_seamless": 19.4,
+            "meteofrance_seamless": 20.0
           },
-          "med_tmax": 20.3,
+          "med_tmax": 20.1,
           "n_modelos": 5,
-          "acuerdo_modelos": 1.3,
+          "acuerdo_modelos": 0.9,
           "desc": "Nublado",
           "icono": "☁️",
           "alertas": [],
-          "confianza": 91
+          "confianza": 93
         },
         {
           "fecha": "2026-10-05",
@@ -402,16 +402,16 @@
           "postproceso_ia": true,
           "modelos_tmax": {
             "ecmwf_ifs025": 20.1,
-            "gfs_seamless": 20.6,
-            "icon_seamless": 22.3,
-            "gem_seamless": 19.3,
-            "meteofrance_seamless": 19.8
+            "gfs_seamless": 22.1,
+            "icon_seamless": 22.1,
+            "gem_seamless": 19.8,
+            "meteofrance_seamless": 19.9
           },
           "med_tmax": 20.1,
           "n_modelos": 5,
-          "acuerdo_modelos": 1.0,
-          "desc": "Nublado",
-          "icono": "☁️",
+          "acuerdo_modelos": 1.1,
+          "desc": "Parcial nublado",
+          "icono": "⛅",
           "alertas": [],
           "confianza": 89
         },
@@ -428,15 +428,15 @@
           "sesgo_corregido": 0.0,
           "postproceso_ia": true,
           "modelos_tmax": {
-            "ecmwf_ifs025": 19.8,
-            "gfs_seamless": 21.6,
-            "icon_seamless": 22.2,
-            "gem_seamless": 19.6,
-            "meteofrance_seamless": 20.700000000000003
+            "ecmwf_ifs025": 19.9,
+            "gfs_seamless": 22.0,
+            "icon_seamless": 22.0,
+            "gem_seamless": 19.5,
+            "meteofrance_seamless": 20.95
           },
-          "med_tmax": 20.700000000000003,
+          "med_tmax": 20.95,
           "n_modelos": 4,
-          "acuerdo_modelos": 1.1,
+          "acuerdo_modelos": 1.2,
           "desc": "Parcial nublado",
           "icono": "⛅",
           "alertas": [],
@@ -455,19 +455,19 @@
           "sesgo_corregido": 0.0,
           "postproceso_ia": false,
           "modelos_tmax": {
-            "ecmwf_ifs025": 19.9,
-            "gfs_seamless": 22.1,
-            "icon_seamless": 21.8,
-            "gem_seamless": 19.3,
-            "meteofrance_seamless": 20.85
+            "ecmwf_ifs025": 19.4,
+            "gfs_seamless": 23.6,
+            "icon_seamless": 21.4,
+            "gem_seamless": 19.8,
+            "meteofrance_seamless": 20.6
           },
-          "med_tmax": 20.85,
+          "med_tmax": 20.6,
           "n_modelos": 4,
-          "acuerdo_modelos": 1.2,
-          "desc": "Nublado",
-          "icono": "☁️",
+          "acuerdo_modelos": 1.7,
+          "desc": "Parcial nublado",
+          "icono": "⛅",
           "alertas": [],
-          "confianza": 74
+          "confianza": 72
         },
         {
           "fecha": "2026-10-08",
@@ -479,22 +479,22 @@
           "lluvia_fuerte_pct": 0,
           "prob_helada": 0,
           "viento": 13,
-          "sesgo_corregido": -0.84,
+          "sesgo_corregido": -0.89,
           "postproceso_ia": false,
           "modelos_tmax": {
-            "ecmwf_ifs025": 19.4,
-            "gfs_seamless": 23.8,
-            "icon_seamless": 21.7,
-            "gem_seamless": 19.9,
-            "meteofrance_seamless": 20.799999999999997
+            "ecmwf_ifs025": 19.6,
+            "gfs_seamless": 22.9,
+            "icon_seamless": 21.8,
+            "gem_seamless": 19.7,
+            "meteofrance_seamless": 20.75
           },
-          "med_tmax": 20.799999999999997,
+          "med_tmax": 20.75,
           "n_modelos": 4,
-          "acuerdo_modelos": 1.7,
-          "desc": "Parcial nublado",
-          "icono": "⛅",
+          "acuerdo_modelos": 1.4,
+          "desc": "Nublado",
+          "icono": "☁️",
           "alertas": [],
-          "confianza": 68
+          "confianza": 69
         }
       ],
       "metodo": "ensemble de 5 modelos atmosféricos + modelo propio"
@@ -508,60 +508,6 @@
           "t_min": 16,
           "t_max": 21,
           "lluvia_mm": 0.0,
-          "prob_lluvia": 1,
-          "mm_max_historico": 0.4,
-          "lluvia_fuerte_pct": 0,
-          "prob_helada": 0,
-          "viento": 16,
-          "sesgo_corregido": 0.0,
-          "postproceso_ia": true,
-          "modelos_tmax": {
-            "ecmwf_ifs025": 17.9,
-            "gfs_seamless": 20.4,
-            "icon_seamless": 24.4,
-            "gem_seamless": 26.4,
-            "meteofrance_seamless": 19.4
-          },
-          "med_tmax": 20.4,
-          "n_modelos": 5,
-          "acuerdo_modelos": 3.2,
-          "desc": "Parcial nublado",
-          "icono": "⛅",
-          "alertas": [],
-          "confianza": 87
-        },
-        {
-          "fecha": "2026-10-03",
-          "t_min": 16,
-          "t_max": 21,
-          "lluvia_mm": 0.0,
-          "prob_lluvia": 1,
-          "mm_max_historico": 0.4,
-          "lluvia_fuerte_pct": 0,
-          "prob_helada": 0,
-          "viento": 16,
-          "sesgo_corregido": 0.0,
-          "postproceso_ia": true,
-          "modelos_tmax": {
-            "ecmwf_ifs025": 18.3,
-            "gfs_seamless": 19.2,
-            "icon_seamless": 22.1,
-            "gem_seamless": 23.8,
-            "meteofrance_seamless": 19.7
-          },
-          "med_tmax": 19.7,
-          "n_modelos": 5,
-          "acuerdo_modelos": 2.0,
-          "desc": "Niebla",
-          "icono": "🌫️",
-          "alertas": [],
-          "confianza": 89
-        },
-        {
-          "fecha": "2026-10-04",
-          "t_min": 17,
-          "t_max": 21,
-          "lluvia_mm": 0.0,
           "prob_lluvia": 2,
           "mm_max_historico": 0.4,
           "lluvia_fuerte_pct": 0,
@@ -570,24 +516,24 @@
           "sesgo_corregido": 0.0,
           "postproceso_ia": true,
           "modelos_tmax": {
-            "ecmwf_ifs025": 18.2,
-            "gfs_seamless": 19.1,
-            "icon_seamless": 23.2,
-            "gem_seamless": 23.2,
-            "meteofrance_seamless": 20.1
+            "ecmwf_ifs025": 18.3,
+            "gfs_seamless": 18.9,
+            "icon_seamless": 22.0,
+            "gem_seamless": 23.5,
+            "meteofrance_seamless": 19.9
           },
-          "med_tmax": 20.1,
+          "med_tmax": 19.9,
           "n_modelos": 5,
-          "acuerdo_modelos": 2.1,
-          "desc": "Nublado",
-          "icono": "☁️",
+          "acuerdo_modelos": 1.9,
+          "desc": "Niebla",
+          "icono": "🌫️",
           "alertas": [],
-          "confianza": 87
+          "confianza": 93
         },
         {
-          "fecha": "2026-10-05",
+          "fecha": "2026-10-03",
           "t_min": 17,
-          "t_max": 20,
+          "t_max": 21,
           "lluvia_mm": 0.0,
           "prob_lluvia": 1,
           "mm_max_historico": 0.4,
@@ -597,19 +543,73 @@
           "sesgo_corregido": 0.0,
           "postproceso_ia": true,
           "modelos_tmax": {
-            "ecmwf_ifs025": 17.7,
-            "gfs_seamless": 18.6,
-            "icon_seamless": 22.6,
-            "gem_seamless": 22.8,
-            "meteofrance_seamless": 19.7
+            "ecmwf_ifs025": 18.5,
+            "gfs_seamless": 19.3,
+            "icon_seamless": 23.0,
+            "gem_seamless": 23.4,
+            "meteofrance_seamless": 20.0
           },
-          "med_tmax": 19.7,
+          "med_tmax": 20.0,
           "n_modelos": 5,
-          "acuerdo_modelos": 2.1,
+          "acuerdo_modelos": 2.0,
           "desc": "Nublado",
           "icono": "☁️",
           "alertas": [],
-          "confianza": 84
+          "confianza": 89
+        },
+        {
+          "fecha": "2026-10-04",
+          "t_min": 16,
+          "t_max": 20,
+          "lluvia_mm": 0.0,
+          "prob_lluvia": 0,
+          "mm_max_historico": 0.4,
+          "lluvia_fuerte_pct": 0,
+          "prob_helada": 0,
+          "viento": 16,
+          "sesgo_corregido": 0.0,
+          "postproceso_ia": true,
+          "modelos_tmax": {
+            "ecmwf_ifs025": 18.1,
+            "gfs_seamless": 19.2,
+            "icon_seamless": 22.0,
+            "gem_seamless": 22.1,
+            "meteofrance_seamless": 19.4
+          },
+          "med_tmax": 19.4,
+          "n_modelos": 5,
+          "acuerdo_modelos": 1.6,
+          "desc": "Nublado",
+          "icono": "☁️",
+          "alertas": [],
+          "confianza": 89
+        },
+        {
+          "fecha": "2026-10-05",
+          "t_min": 16,
+          "t_max": 20,
+          "lluvia_mm": 0.0,
+          "prob_lluvia": 0,
+          "mm_max_historico": 0.4,
+          "lluvia_fuerte_pct": 0,
+          "prob_helada": 0,
+          "viento": 16,
+          "sesgo_corregido": 0.0,
+          "postproceso_ia": true,
+          "modelos_tmax": {
+            "ecmwf_ifs025": 17.3,
+            "gfs_seamless": 18.6,
+            "icon_seamless": 22.7,
+            "gem_seamless": 24.5,
+            "meteofrance_seamless": 19.2
+          },
+          "med_tmax": 19.2,
+          "n_modelos": 5,
+          "acuerdo_modelos": 2.7,
+          "desc": "Nublado",
+          "icono": "☁️",
+          "alertas": [],
+          "confianza": 81
         },
         {
           "fecha": "2026-10-06",
@@ -624,19 +624,19 @@
           "sesgo_corregido": 0.0,
           "postproceso_ia": true,
           "modelos_tmax": {
-            "ecmwf_ifs025": 17.6,
-            "gfs_seamless": 18.2,
-            "icon_seamless": 22.7,
-            "gem_seamless": 24.5,
-            "meteofrance_seamless": 20.45
+            "ecmwf_ifs025": 17.9,
+            "gfs_seamless": 19.2,
+            "icon_seamless": 22.5,
+            "gem_seamless": 23.7,
+            "meteofrance_seamless": 20.85
           },
-          "med_tmax": 20.45,
+          "med_tmax": 20.85,
           "n_modelos": 4,
-          "acuerdo_modelos": 2.9,
-          "desc": "Niebla",
-          "icono": "🌫️",
+          "acuerdo_modelos": 2.4,
+          "desc": "Nublado",
+          "icono": "☁️",
           "alertas": [],
-          "confianza": 71
+          "confianza": 74
         },
         {
           "fecha": "2026-10-07",
@@ -652,22 +652,22 @@
           "postproceso_ia": false,
           "modelos_tmax": {
             "ecmwf_ifs025": 17.4,
-            "gfs_seamless": 19.6,
-            "icon_seamless": 22.5,
-            "gem_seamless": 25.0,
-            "meteofrance_seamless": 21.05
+            "gfs_seamless": 19.3,
+            "icon_seamless": 22.7,
+            "gem_seamless": 24.0,
+            "meteofrance_seamless": 21.0
           },
-          "med_tmax": 21.05,
+          "med_tmax": 21.0,
           "n_modelos": 4,
-          "acuerdo_modelos": 2.9,
+          "acuerdo_modelos": 2.6,
           "desc": "Nublado",
           "icono": "☁️",
           "alertas": [],
-          "confianza": 66
+          "confianza": 67
         },
         {
           "fecha": "2026-10-08",
-          "t_min": 15,
+          "t_min": 16,
           "t_max": 21,
           "lluvia_mm": 0.0,
           "prob_lluvia": 0,
@@ -675,22 +675,22 @@
           "lluvia_fuerte_pct": 0,
           "prob_helada": 0,
           "viento": 16,
-          "sesgo_corregido": -0.48,
+          "sesgo_corregido": -0.51,
           "postproceso_ia": false,
           "modelos_tmax": {
-            "ecmwf_ifs025": 17.1,
-            "gfs_seamless": 19.7,
-            "icon_seamless": 22.6,
-            "gem_seamless": 26.0,
-            "meteofrance_seamless": 21.15
+            "ecmwf_ifs025": 18.4,
+            "gfs_seamless": 19.8,
+            "icon_seamless": 22.8,
+            "gem_seamless": 24.1,
+            "meteofrance_seamless": 21.3
           },
-          "med_tmax": 21.15,
+          "med_tmax": 21.3,
           "n_modelos": 4,
-          "acuerdo_modelos": 3.3,
-          "desc": "Nublado",
-          "icono": "☁️",
+          "acuerdo_modelos": 2.3,
+          "desc": "—",
+          "icono": "•",
           "alertas": [],
-          "confianza": 60
+          "confianza": 65
         }
       ],
       "metodo": "ensemble de 5 modelos atmosféricos + modelo propio"
@@ -701,8 +701,8 @@
       "dias": [
         {
           "fecha": "2026-10-02",
-          "t_min": 18,
-          "t_max": 31,
+          "t_min": 20,
+          "t_max": 27,
           "lluvia_mm": 0.0,
           "prob_lluvia": 0,
           "mm_max_historico": 0.1,
@@ -712,53 +712,26 @@
           "sesgo_corregido": 0.0,
           "postproceso_ia": true,
           "modelos_tmax": {
-            "ecmwf_ifs025": 33.5,
-            "gfs_seamless": 32.4,
-            "icon_seamless": 32.3,
-            "gem_seamless": 32.5,
-            "meteofrance_seamless": 35.3
-          },
-          "med_tmax": 32.5,
-          "n_modelos": 5,
-          "acuerdo_modelos": 1.1,
-          "desc": "Despejado",
-          "icono": "☀️",
-          "alertas": [],
-          "confianza": 96
-        },
-        {
-          "fecha": "2026-10-03",
-          "t_min": 19,
-          "t_max": 27,
-          "lluvia_mm": 0.0,
-          "prob_lluvia": 0,
-          "mm_max_historico": 3.2,
-          "lluvia_fuerte_pct": 0,
-          "prob_helada": 0,
-          "viento": 17,
-          "sesgo_corregido": 0.0,
-          "postproceso_ia": true,
-          "modelos_tmax": {
-            "ecmwf_ifs025": 29.3,
+            "ecmwf_ifs025": 30.5,
             "gfs_seamless": 28.9,
-            "icon_seamless": 27.6,
-            "gem_seamless": 27.5,
+            "icon_seamless": 26.5,
+            "gem_seamless": 26.8,
             "meteofrance_seamless": 30.9
           },
           "med_tmax": 28.9,
           "n_modelos": 5,
-          "acuerdo_modelos": 1.2,
+          "acuerdo_modelos": 1.8,
           "desc": "Nublado",
           "icono": "☁️",
           "alertas": [],
           "confianza": 93
         },
         {
-          "fecha": "2026-10-04",
-          "t_min": 16,
+          "fecha": "2026-10-03",
+          "t_min": 17,
           "t_max": 23,
           "lluvia_mm": 0.0,
-          "prob_lluvia": 2,
+          "prob_lluvia": 1,
           "mm_max_historico": 3.2,
           "lluvia_fuerte_pct": 0,
           "prob_helada": 0,
@@ -766,26 +739,26 @@
           "sesgo_corregido": 0.0,
           "postproceso_ia": true,
           "modelos_tmax": {
-            "ecmwf_ifs025": 25.6,
-            "gfs_seamless": 25.7,
-            "icon_seamless": 22.9,
-            "gem_seamless": 25.3,
-            "meteofrance_seamless": 28.2
+            "ecmwf_ifs025": 25.8,
+            "gfs_seamless": 26.2,
+            "icon_seamless": 23.4,
+            "gem_seamless": 24.6,
+            "meteofrance_seamless": 27.5
           },
-          "med_tmax": 25.6,
+          "med_tmax": 25.8,
           "n_modelos": 5,
-          "acuerdo_modelos": 1.7,
+          "acuerdo_modelos": 1.4,
           "desc": "Nublado",
           "icono": "☁️",
           "alertas": [],
-          "confianza": 89
+          "confianza": 92
         },
         {
-          "fecha": "2026-10-05",
-          "t_min": 16,
-          "t_max": 22,
+          "fecha": "2026-10-04",
+          "t_min": 17,
+          "t_max": 23,
           "lluvia_mm": 0.0,
-          "prob_lluvia": 7,
+          "prob_lluvia": 8,
           "mm_max_historico": 3.2,
           "lluvia_fuerte_pct": 0,
           "prob_helada": 0,
@@ -793,15 +766,42 @@
           "sesgo_corregido": 0.0,
           "postproceso_ia": true,
           "modelos_tmax": {
-            "ecmwf_ifs025": 23.5,
-            "gfs_seamless": 24.3,
-            "icon_seamless": 23.2,
-            "gem_seamless": 24.5,
-            "meteofrance_seamless": 27.7
+            "ecmwf_ifs025": 27.6,
+            "gfs_seamless": 25.5,
+            "icon_seamless": 21.8,
+            "gem_seamless": 23.1,
+            "meteofrance_seamless": 25.9
           },
-          "med_tmax": 24.3,
+          "med_tmax": 25.5,
           "n_modelos": 5,
-          "acuerdo_modelos": 1.6,
+          "acuerdo_modelos": 2.1,
+          "desc": "Nublado",
+          "icono": "☁️",
+          "alertas": [],
+          "confianza": 87
+        },
+        {
+          "fecha": "2026-10-05",
+          "t_min": 17,
+          "t_max": 25,
+          "lluvia_mm": 0.0,
+          "prob_lluvia": 4,
+          "mm_max_historico": 3.2,
+          "lluvia_fuerte_pct": 0,
+          "prob_helada": 0,
+          "viento": 17,
+          "sesgo_corregido": 0.0,
+          "postproceso_ia": true,
+          "modelos_tmax": {
+            "ecmwf_ifs025": 28.6,
+            "gfs_seamless": 26.0,
+            "icon_seamless": 24.5,
+            "gem_seamless": 26.6,
+            "meteofrance_seamless": 29.1
+          },
+          "med_tmax": 26.6,
+          "n_modelos": 5,
+          "acuerdo_modelos": 1.7,
           "desc": "Nublado",
           "icono": "☁️",
           "alertas": [],
@@ -812,7 +812,7 @@
           "t_min": 13,
           "t_max": 25,
           "lluvia_mm": 0.0,
-          "prob_lluvia": 7,
+          "prob_lluvia": 3,
           "mm_max_historico": 3.2,
           "lluvia_fuerte_pct": 0,
           "prob_helada": 0,
@@ -820,26 +820,26 @@
           "sesgo_corregido": 0.0,
           "postproceso_ia": true,
           "modelos_tmax": {
-            "ecmwf_ifs025": 27.8,
-            "gfs_seamless": 24.6,
-            "icon_seamless": 26.7,
-            "gem_seamless": 26.4,
-            "meteofrance_seamless": 26.549999999999997
+            "ecmwf_ifs025": 27.3,
+            "gfs_seamless": 26.2,
+            "icon_seamless": 25.9,
+            "gem_seamless": 26.3,
+            "meteofrance_seamless": 26.25
           },
-          "med_tmax": 26.549999999999997,
+          "med_tmax": 26.25,
           "n_modelos": 4,
-          "acuerdo_modelos": 1.1,
+          "acuerdo_modelos": 0.5,
           "desc": "Nublado",
           "icono": "☁️",
           "alertas": [],
-          "confianza": 79
+          "confianza": 82
         },
         {
           "fecha": "2026-10-07",
-          "t_min": 16,
+          "t_min": 15,
           "t_max": 26,
           "lluvia_mm": 0.0,
-          "prob_lluvia": 4,
+          "prob_lluvia": 2,
           "mm_max_historico": 3.2,
           "lluvia_fuerte_pct": 0,
           "prob_helada": 0,
@@ -847,46 +847,46 @@
           "sesgo_corregido": 0.0,
           "postproceso_ia": false,
           "modelos_tmax": {
-            "ecmwf_ifs025": 27.0,
-            "gfs_seamless": 25.9,
-            "icon_seamless": 28.3,
-            "gem_seamless": 26.0,
-            "meteofrance_seamless": 26.5
+            "ecmwf_ifs025": 25.2,
+            "gfs_seamless": 26.2,
+            "icon_seamless": 24.5,
+            "gem_seamless": 26.4,
+            "meteofrance_seamless": 25.7
           },
-          "med_tmax": 26.5,
+          "med_tmax": 25.7,
           "n_modelos": 4,
-          "acuerdo_modelos": 1.0,
+          "acuerdo_modelos": 0.8,
           "desc": "Nublado",
           "icono": "☁️",
           "alertas": [],
-          "confianza": 75
+          "confianza": 76
         },
         {
           "fecha": "2026-10-08",
           "t_min": 14,
           "t_max": 25,
           "lluvia_mm": 0.0,
-          "prob_lluvia": 3,
+          "prob_lluvia": 4,
           "mm_max_historico": 3.2,
           "lluvia_fuerte_pct": 0,
           "prob_helada": 0,
           "viento": 17,
-          "sesgo_corregido": 0.44,
+          "sesgo_corregido": 0.32,
           "postproceso_ia": false,
           "modelos_tmax": {
-            "ecmwf_ifs025": 25.7,
-            "gfs_seamless": 24.7,
-            "icon_seamless": 25.2,
-            "gem_seamless": 26.8,
-            "meteofrance_seamless": 25.45
+            "ecmwf_ifs025": 25.3,
+            "gfs_seamless": 28.2,
+            "icon_seamless": 24.0,
+            "gem_seamless": 24.4,
+            "meteofrance_seamless": 24.85
           },
-          "med_tmax": 25.45,
+          "med_tmax": 24.85,
           "n_modelos": 4,
-          "acuerdo_modelos": 0.8,
+          "acuerdo_modelos": 1.6,
           "desc": "Nublado",
           "icono": "☁️",
           "alertas": [],
-          "confianza": 72
+          "confianza": 68
         }
       ],
       "metodo": "ensemble de 5 modelos atmosféricos + modelo propio"
@@ -897,33 +897,6 @@
       "dias": [
         {
           "fecha": "2026-10-02",
-          "t_min": 11,
-          "t_max": 23,
-          "lluvia_mm": 0.0,
-          "prob_lluvia": 0,
-          "mm_max_historico": 0.8,
-          "lluvia_fuerte_pct": 0,
-          "prob_helada": 0,
-          "viento": 15,
-          "sesgo_corregido": 0.0,
-          "postproceso_ia": true,
-          "modelos_tmax": {
-            "ecmwf_ifs025": 25.1,
-            "gfs_seamless": 21.9,
-            "icon_seamless": 22.4,
-            "gem_seamless": 21.8,
-            "meteofrance_seamless": 24.9
-          },
-          "med_tmax": 22.4,
-          "n_modelos": 5,
-          "acuerdo_modelos": 1.5,
-          "desc": "Nublado",
-          "icono": "☁️",
-          "alertas": [],
-          "confianza": 95
-        },
-        {
-          "fecha": "2026-10-03",
           "t_min": 12,
           "t_max": 20,
           "lluvia_mm": 0.0,
@@ -935,22 +908,22 @@
           "sesgo_corregido": 0.0,
           "postproceso_ia": true,
           "modelos_tmax": {
-            "ecmwf_ifs025": 22.6,
-            "gfs_seamless": 19.6,
-            "icon_seamless": 19.0,
-            "gem_seamless": 19.4,
-            "meteofrance_seamless": 22.1
+            "ecmwf_ifs025": 22.5,
+            "gfs_seamless": 19.5,
+            "icon_seamless": 18.3,
+            "gem_seamless": 19.3,
+            "meteofrance_seamless": 22.5
           },
-          "med_tmax": 19.6,
+          "med_tmax": 19.5,
           "n_modelos": 5,
-          "acuerdo_modelos": 1.5,
+          "acuerdo_modelos": 1.7,
           "desc": "Nublado",
           "icono": "☁️",
           "alertas": [],
-          "confianza": 92
+          "confianza": 93
         },
         {
-          "fecha": "2026-10-04",
+          "fecha": "2026-10-03",
           "t_min": 11,
           "t_max": 20,
           "lluvia_mm": 0.0,
@@ -962,26 +935,26 @@
           "sesgo_corregido": 0.0,
           "postproceso_ia": true,
           "modelos_tmax": {
-            "ecmwf_ifs025": 21.4,
-            "gfs_seamless": 19.2,
-            "icon_seamless": 18.9,
-            "gem_seamless": 18.8,
-            "meteofrance_seamless": 20.5
+            "ecmwf_ifs025": 21.5,
+            "gfs_seamless": 19.5,
+            "icon_seamless": 19.2,
+            "gem_seamless": 18.5,
+            "meteofrance_seamless": 20.7
           },
-          "med_tmax": 19.2,
+          "med_tmax": 19.5,
           "n_modelos": 5,
-          "acuerdo_modelos": 1.0,
+          "acuerdo_modelos": 1.1,
           "desc": "Nublado",
           "icono": "☁️",
           "alertas": [],
-          "confianza": 92
+          "confianza": 94
         },
         {
-          "fecha": "2026-10-05",
+          "fecha": "2026-10-04",
           "t_min": 11,
-          "t_max": 19,
+          "t_max": 20,
           "lluvia_mm": 0.0,
-          "prob_lluvia": 2,
+          "prob_lluvia": 3,
           "mm_max_historico": 0.8,
           "lluvia_fuerte_pct": 0,
           "prob_helada": 0,
@@ -989,26 +962,53 @@
           "sesgo_corregido": 0.0,
           "postproceso_ia": true,
           "modelos_tmax": {
-            "ecmwf_ifs025": 21.0,
-            "gfs_seamless": 21.5,
-            "icon_seamless": 19.4,
-            "gem_seamless": 17.6,
-            "meteofrance_seamless": 20.6
+            "ecmwf_ifs025": 23.2,
+            "gfs_seamless": 19.7,
+            "icon_seamless": 18.5,
+            "gem_seamless": 19.9,
+            "meteofrance_seamless": 20.8
           },
-          "med_tmax": 20.6,
+          "med_tmax": 19.9,
           "n_modelos": 5,
-          "acuerdo_modelos": 1.4,
+          "acuerdo_modelos": 1.6,
           "desc": "Nublado",
           "icono": "☁️",
           "alertas": [],
-          "confianza": 87
+          "confianza": 89
+        },
+        {
+          "fecha": "2026-10-05",
+          "t_min": 12,
+          "t_max": 18,
+          "lluvia_mm": 0.0,
+          "prob_lluvia": 15,
+          "mm_max_historico": 0.8,
+          "lluvia_fuerte_pct": 0,
+          "prob_helada": 0,
+          "viento": 15,
+          "sesgo_corregido": 0.0,
+          "postproceso_ia": true,
+          "modelos_tmax": {
+            "ecmwf_ifs025": 18.9,
+            "gfs_seamless": 20.5,
+            "icon_seamless": 18.0,
+            "gem_seamless": 19.6,
+            "meteofrance_seamless": 23.6
+          },
+          "med_tmax": 19.6,
+          "n_modelos": 5,
+          "acuerdo_modelos": 1.9,
+          "desc": "Nublado",
+          "icono": "☁️",
+          "alertas": [],
+          "confianza": 85
         },
         {
           "fecha": "2026-10-06",
-          "t_min": 11,
+          "t_min": 12,
           "t_max": 19,
-          "lluvia_mm": 0.0,
-          "prob_lluvia": 15,
+          "lluvia_mm": 1.6,
+          "prob_lluvia": 23,
           "mm_max_historico": 6.6,
           "lluvia_fuerte_pct": 0,
           "prob_helada": 0,
@@ -1016,26 +1016,26 @@
           "sesgo_corregido": 0.0,
           "postproceso_ia": true,
           "modelos_tmax": {
-            "ecmwf_ifs025": 19.4,
-            "gfs_seamless": 21.2,
-            "icon_seamless": 19.9,
-            "gem_seamless": 19.0,
-            "meteofrance_seamless": 19.65
+            "ecmwf_ifs025": 20.0,
+            "gfs_seamless": 19.9,
+            "icon_seamless": 19.1,
+            "gem_seamless": 19.5,
+            "meteofrance_seamless": 19.7
           },
-          "med_tmax": 19.65,
+          "med_tmax": 19.7,
           "n_modelos": 4,
-          "acuerdo_modelos": 0.8,
-          "desc": "Nublado",
-          "icono": "☁️",
+          "acuerdo_modelos": 0.4,
+          "desc": "Niebla",
+          "icono": "🌫️",
           "alertas": [],
-          "confianza": 81
+          "confianza": 83
         },
         {
           "fecha": "2026-10-07",
-          "t_min": 14,
-          "t_max": 19,
-          "lluvia_mm": 1.1,
-          "prob_lluvia": 23,
+          "t_min": 13,
+          "t_max": 20,
+          "lluvia_mm": 0.0,
+          "prob_lluvia": 20,
           "mm_max_historico": 6.6,
           "lluvia_fuerte_pct": 0,
           "prob_helada": 0,
@@ -1043,46 +1043,46 @@
           "sesgo_corregido": 0.0,
           "postproceso_ia": false,
           "modelos_tmax": {
-            "ecmwf_ifs025": 17.5,
+            "ecmwf_ifs025": 20.1,
             "gfs_seamless": 20.9,
-            "icon_seamless": 19.3,
-            "gem_seamless": 19.2,
-            "meteofrance_seamless": 19.25
+            "icon_seamless": 20.3,
+            "gem_seamless": 19.4,
+            "meteofrance_seamless": 20.200000000000003
           },
-          "med_tmax": 19.25,
+          "med_tmax": 20.200000000000003,
           "n_modelos": 4,
-          "acuerdo_modelos": 1.2,
+          "acuerdo_modelos": 0.5,
           "desc": "—",
           "icono": "•",
           "alertas": [],
-          "confianza": 74
+          "confianza": 77
         },
         {
           "fecha": "2026-10-08",
-          "t_min": 14,
-          "t_max": 20,
+          "t_min": 13,
+          "t_max": 19,
           "lluvia_mm": 0.0,
-          "prob_lluvia": 18,
+          "prob_lluvia": 11,
           "mm_max_historico": 6.6,
           "lluvia_fuerte_pct": 0,
           "prob_helada": 0,
           "viento": 15,
-          "sesgo_corregido": -0.16,
+          "sesgo_corregido": -0.1,
           "postproceso_ia": false,
           "modelos_tmax": {
-            "ecmwf_ifs025": 16.0,
-            "gfs_seamless": 20.0,
-            "icon_seamless": 20.0,
-            "gem_seamless": 19.9,
-            "meteofrance_seamless": 19.95
+            "ecmwf_ifs025": 19.2,
+            "gfs_seamless": 21.0,
+            "icon_seamless": 18.4,
+            "gem_seamless": 19.1,
+            "meteofrance_seamless": 19.15
           },
-          "med_tmax": 19.95,
+          "med_tmax": 19.15,
           "n_modelos": 4,
-          "acuerdo_modelos": 1.7,
+          "acuerdo_modelos": 1.0,
           "desc": "—",
           "icono": "•",
           "alertas": [],
-          "confianza": 68
+          "confianza": 71
         }
       ],
       "metodo": "ensemble de 5 modelos atmosféricos + modelo propio"
@@ -1093,37 +1093,10 @@
       "dias": [
         {
           "fecha": "2026-10-02",
-          "t_min": 9,
-          "t_max": 23,
-          "lluvia_mm": 0.0,
-          "prob_lluvia": 17,
-          "mm_max_historico": 23.8,
-          "lluvia_fuerte_pct": 2,
-          "prob_helada": 0,
-          "viento": 14,
-          "sesgo_corregido": 0.0,
-          "postproceso_ia": true,
-          "modelos_tmax": {
-            "ecmwf_ifs025": 25.0,
-            "gfs_seamless": 26.1,
-            "icon_seamless": 26.0,
-            "gem_seamless": 25.2,
-            "meteofrance_seamless": 24.0
-          },
-          "med_tmax": 25.2,
-          "n_modelos": 5,
-          "acuerdo_modelos": 0.8,
-          "desc": "Nublado",
-          "icono": "☁️",
-          "alertas": [],
-          "confianza": 96
-        },
-        {
-          "fecha": "2026-10-03",
-          "t_min": 9,
+          "t_min": 10,
           "t_max": 17,
-          "lluvia_mm": 8.0,
-          "prob_lluvia": 93,
+          "lluvia_mm": 9.0,
+          "prob_lluvia": 98,
           "mm_max_historico": 23.8,
           "lluvia_fuerte_pct": 2,
           "prob_helada": 0,
@@ -1131,13 +1104,13 @@
           "sesgo_corregido": 0.0,
           "postproceso_ia": true,
           "modelos_tmax": {
-            "ecmwf_ifs025": 19.3,
-            "gfs_seamless": 21.0,
-            "icon_seamless": 18.4,
-            "gem_seamless": 19.8,
-            "meteofrance_seamless": 17.0
+            "ecmwf_ifs025": 18.4,
+            "gfs_seamless": 20.5,
+            "icon_seamless": 18.5,
+            "gem_seamless": 19.6,
+            "meteofrance_seamless": 16.7
           },
-          "med_tmax": 19.3,
+          "med_tmax": 18.5,
           "n_modelos": 5,
           "acuerdo_modelos": 1.3,
           "desc": "Lluvia",
@@ -1145,18 +1118,18 @@
           "alertas": [
             {
               "tipo": "lluvia",
-              "txt": "Lluvia probable (~8mm)",
+              "txt": "Lluvia probable (~9mm)",
               "icono": "🌧️"
             }
           ],
-          "confianza": 92
+          "confianza": 96
         },
         {
-          "fecha": "2026-10-04",
-          "t_min": 8,
+          "fecha": "2026-10-03",
+          "t_min": 11,
           "t_max": 16,
-          "lluvia_mm": 2.9,
-          "prob_lluvia": 83,
+          "lluvia_mm": 2.0,
+          "prob_lluvia": 81,
           "mm_max_historico": 23.8,
           "lluvia_fuerte_pct": 2,
           "prob_helada": 0,
@@ -1165,14 +1138,74 @@
           "postproceso_ia": true,
           "modelos_tmax": {
             "ecmwf_ifs025": 17.9,
-            "gfs_seamless": 19.5,
-            "icon_seamless": 18.2,
-            "gem_seamless": 16.8,
-            "meteofrance_seamless": 18.1
+            "gfs_seamless": 20.0,
+            "icon_seamless": 18.3,
+            "gem_seamless": 16.3,
+            "meteofrance_seamless": 18.2
           },
-          "med_tmax": 18.1,
+          "med_tmax": 18.2,
           "n_modelos": 5,
-          "acuerdo_modelos": 0.9,
+          "acuerdo_modelos": 1.2,
+          "desc": "Llovizna leve",
+          "icono": "🌦️",
+          "alertas": [
+            {
+              "tipo": "lluvia",
+              "txt": "Lluvia probable (~2mm)",
+              "icono": "🌧️"
+            }
+          ],
+          "confianza": 93
+        },
+        {
+          "fecha": "2026-10-04",
+          "t_min": 10,
+          "t_max": 17,
+          "lluvia_mm": 0.7,
+          "prob_lluvia": 24,
+          "mm_max_historico": 23.8,
+          "lluvia_fuerte_pct": 2,
+          "prob_helada": 0,
+          "viento": 14,
+          "sesgo_corregido": 0.0,
+          "postproceso_ia": true,
+          "modelos_tmax": {
+            "ecmwf_ifs025": 18.3,
+            "gfs_seamless": 19.5,
+            "icon_seamless": 19.4,
+            "gem_seamless": 17.9,
+            "meteofrance_seamless": 20.0
+          },
+          "med_tmax": 19.4,
+          "n_modelos": 5,
+          "acuerdo_modelos": 0.8,
+          "desc": "Llovizna leve",
+          "icono": "🌦️",
+          "alertas": [],
+          "confianza": 93
+        },
+        {
+          "fecha": "2026-10-05",
+          "t_min": 8,
+          "t_max": 19,
+          "lluvia_mm": 3.3,
+          "prob_lluvia": 60,
+          "mm_max_historico": 23.8,
+          "lluvia_fuerte_pct": 2,
+          "prob_helada": 0,
+          "viento": 14,
+          "sesgo_corregido": 0.0,
+          "postproceso_ia": true,
+          "modelos_tmax": {
+            "ecmwf_ifs025": 21.2,
+            "gfs_seamless": 17.5,
+            "icon_seamless": 21.0,
+            "gem_seamless": 20.2,
+            "meteofrance_seamless": 19.3
+          },
+          "med_tmax": 20.2,
+          "n_modelos": 5,
+          "acuerdo_modelos": 1.3,
           "desc": "Llovizna",
           "icono": "🌦️",
           "alertas": [
@@ -1182,41 +1215,14 @@
               "icono": "🌧️"
             }
           ],
-          "confianza": 93
-        },
-        {
-          "fecha": "2026-10-05",
-          "t_min": 10,
-          "t_max": 16,
-          "lluvia_mm": 0.6,
-          "prob_lluvia": 24,
-          "mm_max_historico": 23.8,
-          "lluvia_fuerte_pct": 2,
-          "prob_helada": 0,
-          "viento": 14,
-          "sesgo_corregido": 0.0,
-          "postproceso_ia": true,
-          "modelos_tmax": {
-            "ecmwf_ifs025": 18.1,
-            "gfs_seamless": 20.2,
-            "icon_seamless": 16.9,
-            "gem_seamless": 18.2,
-            "meteofrance_seamless": 20.5
-          },
-          "med_tmax": 18.2,
-          "n_modelos": 5,
-          "acuerdo_modelos": 1.4,
-          "desc": "Llovizna leve",
-          "icono": "🌦️",
-          "alertas": [],
           "confianza": 87
         },
         {
           "fecha": "2026-10-06",
-          "t_min": 8,
-          "t_max": 19,
-          "lluvia_mm": 2.7,
-          "prob_lluvia": 46,
+          "t_min": 10,
+          "t_max": 15,
+          "lluvia_mm": 14.9,
+          "prob_lluvia": 71,
           "mm_max_historico": 22.7,
           "lluvia_fuerte_pct": 1,
           "prob_helada": 0,
@@ -1224,84 +1230,84 @@
           "sesgo_corregido": 0.0,
           "postproceso_ia": true,
           "modelos_tmax": {
-            "ecmwf_ifs025": 21.3,
-            "gfs_seamless": 19.4,
-            "icon_seamless": 20.2,
-            "gem_seamless": 18.7,
-            "meteofrance_seamless": 19.799999999999997
+            "ecmwf_ifs025": 17.6,
+            "gfs_seamless": 13.3,
+            "icon_seamless": 14.2,
+            "gem_seamless": 18.6,
+            "meteofrance_seamless": 15.9
           },
-          "med_tmax": 19.799999999999997,
+          "med_tmax": 15.9,
           "n_modelos": 4,
-          "acuerdo_modelos": 1.0,
-          "desc": "—",
-          "icono": "•",
-          "alertas": [],
-          "confianza": 80
-        },
-        {
-          "fecha": "2026-10-07",
-          "t_min": 12,
-          "t_max": 16,
-          "lluvia_mm": 21.1,
-          "prob_lluvia": 67,
-          "mm_max_historico": 22.7,
-          "lluvia_fuerte_pct": 1,
-          "prob_helada": 0,
-          "viento": 14,
-          "sesgo_corregido": 0.0,
-          "postproceso_ia": false,
-          "modelos_tmax": {
-            "ecmwf_ifs025": 14.9,
-            "gfs_seamless": 17.5,
-            "icon_seamless": 14.4,
-            "gem_seamless": 14.6,
-            "meteofrance_seamless": 14.75
-          },
-          "med_tmax": 14.75,
-          "n_modelos": 4,
-          "acuerdo_modelos": 1.3,
+          "acuerdo_modelos": 2.2,
           "desc": "—",
           "icono": "•",
           "alertas": [
             {
-              "tipo": "lluvia_fuerte",
-              "txt": "Lluvia fuerte (~21mm)",
-              "icono": "⛈️"
+              "tipo": "lluvia",
+              "txt": "Lluvia probable (~15mm)",
+              "icono": "🌧️"
             }
           ],
           "confianza": 74
         },
         {
-          "fecha": "2026-10-08",
+          "fecha": "2026-10-07",
           "t_min": 11,
           "t_max": 19,
-          "lluvia_mm": 13.7,
-          "prob_lluvia": 56,
+          "lluvia_mm": 9.8,
+          "prob_lluvia": 63,
           "mm_max_historico": 22.7,
           "lluvia_fuerte_pct": 1,
           "prob_helada": 0,
           "viento": 14,
-          "sesgo_corregido": -1.02,
+          "sesgo_corregido": 0.0,
           "postproceso_ia": false,
           "modelos_tmax": {
-            "ecmwf_ifs025": 16.8,
-            "gfs_seamless": 17.2,
-            "icon_seamless": 16.2,
-            "gem_seamless": 14.5,
-            "meteofrance_seamless": 16.5
+            "ecmwf_ifs025": 18.1,
+            "gfs_seamless": 13.9,
+            "icon_seamless": 18.6,
+            "gem_seamless": 18.5,
+            "meteofrance_seamless": 18.3
           },
-          "med_tmax": 16.5,
+          "med_tmax": 18.3,
           "n_modelos": 4,
-          "acuerdo_modelos": 1.0,
-          "desc": "Nieve leve",
-          "icono": "🌨️",
+          "acuerdo_modelos": 2.0,
+          "desc": "—",
+          "icono": "•",
           "alertas": [
             {
               "tipo": "lluvia",
-              "txt": "Lluvia probable (~14mm)",
+              "txt": "Lluvia probable (~10mm)",
               "icono": "🌧️"
             }
           ],
+          "confianza": 70
+        },
+        {
+          "fecha": "2026-10-08",
+          "t_min": 10,
+          "t_max": 21,
+          "lluvia_mm": 3.8,
+          "prob_lluvia": 47,
+          "mm_max_historico": 22.7,
+          "lluvia_fuerte_pct": 1,
+          "prob_helada": 0,
+          "viento": 14,
+          "sesgo_corregido": -0.78,
+          "postproceso_ia": false,
+          "modelos_tmax": {
+            "ecmwf_ifs025": 17.6,
+            "gfs_seamless": 19.1,
+            "icon_seamless": 20.3,
+            "gem_seamless": 18.6,
+            "meteofrance_seamless": 18.85
+          },
+          "med_tmax": 18.85,
+          "n_modelos": 4,
+          "acuerdo_modelos": 1.0,
+          "desc": "—",
+          "icono": "•",
+          "alertas": [],
           "confianza": 71
         }
       ],
@@ -1313,207 +1319,153 @@
       "dias": [
         {
           "fecha": "2026-10-02",
-          "t_min": 6,
+          "t_min": 7,
           "t_max": 20,
-          "lluvia_mm": 0.2,
-          "prob_lluvia": 28,
+          "lluvia_mm": 0.0,
+          "prob_lluvia": 15,
           "mm_max_historico": 46.8,
           "lluvia_fuerte_pct": 2,
           "prob_helada": 0,
           "viento": 15,
           "sesgo_corregido": 0.0,
-          "postproceso_ia": true,
-          "modelos_tmax": {
-            "ecmwf_ifs025": 21.7,
-            "gfs_seamless": 20.2,
-            "icon_seamless": 21.1,
-            "gem_seamless": 20.3,
-            "meteofrance_seamless": 21.2
-          },
-          "med_tmax": 21.1,
-          "n_modelos": 5,
-          "acuerdo_modelos": 0.6,
-          "desc": "Niebla",
-          "icono": "🌫️",
+          "postproceso_ia": false,
+          "modelos_tmax": null,
+          "med_tmax": null,
+          "n_modelos": 0,
+          "acuerdo_modelos": null,
+          "desc": "Parcial nublado",
+          "icono": "⛅",
           "alertas": [],
-          "confianza": 96
+          "confianza": 97
         },
         {
           "fecha": "2026-10-03",
           "t_min": 8,
-          "t_max": 16,
-          "lluvia_mm": 11.6,
-          "prob_lluvia": 94,
+          "t_max": 20,
+          "lluvia_mm": 0.0,
+          "prob_lluvia": 15,
           "mm_max_historico": 46.8,
           "lluvia_fuerte_pct": 2,
           "prob_helada": 0,
           "viento": 16,
           "sesgo_corregido": 0.0,
-          "postproceso_ia": true,
-          "modelos_tmax": {
-            "ecmwf_ifs025": 17.8,
-            "gfs_seamless": 16.2,
-            "icon_seamless": 18.1,
-            "gem_seamless": 14.9,
-            "meteofrance_seamless": 18.5
-          },
-          "med_tmax": 17.8,
-          "n_modelos": 5,
-          "acuerdo_modelos": 1.3,
-          "desc": "Chubascos",
-          "icono": "🌦️",
-          "alertas": [
-            {
-              "tipo": "lluvia",
-              "txt": "Lluvia probable (~12mm)",
-              "icono": "🌧️"
-            }
-          ],
-          "confianza": 92
-        },
-        {
-          "fecha": "2026-10-04",
-          "t_min": 6,
-          "t_max": 17,
-          "lluvia_mm": 1.0,
-          "prob_lluvia": 44,
-          "mm_max_historico": 46.8,
-          "lluvia_fuerte_pct": 1,
-          "prob_helada": 0,
-          "viento": 16,
-          "sesgo_corregido": 0.0,
-          "postproceso_ia": true,
-          "modelos_tmax": {
-            "ecmwf_ifs025": 17.9,
-            "gfs_seamless": 18.0,
-            "icon_seamless": 17.7,
-            "gem_seamless": 16.5,
-            "meteofrance_seamless": 17.7
-          },
-          "med_tmax": 17.7,
-          "n_modelos": 5,
-          "acuerdo_modelos": 0.5,
-          "desc": "Llovizna leve",
-          "icono": "🌦️",
+          "postproceso_ia": false,
+          "modelos_tmax": null,
+          "med_tmax": null,
+          "n_modelos": 0,
+          "acuerdo_modelos": null,
+          "desc": "Parcial nublado",
+          "icono": "⛅",
           "alertas": [],
           "confianza": 94
         },
         {
-          "fecha": "2026-10-05",
-          "t_min": 5,
-          "t_max": 17,
+          "fecha": "2026-10-04",
+          "t_min": 8,
+          "t_max": 20,
           "lluvia_mm": 0.0,
-          "prob_lluvia": 10,
+          "prob_lluvia": 17,
           "mm_max_historico": 46.8,
           "lluvia_fuerte_pct": 1,
           "prob_helada": 0,
           "viento": 16,
           "sesgo_corregido": 0.0,
-          "postproceso_ia": true,
-          "modelos_tmax": {
-            "ecmwf_ifs025": 18.3,
-            "gfs_seamless": 17.9,
-            "icon_seamless": 17.9,
-            "gem_seamless": 17.6,
-            "meteofrance_seamless": 19.5
-          },
-          "med_tmax": 17.9,
-          "n_modelos": 5,
-          "acuerdo_modelos": 0.7,
-          "desc": "Nublado",
-          "icono": "☁️",
+          "postproceso_ia": false,
+          "modelos_tmax": null,
+          "med_tmax": null,
+          "n_modelos": 0,
+          "acuerdo_modelos": null,
+          "desc": "Parcial nublado",
+          "icono": "⛅",
           "alertas": [],
-          "confianza": 90
+          "confianza": 92
+        },
+        {
+          "fecha": "2026-10-05",
+          "t_min": 8,
+          "t_max": 20,
+          "lluvia_mm": 0.0,
+          "prob_lluvia": 17,
+          "mm_max_historico": 46.8,
+          "lluvia_fuerte_pct": 1,
+          "prob_helada": 0,
+          "viento": 16,
+          "sesgo_corregido": 0.0,
+          "postproceso_ia": false,
+          "modelos_tmax": null,
+          "med_tmax": null,
+          "n_modelos": 0,
+          "acuerdo_modelos": null,
+          "desc": "Parcial nublado",
+          "icono": "⛅",
+          "alertas": [],
+          "confianza": 89
         },
         {
           "fecha": "2026-10-06",
-          "t_min": 5,
-          "t_max": 18,
-          "lluvia_mm": 1.1,
-          "prob_lluvia": 38,
+          "t_min": 8,
+          "t_max": 20,
+          "lluvia_mm": 5.5,
+          "prob_lluvia": 22,
           "mm_max_historico": 14.6,
           "lluvia_fuerte_pct": 0,
           "prob_helada": 0,
           "viento": 16,
           "sesgo_corregido": 0.0,
-          "postproceso_ia": true,
-          "modelos_tmax": {
-            "ecmwf_ifs025": 21.1,
-            "gfs_seamless": 19.2,
-            "icon_seamless": 17.1,
-            "gem_seamless": 16.6,
-            "meteofrance_seamless": 18.15
-          },
-          "med_tmax": 18.15,
-          "n_modelos": 4,
-          "acuerdo_modelos": 1.8,
-          "desc": "Nublado",
-          "icono": "☁️",
+          "postproceso_ia": false,
+          "modelos_tmax": null,
+          "med_tmax": null,
+          "n_modelos": 0,
+          "acuerdo_modelos": null,
+          "desc": "Parcial nublado",
+          "icono": "⛅",
           "alertas": [],
-          "confianza": 76
+          "confianza": 80
         },
         {
           "fecha": "2026-10-07",
-          "t_min": 11,
-          "t_max": 16,
-          "lluvia_mm": 21.0,
-          "prob_lluvia": 68,
+          "t_min": 8,
+          "t_max": 20,
+          "lluvia_mm": 0.0,
+          "prob_lluvia": 17,
           "mm_max_historico": 14.6,
           "lluvia_fuerte_pct": 0,
           "prob_helada": 0,
           "viento": 15,
           "sesgo_corregido": 0.0,
           "postproceso_ia": false,
-          "modelos_tmax": {
-            "ecmwf_ifs025": 15.1,
-            "gfs_seamless": 17.2,
-            "icon_seamless": 14.2,
-            "gem_seamless": 13.8,
-            "meteofrance_seamless": 14.649999999999999
-          },
-          "med_tmax": 14.649999999999999,
-          "n_modelos": 4,
-          "acuerdo_modelos": 1.3,
-          "desc": "—",
-          "icono": "•",
-          "alertas": [
-            {
-              "tipo": "lluvia_fuerte",
-              "txt": "Lluvia fuerte (~21mm)",
-              "icono": "⛈️"
-            }
-          ],
-          "confianza": 73
+          "modelos_tmax": null,
+          "med_tmax": null,
+          "n_modelos": 0,
+          "acuerdo_modelos": null,
+          "desc": "Parcial nublado",
+          "icono": "⛅",
+          "alertas": [],
+          "confianza": 75
         },
         {
           "fecha": "2026-10-08",
-          "t_min": 11,
-          "t_max": 18,
-          "lluvia_mm": 10.7,
-          "prob_lluvia": 51,
+          "t_min": 8,
+          "t_max": 21,
+          "lluvia_mm": 0.0,
+          "prob_lluvia": 17,
           "mm_max_historico": 14.6,
           "lluvia_fuerte_pct": 0,
           "prob_helada": 0,
           "viento": 16,
-          "sesgo_corregido": -0.39,
+          "sesgo_corregido": -0.28,
           "postproceso_ia": false,
-          "modelos_tmax": {
-            "ecmwf_ifs025": 16.4,
-            "gfs_seamless": 18.3,
-            "icon_seamless": 17.3,
-            "gem_seamless": 16.3,
-            "meteofrance_seamless": 16.85
-          },
-          "med_tmax": 16.85,
-          "n_modelos": 4,
-          "acuerdo_modelos": 0.8,
-          "desc": "Chubascos",
-          "icono": "🌦️",
+          "modelos_tmax": null,
+          "med_tmax": null,
+          "n_modelos": 0,
+          "acuerdo_modelos": null,
+          "desc": "Parcial nublado",
+          "icono": "⛅",
           "alertas": [],
-          "confianza": 72
+          "confianza": 71
         }
       ],
-      "metodo": "ensemble de 5 modelos atmosféricos + modelo propio"
+      "metodo": "modelo propio (sin dato actual)"
     },
     {
       "zona": "Biobío–Araucanía",
@@ -1522,218 +1474,152 @@
         {
           "fecha": "2026-10-02",
           "t_min": 7,
-          "t_max": 18,
-          "lluvia_mm": 0.0,
-          "prob_lluvia": 17,
+          "t_max": 15,
+          "lluvia_mm": 10.6,
+          "prob_lluvia": 22,
           "mm_max_historico": 35.2,
           "lluvia_fuerte_pct": 10,
           "prob_helada": 0,
           "viento": 20,
           "sesgo_corregido": 0.0,
-          "postproceso_ia": true,
-          "modelos_tmax": {
-            "ecmwf_ifs025": 19.3,
-            "gfs_seamless": 20.8,
-            "icon_seamless": 19.1,
-            "gem_seamless": 18.2,
-            "meteofrance_seamless": 20.4
-          },
-          "med_tmax": 19.3,
-          "n_modelos": 5,
-          "acuerdo_modelos": 0.9,
-          "desc": "Nublado",
-          "icono": "☁️",
+          "postproceso_ia": false,
+          "modelos_tmax": null,
+          "med_tmax": null,
+          "n_modelos": 0,
+          "acuerdo_modelos": null,
+          "desc": "Parcial nublado",
+          "icono": "⛅",
           "alertas": [],
-          "confianza": 96
+          "confianza": 97
         },
         {
           "fecha": "2026-10-03",
-          "t_min": 10,
+          "t_min": 7,
           "t_max": 15,
-          "lluvia_mm": 13.9,
-          "prob_lluvia": 95,
+          "lluvia_mm": 10.4,
+          "prob_lluvia": 22,
           "mm_max_historico": 35.2,
           "lluvia_fuerte_pct": 9,
           "prob_helada": 0,
           "viento": 20,
           "sesgo_corregido": 0.0,
-          "postproceso_ia": true,
-          "modelos_tmax": {
-            "ecmwf_ifs025": 15.9,
-            "gfs_seamless": 15.1,
-            "icon_seamless": 14.9,
-            "gem_seamless": 14.9,
-            "meteofrance_seamless": 15.3
-          },
-          "med_tmax": 15.1,
-          "n_modelos": 5,
-          "acuerdo_modelos": 0.4,
-          "desc": "Lluvia",
-          "icono": "🌧️",
-          "alertas": [
-            {
-              "tipo": "lluvia",
-              "txt": "Lluvia probable (~14mm)",
-              "icono": "🌧️"
-            }
-          ],
-          "confianza": 96
+          "postproceso_ia": false,
+          "modelos_tmax": null,
+          "med_tmax": null,
+          "n_modelos": 0,
+          "acuerdo_modelos": null,
+          "desc": "Parcial nublado",
+          "icono": "⛅",
+          "alertas": [],
+          "confianza": 94
         },
         {
           "fecha": "2026-10-04",
-          "t_min": 9,
-          "t_max": 13,
-          "lluvia_mm": 16.6,
-          "prob_lluvia": 94,
+          "t_min": 7,
+          "t_max": 16,
+          "lluvia_mm": 9.8,
+          "prob_lluvia": 22,
           "mm_max_historico": 35.2,
           "lluvia_fuerte_pct": 8,
           "prob_helada": 0,
           "viento": 20,
           "sesgo_corregido": 0.0,
-          "postproceso_ia": true,
-          "modelos_tmax": {
-            "ecmwf_ifs025": 14.6,
-            "gfs_seamless": 14.7,
-            "icon_seamless": 13.7,
-            "gem_seamless": 12.8,
-            "meteofrance_seamless": 13.4
-          },
-          "med_tmax": 13.7,
-          "n_modelos": 5,
-          "acuerdo_modelos": 0.7,
-          "desc": "Lluvia leve",
-          "icono": "🌦️",
-          "alertas": [
-            {
-              "tipo": "lluvia",
-              "txt": "Lluvia probable (~17mm)",
-              "icono": "🌧️"
-            }
-          ],
-          "confianza": 93
+          "postproceso_ia": false,
+          "modelos_tmax": null,
+          "med_tmax": null,
+          "n_modelos": 0,
+          "acuerdo_modelos": null,
+          "desc": "Parcial nublado",
+          "icono": "⛅",
+          "alertas": [],
+          "confianza": 92
         },
         {
           "fecha": "2026-10-05",
-          "t_min": 8,
-          "t_max": 14,
-          "lluvia_mm": 2.7,
-          "prob_lluvia": 61,
+          "t_min": 7,
+          "t_max": 16,
+          "lluvia_mm": 9.2,
+          "prob_lluvia": 26,
           "mm_max_historico": 35.2,
           "lluvia_fuerte_pct": 6,
           "prob_helada": 0,
           "viento": 20,
           "sesgo_corregido": 0.0,
-          "postproceso_ia": true,
-          "modelos_tmax": {
-            "ecmwf_ifs025": 15.2,
-            "gfs_seamless": 15.9,
-            "icon_seamless": 15.1,
-            "gem_seamless": 14.5,
-            "meteofrance_seamless": 15.6
-          },
-          "med_tmax": 15.2,
-          "n_modelos": 5,
-          "acuerdo_modelos": 0.5,
-          "desc": "Llovizna",
-          "icono": "🌦️",
-          "alertas": [
-            {
-              "tipo": "lluvia",
-              "txt": "Lluvia probable (~3mm)",
-              "icono": "🌧️"
-            }
-          ],
-          "confianza": 91
+          "postproceso_ia": false,
+          "modelos_tmax": null,
+          "med_tmax": null,
+          "n_modelos": 0,
+          "acuerdo_modelos": null,
+          "desc": "Parcial nublado",
+          "icono": "⛅",
+          "alertas": [],
+          "confianza": 89
         },
         {
           "fecha": "2026-10-06",
-          "t_min": 6,
+          "t_min": 7,
           "t_max": 16,
-          "lluvia_mm": 1.7,
-          "prob_lluvia": 47,
+          "lluvia_mm": 8.3,
+          "prob_lluvia": 22,
           "mm_max_historico": 35.2,
           "lluvia_fuerte_pct": 5,
           "prob_helada": 0,
           "viento": 19,
           "sesgo_corregido": 0.0,
-          "postproceso_ia": true,
-          "modelos_tmax": {
-            "ecmwf_ifs025": 18.4,
-            "gfs_seamless": 16.5,
-            "icon_seamless": 15.9,
-            "gem_seamless": 15.3,
-            "meteofrance_seamless": 16.2
-          },
-          "med_tmax": 16.2,
-          "n_modelos": 4,
-          "acuerdo_modelos": 1.2,
-          "desc": "—",
-          "icono": "•",
+          "postproceso_ia": false,
+          "modelos_tmax": null,
+          "med_tmax": null,
+          "n_modelos": 0,
+          "acuerdo_modelos": null,
+          "desc": "Parcial nublado",
+          "icono": "⛅",
           "alertas": [],
-          "confianza": 79
+          "confianza": 80
         },
         {
           "fecha": "2026-10-07",
-          "t_min": 10,
+          "t_min": 7,
           "t_max": 15,
-          "lluvia_mm": 18.0,
-          "prob_lluvia": 76,
+          "lluvia_mm": 7.2,
+          "prob_lluvia": 22,
           "mm_max_historico": 21.9,
           "lluvia_fuerte_pct": 3,
           "prob_helada": 0,
           "viento": 19,
           "sesgo_corregido": 0.0,
           "postproceso_ia": false,
-          "modelos_tmax": {
-            "ecmwf_ifs025": 12.7,
-            "gfs_seamless": 15.5,
-            "icon_seamless": 15.2,
-            "gem_seamless": 14.0,
-            "meteofrance_seamless": 14.6
-          },
-          "med_tmax": 14.6,
-          "n_modelos": 4,
-          "acuerdo_modelos": 1.1,
-          "desc": "Lluvia leve",
-          "icono": "🌦️",
-          "alertas": [
-            {
-              "tipo": "lluvia",
-              "txt": "Lluvia probable (~18mm)",
-              "icono": "🌧️"
-            }
-          ],
-          "confianza": 74
+          "modelos_tmax": null,
+          "med_tmax": null,
+          "n_modelos": 0,
+          "acuerdo_modelos": null,
+          "desc": "Parcial nublado",
+          "icono": "⛅",
+          "alertas": [],
+          "confianza": 75
         },
         {
           "fecha": "2026-10-08",
-          "t_min": 10,
-          "t_max": 15,
-          "lluvia_mm": 13.5,
-          "prob_lluvia": 50,
+          "t_min": 7,
+          "t_max": 16,
+          "lluvia_mm": 0.0,
+          "prob_lluvia": 19,
           "mm_max_historico": 21.9,
           "lluvia_fuerte_pct": 4,
           "prob_helada": 0,
           "viento": 19,
-          "sesgo_corregido": -0.05,
+          "sesgo_corregido": 0.06,
           "postproceso_ia": false,
-          "modelos_tmax": {
-            "ecmwf_ifs025": 15.2,
-            "gfs_seamless": 14.3,
-            "icon_seamless": 15.8,
-            "gem_seamless": 14.5,
-            "meteofrance_seamless": 14.85
-          },
-          "med_tmax": 14.85,
-          "n_modelos": 4,
-          "acuerdo_modelos": 0.6,
-          "desc": "Chubascos",
-          "icono": "🌦️",
+          "modelos_tmax": null,
+          "med_tmax": null,
+          "n_modelos": 0,
+          "acuerdo_modelos": null,
+          "desc": "Parcial nublado",
+          "icono": "⛅",
           "alertas": [],
-          "confianza": 73
+          "confianza": 71
         }
       ],
-      "metodo": "ensemble de 5 modelos atmosféricos + modelo propio"
+      "metodo": "modelo propio (sin dato actual)"
     },
     {
       "zona": "Los Lagos–Aysén",
@@ -1741,27 +1627,21 @@
       "dias": [
         {
           "fecha": "2026-10-02",
-          "t_min": 8,
-          "t_max": 16,
-          "lluvia_mm": 1.7,
-          "prob_lluvia": 88,
+          "t_min": 6,
+          "t_max": 12,
+          "lluvia_mm": 9.5,
+          "prob_lluvia": 65,
           "mm_max_historico": 28.7,
           "lluvia_fuerte_pct": 16,
           "prob_helada": 0,
           "viento": 23,
           "sesgo_corregido": 0.0,
-          "postproceso_ia": true,
-          "modelos_tmax": {
-            "ecmwf_ifs025": 16.1,
-            "gfs_seamless": 16.4,
-            "icon_seamless": 16.1,
-            "gem_seamless": 15.5,
-            "meteofrance_seamless": 14.8
-          },
-          "med_tmax": 16.1,
-          "n_modelos": 5,
-          "acuerdo_modelos": 0.6,
-          "desc": "Llovizna intensa",
+          "postproceso_ia": false,
+          "modelos_tmax": null,
+          "med_tmax": null,
+          "n_modelos": 0,
+          "acuerdo_modelos": null,
+          "desc": "Lluvia probable",
           "icono": "🌧️",
           "alertas": [
             {
@@ -1770,65 +1650,53 @@
               "icono": "⛈️"
             }
           ],
-          "confianza": 96
+          "confianza": 97
         },
         {
           "fecha": "2026-10-03",
-          "t_min": 8,
-          "t_max": 13,
-          "lluvia_mm": 20.8,
-          "prob_lluvia": 98,
+          "t_min": 6,
+          "t_max": 12,
+          "lluvia_mm": 9.3,
+          "prob_lluvia": 67,
           "mm_max_historico": 28.7,
           "lluvia_fuerte_pct": 16,
           "prob_helada": 0,
           "viento": 22,
           "sesgo_corregido": 0.0,
-          "postproceso_ia": true,
-          "modelos_tmax": {
-            "ecmwf_ifs025": 12.8,
-            "gfs_seamless": 12.0,
-            "icon_seamless": 13.3,
-            "gem_seamless": 11.8,
-            "meteofrance_seamless": 12.5
-          },
-          "med_tmax": 12.5,
-          "n_modelos": 5,
-          "acuerdo_modelos": 0.5,
-          "desc": "Chubascos",
-          "icono": "🌦️",
+          "postproceso_ia": false,
+          "modelos_tmax": null,
+          "med_tmax": null,
+          "n_modelos": 0,
+          "acuerdo_modelos": null,
+          "desc": "Lluvia probable",
+          "icono": "🌧️",
           "alertas": [
             {
               "tipo": "lluvia_fuerte",
-              "txt": "Lluvia fuerte (~21mm)",
+              "txt": "Posible lluvia fuerte",
               "icono": "⛈️"
             }
           ],
-          "confianza": 96
+          "confianza": 94
         },
         {
           "fecha": "2026-10-04",
           "t_min": 7,
-          "t_max": 11,
-          "lluvia_mm": 18.3,
-          "prob_lluvia": 97,
+          "t_max": 13,
+          "lluvia_mm": 8.9,
+          "prob_lluvia": 65,
           "mm_max_historico": 28.7,
           "lluvia_fuerte_pct": 14,
           "prob_helada": 0,
           "viento": 22,
           "sesgo_corregido": 0.0,
-          "postproceso_ia": true,
-          "modelos_tmax": {
-            "ecmwf_ifs025": 11.4,
-            "gfs_seamless": 8.2,
-            "icon_seamless": 11.1,
-            "gem_seamless": 10.0,
-            "meteofrance_seamless": 10.1
-          },
-          "med_tmax": 10.1,
-          "n_modelos": 5,
-          "acuerdo_modelos": 1.1,
-          "desc": "Lluvia leve",
-          "icono": "🌦️",
+          "postproceso_ia": false,
+          "modelos_tmax": null,
+          "med_tmax": null,
+          "n_modelos": 0,
+          "acuerdo_modelos": null,
+          "desc": "Lluvia probable",
+          "icono": "🌧️",
           "alertas": [
             {
               "tipo": "lluvia_fuerte",
@@ -1836,32 +1704,26 @@
               "icono": "⛈️"
             }
           ],
-          "confianza": 91
+          "confianza": 92
         },
         {
           "fecha": "2026-10-05",
           "t_min": 7,
           "t_max": 13,
-          "lluvia_mm": 11.0,
-          "prob_lluvia": 95,
+          "lluvia_mm": 8.6,
+          "prob_lluvia": 60,
           "mm_max_historico": 28.7,
           "lluvia_fuerte_pct": 14,
           "prob_helada": 0,
           "viento": 21,
           "sesgo_corregido": 0.0,
-          "postproceso_ia": true,
-          "modelos_tmax": {
-            "ecmwf_ifs025": 13.9,
-            "gfs_seamless": 11.9,
-            "icon_seamless": 12.6,
-            "gem_seamless": 12.1,
-            "meteofrance_seamless": 11.5
-          },
-          "med_tmax": 12.1,
-          "n_modelos": 5,
-          "acuerdo_modelos": 0.8,
-          "desc": "Lluvia leve",
-          "icono": "🌦️",
+          "postproceso_ia": false,
+          "modelos_tmax": null,
+          "med_tmax": null,
+          "n_modelos": 0,
+          "acuerdo_modelos": null,
+          "desc": "Lluvia probable",
+          "icono": "🌧️",
           "alertas": [
             {
               "tipo": "lluvia_fuerte",
@@ -1869,177 +1731,165 @@
               "icono": "⛈️"
             }
           ],
-          "confianza": 90
+          "confianza": 89
         },
         {
           "fecha": "2026-10-06",
-          "t_min": 7,
-          "t_max": 13,
-          "lluvia_mm": 4.2,
-          "prob_lluvia": 62,
+          "t_min": 6,
+          "t_max": 12,
+          "lluvia_mm": 7.9,
+          "prob_lluvia": 60,
           "mm_max_historico": 27.8,
           "lluvia_fuerte_pct": 11,
           "prob_helada": 0,
           "viento": 21,
           "sesgo_corregido": 0.0,
-          "postproceso_ia": true,
-          "modelos_tmax": {
-            "ecmwf_ifs025": 12.2,
-            "gfs_seamless": 15.8,
-            "icon_seamless": 15.1,
-            "gem_seamless": 13.8,
-            "meteofrance_seamless": 14.45
-          },
-          "med_tmax": 14.45,
-          "n_modelos": 4,
-          "acuerdo_modelos": 1.4,
-          "desc": "—",
-          "icono": "•",
+          "postproceso_ia": false,
+          "modelos_tmax": null,
+          "med_tmax": null,
+          "n_modelos": 0,
+          "acuerdo_modelos": null,
+          "desc": "Lluvia probable",
+          "icono": "🌧️",
           "alertas": [
             {
               "tipo": "lluvia",
-              "txt": "Lluvia probable (~4mm)",
+              "txt": "Lluvia probable (~8mm)",
               "icono": "🌧️"
             }
           ],
-          "confianza": 78
+          "confianza": 80
         },
         {
           "fecha": "2026-10-07",
-          "t_min": 7,
-          "t_max": 14,
-          "lluvia_mm": 2.9,
-          "prob_lluvia": 57,
+          "t_min": 6,
+          "t_max": 12,
+          "lluvia_mm": 7.6,
+          "prob_lluvia": 60,
           "mm_max_historico": 27.8,
           "lluvia_fuerte_pct": 9,
           "prob_helada": 0,
           "viento": 21,
           "sesgo_corregido": 0.0,
           "postproceso_ia": false,
-          "modelos_tmax": {
-            "ecmwf_ifs025": 13.7,
-            "gfs_seamless": 17.3,
-            "icon_seamless": 13.3,
-            "gem_seamless": 14.4,
-            "meteofrance_seamless": 14.05
-          },
-          "med_tmax": 14.05,
-          "n_modelos": 4,
-          "acuerdo_modelos": 1.6,
-          "desc": "—",
-          "icono": "•",
+          "modelos_tmax": null,
+          "med_tmax": null,
+          "n_modelos": 0,
+          "acuerdo_modelos": null,
+          "desc": "Lluvia probable",
+          "icono": "🌧️",
           "alertas": [
             {
               "tipo": "lluvia",
-              "txt": "Lluvia probable (~3mm)",
+              "txt": "Lluvia probable (~8mm)",
               "icono": "🌧️"
             }
           ],
-          "confianza": 72
+          "confianza": 75
         },
         {
           "fecha": "2026-10-08",
-          "t_min": 8,
-          "t_max": 15,
-          "lluvia_mm": 6.6,
-          "prob_lluvia": 53,
+          "t_min": 7,
+          "t_max": 13,
+          "lluvia_mm": 7.9,
+          "prob_lluvia": 65,
           "mm_max_historico": 27.8,
           "lluvia_fuerte_pct": 9,
           "prob_helada": 0,
           "viento": 22,
           "sesgo_corregido": -0.52,
           "postproceso_ia": false,
-          "modelos_tmax": {
-            "ecmwf_ifs025": 16.4,
-            "gfs_seamless": 11.2,
-            "icon_seamless": 14.6,
-            "gem_seamless": 16.4,
-            "meteofrance_seamless": 15.5
-          },
-          "med_tmax": 15.5,
-          "n_modelos": 4,
-          "acuerdo_modelos": 2.1,
-          "desc": "—",
-          "icono": "•",
-          "alertas": [],
-          "confianza": 66
+          "modelos_tmax": null,
+          "med_tmax": null,
+          "n_modelos": 0,
+          "acuerdo_modelos": null,
+          "desc": "Lluvia probable",
+          "icono": "🌧️",
+          "alertas": [
+            {
+              "tipo": "lluvia",
+              "txt": "Lluvia probable (~8mm)",
+              "icono": "🌧️"
+            }
+          ],
+          "confianza": 71
         }
       ],
-      "metodo": "ensemble de 5 modelos atmosféricos + modelo propio"
+      "metodo": "modelo propio (sin dato actual)"
     }
   ],
   "observaciones_chile": {
     "Arica–Parinacota": {
       "estacion": "SCAR",
       "ciudad": "Arica",
-      "temperatura": 19.0,
-      "condicion": "Despejado",
-      "humedad": 83,
-      "hora": "21:00:00"
+      "temperatura": 20.0,
+      "condicion": "Cubierto",
+      "humedad": 73,
+      "hora": "03:00:00"
     },
     "Tarapacá (Iquique)": {
       "estacion": "SCDA",
       "ciudad": "Iquique",
-      "temperatura": 20.0,
+      "temperatura": 19.0,
       "condicion": "Cubierto",
       "humedad": 73,
-      "hora": "21:00:00"
+      "hora": "03:00:00"
     },
     "Antofagasta": {
       "estacion": "SCFA",
       "ciudad": "Antofagasta",
       "temperatura": 18.0,
       "condicion": "Nublado",
-      "humedad": 83,
-      "hora": "21:00:00"
+      "humedad": 77,
+      "hora": "03:00:00"
     },
     "Atacama (Copiapó)": {
       "estacion": "SCAT",
       "ciudad": "Caldera",
-      "temperatura": 16.0,
+      "temperatura": 15.0,
       "condicion": "Despejado",
       "humedad": 88,
-      "hora": "21:00:00"
+      "hora": "02:00:00"
     },
     "Coquimbo (La Serena)": {
       "estacion": "SCSE",
       "ciudad": "La Serena/Coquimbo",
-      "temperatura": 16.0,
+      "temperatura": 14.0,
       "condicion": "Despejado",
-      "humedad": 82,
-      "hora": "20:00:00"
+      "humedad": 94,
+      "hora": "03:00:00"
     },
     "Valparaíso–Metropolitana": {
       "estacion": "SCEL",
       "ciudad": "Santiago Poniente",
-      "temperatura": 21.0,
+      "temperatura": 14.0,
       "condicion": "Nublado",
-      "humedad": 43,
-      "hora": "21:00:00"
+      "humedad": 77,
+      "hora": "03:00:00"
     },
     "Maule–Ñuble": {
       "estacion": "SCIC",
       "ciudad": "Curicó",
-      "temperatura": 17.0,
+      "temperatura": 14.0,
       "condicion": "Despejado",
-      "humedad": 72,
-      "hora": "21:00:00"
+      "humedad": 94,
+      "hora": "03:00:00"
     },
     "Biobío–Araucanía": {
       "estacion": "SCIE",
       "ciudad": "Concepción",
-      "temperatura": 14.0,
-      "condicion": "Despejado",
+      "temperatura": 13.0,
+      "condicion": "Nubosidad parcial y chubascos",
       "humedad": 82,
-      "hora": "21:00:00"
+      "hora": "03:00:00"
     },
     "Los Lagos–Aysén": {
       "estacion": "SCTE",
       "ciudad": "Puerto Montt",
-      "temperatura": 13.0,
+      "temperatura": 10.0,
       "condicion": "Nubosidad parcial y chubascos",
-      "humedad": 67,
-      "hora": "21:00:00"
+      "humedad": 94,
+      "hora": "03:00:00"
     }
   },
   "obs_diarias": {
@@ -2140,9 +1990,9 @@
         "n": 4
       },
       "2026-10-02": {
-        "t_max_obs": 19.0,
+        "t_max_obs": 20.0,
         "t_min_obs": 19.0,
-        "n": 1
+        "n": 2
       }
     },
     "Tarapacá (Iquique)": {
@@ -2243,8 +2093,8 @@
       },
       "2026-10-02": {
         "t_max_obs": 20.0,
-        "t_min_obs": 20.0,
-        "n": 1
+        "t_min_obs": 19.0,
+        "n": 2
       }
     },
     "Antofagasta": {
@@ -2346,7 +2196,7 @@
       "2026-10-02": {
         "t_max_obs": 18.0,
         "t_min_obs": 18.0,
-        "n": 1
+        "n": 2
       }
     },
     "Atacama (Copiapó)": {
@@ -2447,8 +2297,8 @@
       },
       "2026-10-02": {
         "t_max_obs": 16.0,
-        "t_min_obs": 16.0,
-        "n": 1
+        "t_min_obs": 15.0,
+        "n": 2
       }
     },
     "Coquimbo (La Serena)": {
@@ -2549,8 +2399,8 @@
       },
       "2026-10-02": {
         "t_max_obs": 16.0,
-        "t_min_obs": 16.0,
-        "n": 1
+        "t_min_obs": 14.0,
+        "n": 2
       }
     },
     "Valparaíso–Metropolitana": {
@@ -2651,8 +2501,8 @@
       },
       "2026-10-02": {
         "t_max_obs": 21.0,
-        "t_min_obs": 21.0,
-        "n": 1
+        "t_min_obs": 14.0,
+        "n": 2
       }
     },
     "Maule–Ñuble": {
@@ -2753,8 +2603,8 @@
       },
       "2026-10-02": {
         "t_max_obs": 17.0,
-        "t_min_obs": 17.0,
-        "n": 1
+        "t_min_obs": 14.0,
+        "n": 2
       }
     },
     "Biobío–Araucanía": {
@@ -2855,8 +2705,8 @@
       },
       "2026-10-02": {
         "t_max_obs": 14.0,
-        "t_min_obs": 14.0,
-        "n": 1
+        "t_min_obs": 13.0,
+        "n": 2
       }
     },
     "Los Lagos–Aysén": {
@@ -2957,8 +2807,8 @@
       },
       "2026-10-02": {
         "t_max_obs": 13.0,
-        "t_min_obs": 13.0,
-        "n": 1
+        "t_min_obs": 10.0,
+        "n": 2
       }
     }
   },
@@ -4348,7 +4198,7 @@
     "lon_punto": -68.61,
     "mag_esperada_aprox": 4.7,
     "mostrar_circulo": false,
-    "prob_M5_7d": 0.405,
+    "prob_M5_7d": 0.389,
     "radio_km": 420,
     "acierto_100km_pct": 19,
     "acierto_200km_pct": 36,
@@ -4409,24 +4259,24 @@
       "zona": "Tarapacá (Iquique)",
       "lat0": -23,
       "lat1": -20,
-      "prob_M5_7d": 0.405,
+      "prob_M5_7d": 0.389,
       "prob_M6_7d": 0.024,
-      "prob_M5_3d": 0.2,
+      "prob_M5_3d": 0.19,
       "prob_M6_3d": 0.01,
-      "nivel": "MODERADO",
+      "nivel": "NORMAL",
       "regimen": "NORMAL",
       "mag_esperada": 5.3,
       "mag_maxima_historica": 6.9,
       "n_ult7d": 9,
-      "n_ult30d": 39,
-      "factor_actividad": 2.37,
+      "n_ult30d": 37,
+      "factor_actividad": 2.25,
       "mag_max_ult30d": 5.3
     },
     {
       "zona": "Antofagasta",
       "lat0": -26,
       "lat1": -23,
-      "prob_M5_7d": 0.346,
+      "prob_M5_7d": 0.345,
       "prob_M6_7d": 0.021,
       "prob_M5_3d": 0.166,
       "prob_M6_3d": 0.009,
@@ -4434,7 +4284,7 @@
       "regimen": "NORMAL",
       "mag_esperada": 5.2,
       "mag_maxima_historica": 7.4,
-      "n_ult7d": 10,
+      "n_ult7d": 9,
       "n_ult30d": 34,
       "factor_actividad": 2.66,
       "mag_max_ult30d": 5.3
@@ -4443,7 +4293,7 @@
       "zona": "Atacama (Copiapó)",
       "lat0": -29,
       "lat1": -26,
-      "prob_M5_7d": 0.243,
+      "prob_M5_7d": 0.242,
       "prob_M6_7d": 0.019,
       "prob_M5_3d": 0.112,
       "prob_M6_3d": 0.008,
@@ -4451,7 +4301,7 @@
       "regimen": "NORMAL",
       "mag_esperada": 5.4,
       "mag_maxima_historica": 6.8,
-      "n_ult7d": 1,
+      "n_ult7d": 0,
       "n_ult30d": 13,
       "factor_actividad": 2.03,
       "mag_max_ult30d": 5.3
@@ -4474,23 +4324,6 @@
       "mag_max_ult30d": 5.1
     },
     {
-      "zona": "Valparaíso–Metropolitana",
-      "lat0": -35,
-      "lat1": -32,
-      "prob_M5_7d": 0.154,
-      "prob_M6_7d": 0.005,
-      "prob_M5_3d": 0.069,
-      "prob_M6_3d": 0.002,
-      "nivel": "NORMAL",
-      "regimen": "NORMAL",
-      "mag_esperada": 5.2,
-      "mag_maxima_historica": 6.1,
-      "n_ult7d": 3,
-      "n_ult30d": 8,
-      "factor_actividad": 1.43,
-      "mag_max_ult30d": 5.2
-    },
-    {
       "zona": "Arica–Parinacota",
       "lat0": -20,
       "lat1": -17,
@@ -4508,12 +4341,29 @@
       "mag_max_ult30d": 4.3
     },
     {
+      "zona": "Valparaíso–Metropolitana",
+      "lat0": -35,
+      "lat1": -32,
+      "prob_M5_7d": 0.144,
+      "prob_M6_7d": 0.005,
+      "prob_M5_3d": 0.064,
+      "prob_M6_3d": 0.002,
+      "nivel": "NORMAL",
+      "regimen": "NORMAL",
+      "mag_esperada": 5.2,
+      "mag_maxima_historica": 6.1,
+      "n_ult7d": 3,
+      "n_ult30d": 8,
+      "factor_actividad": 1.33,
+      "mag_max_ult30d": 5.2
+    },
+    {
       "zona": "Maule–Ñuble",
       "lat0": -38,
       "lat1": -35,
-      "prob_M5_7d": 0.123,
+      "prob_M5_7d": 0.114,
       "prob_M6_7d": 0.013,
-      "prob_M5_3d": 0.055,
+      "prob_M5_3d": 0.051,
       "prob_M6_3d": 0.006,
       "nivel": "NORMAL",
       "regimen": "NORMAL",
@@ -4521,24 +4371,24 @@
       "mag_maxima_historica": 6.7,
       "n_ult7d": 2,
       "n_ult30d": 5,
-      "factor_actividad": 1.74,
+      "factor_actividad": 1.61,
       "mag_max_ult30d": 4.5
     },
     {
       "zona": "Biobío–Araucanía",
       "lat0": -41,
       "lat1": -38,
-      "prob_M5_7d": 0.068,
+      "prob_M5_7d": 0.073,
       "prob_M6_7d": 0.008,
-      "prob_M5_3d": 0.03,
+      "prob_M5_3d": 0.032,
       "prob_M6_3d": 0.003,
       "nivel": "NORMAL",
       "regimen": "NORMAL",
       "mag_esperada": 5.3,
       "mag_maxima_historica": 6.7,
-      "n_ult7d": 0,
+      "n_ult7d": 1,
       "n_ult30d": 3,
-      "factor_actividad": 2.36,
+      "factor_actividad": 2.55,
       "mag_max_ult30d": 4.6
     },
     {
@@ -4591,22 +4441,13 @@
     "veredicto": "Sin efecto medible sobre Chile. Un sismo grande en otro pais no eleva la probabilidad de uno en Chile."
   },
   "calibracion": {
-    "evaluaciones": 56,
+    "evaluaciones": 57,
     "aciertos_top3": 31,
-    "brier_sum": 91.09797299999981,
-    "n_brier": 747,
-    "tasa_acierto_top3_pct": 55.4,
-    "brier_score": 0.122,
+    "brier_sum": 92.40495399999979,
+    "n_brier": 756,
+    "tasa_acierto_top3_pct": 54.4,
+    "brier_score": 0.1222,
     "historial": [
-      {
-        "fecha": "22-07-2026",
-        "zona_pronosticada": "Tarapacá (Iquique)",
-        "zonas_reales": [
-          "Atacama (Copiapó)",
-          "Antofagasta"
-        ],
-        "acierto": false
-      },
       {
         "fecha": "23-07-2026",
         "zona_pronosticada": "Antofagasta",
@@ -4954,69 +4795,17 @@
           "Valparaíso–Metropolitana"
         ],
         "acierto": false
+      },
+      {
+        "fecha": "25-09-2026",
+        "zona_pronosticada": "Tarapacá (Iquique)",
+        "zonas_reales": [
+          "Valparaíso–Metropolitana"
+        ],
+        "acierto": false
       }
     ],
     "pendientes": [
-      {
-        "fecha_iso": "2026-09-25T03:23:26+00:00",
-        "fecha_dia": "2026-09-25",
-        "zonas": [
-          {
-            "zona": "Tarapacá (Iquique)",
-            "lat0": -23,
-            "lat1": -20,
-            "prob_M5_7d": 0.516
-          },
-          {
-            "zona": "Antofagasta",
-            "lat0": -26,
-            "lat1": -23,
-            "prob_M5_7d": 0.385
-          },
-          {
-            "zona": "Atacama (Copiapó)",
-            "lat0": -29,
-            "lat1": -26,
-            "prob_M5_7d": 0.383
-          },
-          {
-            "zona": "Coquimbo (La Serena)",
-            "lat0": -32,
-            "lat1": -29,
-            "prob_M5_7d": 0.254
-          },
-          {
-            "zona": "Valparaíso–Metropolitana",
-            "lat0": -35,
-            "lat1": -32,
-            "prob_M5_7d": 0.219
-          },
-          {
-            "zona": "Arica–Parinacota",
-            "lat0": -20,
-            "lat1": -17,
-            "prob_M5_7d": 0.18
-          },
-          {
-            "zona": "Maule–Ñuble",
-            "lat0": -38,
-            "lat1": -35,
-            "prob_M5_7d": 0.178
-          },
-          {
-            "zona": "Biobío–Araucanía",
-            "lat0": -41,
-            "lat1": -38,
-            "prob_M5_7d": 0.085
-          },
-          {
-            "zona": "Los Lagos–Aysén",
-            "lat0": -44,
-            "lat1": -41,
-            "prob_M5_7d": 0.005
-          }
-        ]
-      },
       {
         "fecha_iso": "2026-09-26T19:48:11.508000+00:00",
         "fecha_dia": "2026-09-26",
@@ -5376,19 +5165,70 @@
             "prob_M5_7d": 0.022
           }
         ]
+      },
+      {
+        "fecha_iso": "2026-10-02T05:21:06+00:00",
+        "fecha_dia": "2026-10-02",
+        "zonas": [
+          {
+            "zona": "Tarapacá (Iquique)",
+            "lat0": -23,
+            "lat1": -20,
+            "prob_M5_7d": 0.405
+          },
+          {
+            "zona": "Antofagasta",
+            "lat0": -26,
+            "lat1": -23,
+            "prob_M5_7d": 0.346
+          },
+          {
+            "zona": "Atacama (Copiapó)",
+            "lat0": -29,
+            "lat1": -26,
+            "prob_M5_7d": 0.243
+          },
+          {
+            "zona": "Coquimbo (La Serena)",
+            "lat0": -32,
+            "lat1": -29,
+            "prob_M5_7d": 0.226
+          },
+          {
+            "zona": "Valparaíso–Metropolitana",
+            "lat0": -35,
+            "lat1": -32,
+            "prob_M5_7d": 0.154
+          },
+          {
+            "zona": "Arica–Parinacota",
+            "lat0": -20,
+            "lat1": -17,
+            "prob_M5_7d": 0.152
+          },
+          {
+            "zona": "Maule–Ñuble",
+            "lat0": -38,
+            "lat1": -35,
+            "prob_M5_7d": 0.123
+          },
+          {
+            "zona": "Biobío–Araucanía",
+            "lat0": -41,
+            "lat1": -38,
+            "prob_M5_7d": 0.068
+          },
+          {
+            "zona": "Los Lagos–Aysén",
+            "lat0": -44,
+            "lat1": -41,
+            "prob_M5_7d": 0.021
+          }
+        ]
       }
     ]
   },
   "historial_parametros": [
-    {
-      "fecha": "2026-08-29T22:32:38.895720+00:00",
-      "mu": 0.6653,
-      "K": 0.0011,
-      "alpha": 1.405,
-      "p": 1.276,
-      "b": 1.443,
-      "n_total": 6273
-    },
     {
       "fecha": "2026-08-30T01:10:25.322039+00:00",
       "mu": 0.6671,
@@ -7179,6 +7019,15 @@
       "p": 1.51,
       "b": 1.434,
       "n_total": 6272
+    },
+    {
+      "fecha": "2026-10-02T06:02:48.690586+00:00",
+      "mu": 0.6588,
+      "K": 0.001,
+      "alpha": 1.547,
+      "p": 1.51,
+      "b": 1.434,
+      "n_total": 6271
     }
   ],
   "descargo": "Sistema auto-adaptativo con calibración. Probabilidades por zona para 7 días, NO predicción de día/hora/lugar. Oficial: SENAPRED, sismologia.cl."
