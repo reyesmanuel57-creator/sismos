@@ -1264,7 +1264,8 @@ def clima_regiones(sesgos=None):
             url = "https://api.open-meteo.com/v1/forecast?" + urllib.parse.urlencode({
                 "latitude": lat, "longitude": lon,
                 "daily": "temperature_2m_max,temperature_2m_min,"
-                         "precipitation_probability_max,precipitation_sum,weathercode",
+                         "precipitation_probability_max,precipitation_sum,weathercode,"
+                         "cloud_cover_mean,shortwave_radiation_sum",
                 "timezone": "America/Santiago", "forecast_days": 7,
                 "models": ",".join(MODELOS_ATM),
             })
@@ -1309,6 +1310,8 @@ def clima_regiones(sesgos=None):
                 prob_real, _, _ = _consenso(anclaje, "precipitation_probability_max", i)
                 mm_real, dmm, _ = _consenso(anclaje, "precipitation_sum", i)
                 code_real, _, _ = _consenso(anclaje, "weathercode", i)
+                nub_real, _, _ = _consenso(anclaje, "cloud_cover_mean", i)
+                rad_real, _, _ = _consenso(anclaje, "shortwave_radiation_sum", i)
                 n_modelos = nM
                 desv_temp = dM
                 # peso del ensemble: alto los primeros días, baja hacia el 5º
@@ -1426,6 +1429,13 @@ def clima_regiones(sesgos=None):
                 "lluvia_fuerte_pct": int(lluvia_fuerte),
                 "prob_helada": int(prob_helada),
                 "viento": int(round(viento)),
+                "nubosidad": (int(round(nub_real)) if 'nub_real' in dir() and nub_real is not None else None),
+                "nubosidad_desc": (
+                    ("Despejado" if nub_real < 25 else
+                     "Parcial" if nub_real < 50 else
+                     "Nuboso" if nub_real < 85 else "Cubierto")
+                    if 'nub_real' in dir() and nub_real is not None else None),
+                "radiacion_mj": (round(float(rad_real), 1) if 'rad_real' in dir() and rad_real is not None else None),
                 "sesgo_corregido": round(sesgo_aplicado, 2),
                 "postproceso_ia": bool(mos_aplicado),
                 "modelos_tmax": (det_max["modelos"] if det_max else None),
