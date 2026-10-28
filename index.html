@@ -182,6 +182,9 @@
   .ens-bajo{background:rgba(214,69,80,.12);color:#D64550;border:1px solid rgba(214,69,80,.28);}
   .cd-conf{font-size:8px;color:var(--muted);margin-top:3px;font-family:'Space Mono',monospace;}
   .cd-viento{font-size:9px;color:#8B93A7;margin-top:2px;font-family:'Space Mono',monospace;}
+  .cd-nub{font-size:9px;color:#8B93A7;margin-top:2px;font-family:'Space Mono',monospace;}
+  .cd-rad{font-size:9px;color:#E8B84B;margin-top:1px;font-family:'Space Mono',monospace;}
+
   .clima-alertas{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:10px;}
   .clima-alerta{font-size:10px;background:rgba(232,148,59,.12);border:1px solid rgba(232,148,59,.3);
     color:#E8943B;padding:4px 9px;border-radius:14px;font-family:'Space Mono',monospace;}
@@ -382,6 +385,8 @@ function dibujarClima(clima, obs){
         ${d.prob_lluvia>10?`<div class="cd-lluvia">☔${d.prob_lluvia}%</div>`:''}
         ${d.lluvia_mm>0?`<div class="cd-mm">${d.lluvia_mm}mm</div>`:''}
         ${d.viento>=20?`<div class="cd-viento">💨${d.viento}</div>`:''}
+        ${d.nubosidad!=null?`<div class="cd-nub">☁${d.nubosidad}%</div>`:''}
+        ${d.radiacion_mj!=null?`<div class="cd-rad">☀${d.radiacion_mj}</div>`:''}
         <div class="cd-conf">${d.confianza}%</div>
       </div>`;}).join('');
     html+=`<div class="clima-zona">
