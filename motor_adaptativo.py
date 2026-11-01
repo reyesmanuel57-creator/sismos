@@ -1180,6 +1180,50 @@ PESO_ENSEMBLE = [0.98, 0.93, 0.92, 0.92, 0.80, 0.84, 0.69]
 CONF_BASE = [0.97, 0.94, 0.92, 0.89, 0.80, 0.75, 0.71]
 
 
+def radiacion_horaria(modelos):
+    """
+    Curva horaria de radiación solar (W/m2) para cada region, HOY y MANANA.
+    Una sola llamada a Open-Meteo con las 9 coordenadas, modelo ECMWF (el mas
+    fiable). Devuelve {zona: [{"hora":"HH:MM","wm2":int}, ...]} solo con las
+    horas de sol (radiacion > 0). Sirve para estimar generacion fotovoltaica:
+    kW ~= (wm2/1000) * kWp_instalados * 0.8
+    """
+    import urllib.parse, datetime
+    zonas = list(modelos.keys())
+    lats = ",".join(str(modelos[z].get("lat")) for z in zonas if modelos[z].get("lat") is not None)
+    lons = ",".join(str(modelos[z].get("lon")) for z in zonas if modelos[z].get("lon") is not None)
+    try:
+        url = "https://api.open-meteo.com/v1/forecast?" + urllib.parse.urlencode({
+            "latitude": lats, "longitude": lons,
+            "hourly": "shortwave_radiation",
+            "timezone": "America/Santiago", "forecast_days": 2,
+            "models": "ecmwf_ifs025",
+        })
+        r = requests.get(url, timeout=12)
+        if r.status_code != 200:
+            return {}
+        data = r.json()
+        if isinstance(data, dict):
+            data = [data]  # una sola region vuelve como objeto
+        out = {}
+        for zona, bloque in zip(zonas, data):
+            hr = bloque.get("hourly", {})
+            tiempos = hr.get("time", [])
+            rad = hr.get("shortwave_radiation", [])
+            curva = []
+            for t, v in zip(tiempos, rad):
+                if v is None:
+                    continue
+                vi = int(round(v))
+                if vi > 0:  # solo horas con sol
+                    curva.append({"hora": t[11:16], "fecha": t[:10], "wm2": vi})
+            if curva:
+                out[zona] = curva
+        return out
+    except Exception:
+        return {}
+
+
 def clima_regiones(sesgos=None):
     """
     CLIMA HÍBRIDO DEFINITIVO. Combina dos fuentes:
@@ -1451,6 +1495,13 @@ def clima_regiones(sesgos=None):
             salida.append({"zona": zona, "ciudad": modelo["ciudad"], "dias": dias,
                            "metodo": "ensemble de 5 modelos atmosféricos + modelo propio" if tiene_real
                                      else "modelo propio (sin dato actual)"})
+    # curva horaria de radiación solar (hoy y mañana) por región, en una llamada
+    try:
+        curvas = radiacion_horaria(modelos)
+        for z in salida:
+            z["radiacion_horaria"] = curvas.get(z["zona"])
+    except Exception:
+        pass
     return salida
 
 
