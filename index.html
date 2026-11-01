@@ -184,6 +184,18 @@
   .cd-viento{font-size:9px;color:#8B93A7;margin-top:2px;font-family:'Space Mono',monospace;}
   .cd-nub{font-size:9px;color:#8B93A7;margin-top:2px;font-family:'Space Mono',monospace;}
   .cd-rad{font-size:9px;color:#E8B84B;margin-top:1px;font-family:'Space Mono',monospace;}
+  .solar{margin-top:8px;background:#0F1620;border:1px solid var(--line);border-radius:10px;padding:10px;}
+  .solar-h{font-size:11px;color:#E8B84B;font-family:'Space Mono',monospace;letter-spacing:.05em;
+    text-transform:uppercase;margin-bottom:8px;display:flex;align-items:center;gap:6px;flex-wrap:wrap;}
+  .solar-kwp{background:#1A2430;border:1px solid var(--line);border-radius:6px;color:var(--text);
+    font-size:11px;width:52px;padding:2px 5px;font-family:'Space Mono',monospace;}
+  .solar-barras{display:flex;align-items:flex-end;gap:2px;height:60px;margin-top:4px;}
+  .solar-col{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;height:100%;}
+  .solar-bar{width:100%;background:linear-gradient(to top,#E8943B,#E8B84B);border-radius:2px 2px 0 0;min-height:1px;}
+  .solar-hh{font-size:7px;color:var(--muted2);margin-top:2px;font-family:'Space Mono',monospace;}
+  .solar-kw{font-size:7px;color:#E8B84B;font-family:'Space Mono',monospace;height:9px;}
+  .solar-pico{font-size:10px;color:var(--muted);margin-top:6px;font-family:'Space Mono',monospace;}
+
 
   .clima-alertas{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:10px;}
   .clima-alerta{font-size:10px;background:rgba(232,148,59,.12);border:1px solid rgba(232,148,59,.3);
@@ -412,6 +424,33 @@ function dibujarClima(clima, obs){
       })()}
       ${bannerAlertas}
       <div class="clima-dias">${dias}</div>
+      ${(()=>{
+        const cur=c.radiacion_horaria;
+        if(!cur||!cur.length) return '';
+        const hoy=cur[0].fecha;
+        const dia=cur.filter(p=>p.fecha===hoy);
+        if(!dia.length) return '';
+        const maxW=Math.max(...dia.map(p=>p.wm2));
+        const pico=dia.reduce((a,b)=>b.wm2>a.wm2?b:a);
+        let kwp=5; try{kwp=parseFloat(localStorage.getItem('kwp'))||5}catch(e){}
+        const barras=dia.map(p=>{
+          const alt=Math.round(p.wm2/maxW*100);
+          const kw=p.wm2/1000*kwp*0.8;
+          return `<div class="solar-col">
+            <div class="solar-kw" data-w="${p.wm2}">${kw>=0.1?kw.toFixed(1):''}</div>
+            <div class="solar-bar" style="height:${alt}%"></div>
+            <div class="solar-hh">${p.hora.slice(0,2)}</div>
+          </div>`;}).join('');
+        const picoKw=(pico.wm2/1000*kwp*0.8).toFixed(1);
+        return `<div class="solar" data-picoh="${pico.hora}" data-picow="${pico.wm2}">
+          <div class="solar-h">☀ Radiación solar hoy · panel
+            <input class="solar-kwp" type="number" value="${kwp}" min="0" step="0.5"
+              oninput="recalcSolar(this)"> kWp
+          </div>
+          <div class="solar-barras">${barras}</div>
+          <div class="solar-pico">Pico ${pico.hora} · ${pico.wm2} W/m² · ~${picoKw} kW</div>
+        </div>`;
+      })()}
     </div>`;
   });
   html+=`<div class="clima-nota"><b>Precisión medida</b> (backtest de 60 días en las 9 regiones, contrastado con el reanálisis ERA5): error de la temperatura máxima ±0.6 °C a 1 día, ±0.8 °C a 3 días, ±1.2 °C a 5 días y ±1.5 °C a 7 días. Fuentes: ensemble de 5 modelos atmosféricos (ECMWF, GFS, ICON, GEM, MeteoFrance), modelo propio con 9 años aprendidos por región, y estaciones meteorológicas chilenas para el estado actual y la validación independiente. Los pesos de la mezcla y la confianza de cada día no son supuestos: se calcularon minimizando el error real. Sobre el ensemble corre un <b>post-procesador estadístico</b> (regresión entrenada con el reanálisis ERA5) que aprende cuánto vale cada modelo en cada región: mejora medida <b>+18%</b>, validada con cinco cortes temporales distintos y sin usar la fecha, para no memorizar la estación del año. Además el sistema aprende su propio <b>sesgo</b> frente al reanálisis ERA5 y descuenta la mitad (descontarlo entero empeora el resultado). Las estaciones chilenas muestran el estado actual medido en el suelo. Aun así, el clima es caótico y ningún pronóstico es exacto.</div>`;
@@ -712,6 +751,19 @@ fetch(FUENTE).then(r=>r.json()).then(d=>{
                 y:{ticks:{color:"#8B93A7",font:{size:9}},grid:{color:"#2A3142"}}}}});
   }
 }).catch(e=>{document.getElementById("zonas").innerHTML='<div style="color:#8B93A7;padding:30px;text-align:center">No se pudo cargar el estado.</div>';});
+
+  function recalcSolar(el){
+    let kwp=parseFloat(el.value)||0;
+    try{localStorage.setItem('kwp',el.value)}catch(e){}
+    const box=el.closest('.solar');
+    box.querySelectorAll('.solar-kw').forEach(function(k){
+      const w=parseFloat(k.dataset.w)||0;
+      const kw=w/1000*kwp*0.8;
+      k.textContent=kw>=0.1?kw.toFixed(1):'';
+    });
+    const pw=parseFloat(box.dataset.picow)||0, ph=box.dataset.picoh||'';
+    box.querySelector('.solar-pico').textContent='Pico '+ph+' · '+pw+' W/m² · ~'+(pw/1000*kwp*0.8).toFixed(1)+' kW';
+  }
 </script>
 </body>
 </html>
